@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.WebApi.DTO;
+using WebShop.DTO;
 using WebShop.WebApi.Services;
 
 namespace WebShop.WebApi.Controllers

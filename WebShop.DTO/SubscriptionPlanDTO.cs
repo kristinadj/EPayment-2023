@@ -1,4 +1,4 @@
-﻿namespace WebShop.WebApi.DTO
+﻿namespace WebShop.DTO
 {
     public class SubscriptionPlanDTO
     {

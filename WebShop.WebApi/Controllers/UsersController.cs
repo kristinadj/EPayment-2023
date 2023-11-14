@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.WebApi.DTO;
+using WebShop.DTO;
 using WebShop.WebApi.Enums;
 using WebShop.WebApi.Models;
 using WebShop.WebApi.Services;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebShop.WebApi.DTO
+namespace WebShop.DTO
 {
     public class AuthenticateDTO
     {
@@ -9,6 +9,12 @@ namespace WebShop.WebApi.DTO
 
         [Required] 
         public string Password { get; set; }
+
+        public AuthenticateDTO() 
+        { 
+            Email = string.Empty;
+            Password = string.Empty;
+        }
 
         public AuthenticateDTO(string email, string password)
         {

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using WebShop.WebApi.DTO;
+using WebShop.DTO;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Mappings

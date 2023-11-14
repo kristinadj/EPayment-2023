@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebShop.WebApi.DTO;
+using WebShop.DTO;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Services
