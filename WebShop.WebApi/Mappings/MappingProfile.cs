@@ -8,7 +8,9 @@ namespace WebShop.WebApi.Mappings
     {
         public MappingProfile() 
         { 
-            CreateMap<UserDTO, User>();
+            CreateMap<UserDTO, User>()
+                .ForMember(d => d.UserName, s => s.MapFrom(x => x.Email))
+                .ConstructUsing(x => new User($"{x.FirstName} {x.LastName}"));
 
             CreateMap<Currency, CurrencyDTO>();
 

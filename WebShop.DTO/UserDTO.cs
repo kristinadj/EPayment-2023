@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace WebShop.DTO
 {
@@ -31,6 +32,17 @@ namespace WebShop.DTO
         [StringLength(25)]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; }
+
+        public UserDTO()
+        {
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            Email = string.Empty;
+            PhoneNumber = string.Empty;
+            Address = string.Empty;
+            Password = string.Empty;
+            ConfirmPassword = string.Empty;
+        }
 
         public UserDTO(string firstName, string lastName, string email, string? phoneNumber, string address, string password, string confirmPassword)
         {

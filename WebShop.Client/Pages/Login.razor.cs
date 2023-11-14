@@ -67,6 +67,7 @@ namespace WebShop.Client.Pages
             }
 
             isLoading = false;
+            StateHasChanged();
         }
     }
 }
