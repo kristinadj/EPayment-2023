@@ -1,0 +1,19 @@
+﻿<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Item!.Name</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText>
+            @Item!.Description
+        </MudText>
+        <MudText>
+            @Item!.Price @Item.Currency!.Symbol
+        </MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudNumericField @bind-Value="@quantity" Variant="Variant.Text" Min="1" />
+        <MudButton>Add</MudButton>
+    </MudCardActions>
+</MudCard>

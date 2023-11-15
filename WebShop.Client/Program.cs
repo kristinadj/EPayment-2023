@@ -6,6 +6,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using WebShop.Client;
 using WebShop.Client.Authentication;
+using WebShop.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -24,5 +25,6 @@ builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IApiServices, ApiServices>();
 
 await builder.Build().RunAsync();

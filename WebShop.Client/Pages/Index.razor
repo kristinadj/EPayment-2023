@@ -3,10 +3,11 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="pa-4">
-            <h1>Hello, @context?.User?.Identity?.Name !</h1>
-
-            <p>Welcome to your new app.</p>
+        <div class="d-flex flex-wrap gap-4">
+            @foreach (var item in items)
+            {
+                <ItemCard Item="@item"></ItemCard>
+            }
         </div>
 
     </Authorized>

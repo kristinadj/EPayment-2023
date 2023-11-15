@@ -60,6 +60,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
+builder.Services.AddScoped<IItemService, ItemServices>();
 
 #endregion
 

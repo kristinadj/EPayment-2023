@@ -15,6 +15,11 @@ namespace WebShop.WebApi.Mappings
             CreateMap<Currency, CurrencyDTO>();
 
             CreateMap<SubscriptionPlan, SubscriptionPlanDTO>();
+
+            CreateMap<Item, ItemDTO>();
+
+            CreateMap<Merchant, MerchantDTO>()
+                .ConstructUsing(x => new MerchantDTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber , x.User.Email));
         }
     }
 }
