@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using WebShop.DTO;
+using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Services
 {
     public interface ISubscriptionPlanService
     {
-        Task<List<SubscriptionPlanDTO>> GetSubscriptionPlansAsync();
+        Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
     }
 
     public class SubscripionPlanService : ISubscriptionPlanService
@@ -22,10 +22,10 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<List<SubscriptionPlanDTO>> GetSubscriptionPlansAsync()
+        public async Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync()
         {
             return await _context.SubscriptionPlans
-                .ProjectTo<SubscriptionPlanDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<SubscriptionPlanODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
     }

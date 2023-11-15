@@ -1,6 +1,6 @@
-﻿namespace WebShop.DTO
+﻿namespace WebShop.DTO.Output
 {
-    public class SubscriptionPlanDTO
+    public class SubscriptionPlanODTO
     {
         public int SubscriptionPlanId { get; set; }
         public string Name { get; set; }
@@ -10,7 +10,7 @@
         public int DurationInDays { get; set; }
         public bool AutomaticRenewel { get; set; }
 
-        public SubscriptionPlanDTO(string name, string description)
+        public SubscriptionPlanODTO(string name, string description)
         {
             Name = name;
             Description = description;

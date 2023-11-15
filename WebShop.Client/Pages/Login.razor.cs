@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using WebShop.Client.Authentication;
-using WebShop.DTO;
+using WebShop.Client.Code;
+using WebShop.DTO.Input;
 
 namespace WebShop.Client.Pages
 {
@@ -17,7 +19,7 @@ namespace WebShop.Client.Pages
         private ISnackbar Snackbar { get; set; }
 
         private MudForm? form = new();
-        private AuthenticateDTO authenticateDTO = new();
+        private AuthenticateIDTO authenticateDTO = new();
         private bool isValid;
         private string[] errors = { };
 

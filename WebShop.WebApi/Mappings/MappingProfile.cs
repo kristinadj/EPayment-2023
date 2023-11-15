@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using WebShop.DTO;
+using WebShop.DTO.Input;
+using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Mappings
@@ -8,18 +9,22 @@ namespace WebShop.WebApi.Mappings
     {
         public MappingProfile() 
         { 
-            CreateMap<UserDTO, User>()
+            CreateMap<UserIDTO, User>()
                 .ForMember(d => d.UserName, s => s.MapFrom(x => x.Email))
                 .ConstructUsing(x => new User($"{x.FirstName} {x.LastName}"));
 
-            CreateMap<Currency, CurrencyDTO>();
+            CreateMap<Currency, CurrencyODTO>();
 
-            CreateMap<SubscriptionPlan, SubscriptionPlanDTO>();
+            CreateMap<SubscriptionPlan, SubscriptionPlanODTO>();
 
-            CreateMap<Item, ItemDTO>();
+            CreateMap<Item, ItemODTO>();
 
-            CreateMap<Merchant, MerchantDTO>()
-                .ConstructUsing(x => new MerchantDTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber , x.User.Email));
+            CreateMap<Merchant, MerchantODTO>()
+                .ConstructUsing(x => new MerchantODTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber , x.User.Email));
+
+            CreateMap<ShoppingCart, ShoppingCartODTO>();
+
+            CreateMap<ShoppingCartItem, ShoppingCartItemODTO>();
         }
     }
 }

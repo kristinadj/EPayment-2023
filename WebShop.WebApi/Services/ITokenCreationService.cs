@@ -2,14 +2,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebShop.DTO;
+using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Services
 {
     public interface ITokenCreationService
     {
-        AuthenticationResultDTO CreateToken(User user);
+        AuthenticationODTO CreateToken(User user);
     }
 
     public class JwtService : ITokenCreationService
@@ -22,7 +22,7 @@ namespace WebShop.WebApi.Services
             _configuration = configuration;
         }
 
-        public AuthenticationResultDTO CreateToken(User user)
+        public AuthenticationODTO CreateToken(User user)
         {
             var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]);
             var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
@@ -35,7 +35,7 @@ namespace WebShop.WebApi.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            return new AuthenticationResultDTO(tokenHandler.WriteToken(token))
+            return new AuthenticationODTO(tokenHandler.WriteToken(token))
             {
                 Expiration = expiration
             };

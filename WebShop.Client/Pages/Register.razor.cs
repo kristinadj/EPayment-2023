@@ -2,7 +2,7 @@
 using MudBlazor;
 using System.Text.RegularExpressions;
 using WebShop.Client.Authentication;
-using WebShop.DTO;
+using WebShop.DTO.Input;
 
 namespace WebShop.Client.Pages
 {
@@ -18,7 +18,7 @@ namespace WebShop.Client.Pages
         private ISnackbar Snackbar { get; set; }
 
         private MudForm? form = new();
-        private UserDTO userDTO = new();
+        private UserIDTO userDTO = new();
         private bool isValid;
         private string[] errors = { };
 

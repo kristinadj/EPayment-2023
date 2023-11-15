@@ -61,6 +61,7 @@ builder.Services.AddScoped<ITokenCreationService, JwtService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
 builder.Services.AddScoped<IItemService, ItemServices>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 #endregion
 

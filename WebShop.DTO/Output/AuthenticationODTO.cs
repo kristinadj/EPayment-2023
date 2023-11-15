@@ -1,11 +1,11 @@
-﻿namespace WebShop.DTO
+﻿namespace WebShop.DTO.Output
 {
-    public class AuthenticationResultDTO
+    public class AuthenticationODTO
     {
         public string Token { get; set; }
         public DateTime Expiration { get; set; }
 
-        public AuthenticationResultDTO(string token)
+        public AuthenticationODTO(string token)
         {
             Token = token;
         }

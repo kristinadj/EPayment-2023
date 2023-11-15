@@ -1,6 +1,6 @@
-﻿namespace WebShop.DTO
+﻿namespace WebShop.DTO.Output
 {
-    public class MerchantDTO
+    public class MerchantODTO
     {
         public int MerchantId { get; set; }
         public string UserId { get; set; }
@@ -9,7 +9,7 @@
         public string? PhoneNumber { get; set; }
         public string Email { get; set; }
 
-        public MerchantDTO(string userId, string name, string address, string phoneNumber, string email)
+        public MerchantODTO(string userId, string name, string address, string phoneNumber, string email)
         {
             UserId = userId;
             Name = name;

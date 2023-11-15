@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using WebShop.DTO;
+using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Services
 {
     public interface ICurrencyService
     {
-        Task<List<CurrencyDTO>> GetCurrenciesAsync();
+        Task<List<CurrencyODTO>> GetCurrenciesAsync();
     }
 
     public class CurrencyService : ICurrencyService
@@ -22,10 +22,10 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<List<CurrencyDTO>> GetCurrenciesAsync()
+        public async Task<List<CurrencyODTO>> GetCurrenciesAsync()
         {
             return await _context.Currencies
-                .ProjectTo<CurrencyDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<CurrencyODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
     }

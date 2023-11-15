@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
-using WebShop.DTO;
+using WebShop.DTO.Input;
+using WebShop.DTO.Output;
 
 namespace WebShop.Client.Authentication
 {
     public interface IAuthService
     {
-        Task<AuthenticationResultDTO> Login(AuthenticateDTO model);
+        Task<AuthenticationODTO> Login(AuthenticateIDTO model);
         Task Logout();
-        Task<bool> Register(UserDTO model);
+        Task<bool> Register(UserIDTO model);
     }
 
     public class AuthService : IAuthService
@@ -29,7 +30,7 @@ namespace WebShop.Client.Authentication
             _localStorage = localStorage;
         }
 
-        public async Task<AuthenticationResultDTO?> Login(AuthenticateDTO model)
+        public async Task<AuthenticationODTO?> Login(AuthenticateIDTO model)
         {
             var content = JsonSerializer.Serialize(model);
             var response = await _httpClient.PostAsync("api/Users/Authenticate", new StringContent(content, Encoding.UTF8, "application/json"));
@@ -37,7 +38,7 @@ namespace WebShop.Client.Authentication
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            var loginResult = JsonSerializer.Deserialize<AuthenticationResultDTO>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var loginResult = JsonSerializer.Deserialize<AuthenticationODTO>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (loginResult == null)
                 return null;
@@ -56,7 +57,7 @@ namespace WebShop.Client.Authentication
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
-        public async Task<bool> Register(UserDTO model)
+        public async Task<bool> Register(UserIDTO model)
         {
             var content = JsonSerializer.Serialize(model);
             var response = await _httpClient.PostAsync("api/Users/Register", new StringContent(content, Encoding.UTF8, "application/json"));

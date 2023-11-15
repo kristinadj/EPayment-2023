@@ -15,11 +15,22 @@
         <AuthorizeView>
             <Authorized>
                 <MudTooltip Text="Profile">
-                    <MudIconButton Icon="@Icons.Material.Filled.Person" OnClick="OnClickLogout" Color="Color.Inherit" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" />
                 </MudTooltip>
-                <MudTooltip Text="Shopping Cart">
-                    <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickLogout" Color="Color.Inherit" />
-                </MudTooltip>
+                @if (GlobalSettings.ShoppingCartItemsCount != 0)
+                {
+                    <MudTooltip Text="Shopping Cart">
+                        <MudBadge Content="@GlobalSettings.ShoppingCartItemsCount" Color="Color.Error" Overlap="true" Origin="Origin.CenterRight" >
+                            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickShoppingCart" Color="Color.Inherit" />
+                        </MudBadge>
+                    </MudTooltip>
+                }
+                else
+                {
+                    <MudTooltip Text="Shopping Cart">
+                        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickShoppingCart" Color="Color.Inherit" />
+                    </MudTooltip>
+                }
                 <MudTooltip Text="Logout">
                     <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="OnClickLogout" Color="Color.Inherit" />
                 </MudTooltip>

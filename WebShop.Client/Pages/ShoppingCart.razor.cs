@@ -1,19 +1,23 @@
 ﻿using Microsoft.AspNetCore.Components;
+using WebShop.Client.Code;
 using WebShop.Client.Services;
 using WebShop.DTO.Output;
 
 namespace WebShop.Client.Pages
 {
-    public partial class Index
+    public partial class ShoppingCart
     {
         [Inject]
         private IApiServices ApiServices { get; set; }
 
-        private List<ItemODTO> items { get; set; } = new();
+        [Inject]
+        protected GlobalUserSettings GlobalSettings { get; set; }
+
+        private ShoppingCartODTO? shoppingCart;
 
         protected override async Task OnInitializedAsync()
         {
-            items = await ApiServices.GetItemsAsync();
+            shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
         }
     }
 }

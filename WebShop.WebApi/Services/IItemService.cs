@@ -1,14 +1,14 @@
 ﻿using AutoMapper.QueryableExtensions;
 using AutoMapper;
-using WebShop.DTO;
 using WebShop.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
+using WebShop.DTO.Output;
 
 namespace WebShop.WebApi.Services
 {
     public interface IItemService
     {
-        Task<List<ItemDTO>> GetItemsAsync();
+        Task<List<ItemODTO>> GetItemsAsync();
     }
 
     public class ItemServices : IItemService
@@ -22,10 +22,10 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<List<ItemDTO>> GetItemsAsync()
+        public async Task<List<ItemODTO>> GetItemsAsync()
         {
             return await _context.Items
-                .ProjectTo<ItemDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<ItemODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
     }

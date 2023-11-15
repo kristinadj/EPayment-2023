@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.DTO;
+using WebShop.DTO.Output;
 using WebShop.WebApi.Services;
 
 namespace WebShop.WebApi.Controllers
@@ -20,10 +20,10 @@ namespace WebShop.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ItemDTO>>> GetItems()
+        public async Task<ActionResult<List<ItemODTO>>> GetItems()
         {
-            var items = await _itemService.GetItemsAsync();
-            return Ok(items);
+            var result = await _itemService.GetItemsAsync();
+            return Ok(result);
         }
     }
 }

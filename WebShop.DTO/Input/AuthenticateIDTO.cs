@@ -1,22 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebShop.DTO
+namespace WebShop.DTO.Input
 {
-    public class AuthenticateDTO
+    public class AuthenticateIDTO
     {
         [Required]
         public string Email { get; set; }
 
-        [Required] 
+        [Required]
         public string Password { get; set; }
 
-        public AuthenticateDTO() 
-        { 
+        public AuthenticateIDTO()
+        {
             Email = string.Empty;
             Password = string.Empty;
         }
 
-        public AuthenticateDTO(string email, string password)
+        public AuthenticateIDTO(string email, string password)
         {
             Email = email;
             Password = password;

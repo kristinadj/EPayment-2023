@@ -1,16 +1,16 @@
-﻿namespace WebShop.DTO
+﻿namespace WebShop.DTO.Output
 {
-    public class ItemDTO
+    public class ItemODTO
     {
         public int ItemId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
 
-        public CurrencyDTO? Currency { get; set; }
-        public MerchantDTO? Merchant { get; set; }
+        public CurrencyODTO? Currency { get; set; }
+        public MerchantODTO? Merchant { get; set; }
 
-        public ItemDTO(string name, string description)
+        public ItemODTO(string name, string description)
         {
             Name = name;
             Description = description;
