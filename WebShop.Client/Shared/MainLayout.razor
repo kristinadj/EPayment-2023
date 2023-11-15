@@ -1,17 +1,44 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider Theme="_currentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+<MudLayout>
+    <MudAppBar Elevation="0" Dense="true" Color="Color.Primary">
+        <MudTooltip Text="Home" Delay="600">
+            <div class="cursor-pointer" @onclick="OnClickHome">
+                <MudText Typo="Typo.h6">Law Publishing Agency</MudText>
+            </div>
+        </MudTooltip>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudTooltip Text="Profile">
+                    <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" />
+                </MudTooltip>
+                @if (GlobalSettings.ShoppingCartItemsCount != 0)
+                {
+                    <MudTooltip Text="Shopping Cart">
+                        <MudBadge Content="@GlobalSettings.ShoppingCartItemsCount" Color="Color.Error" Overlap="true" Origin="Origin.CenterRight" >
+                            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickShoppingCart" Color="Color.Inherit" />
+                        </MudBadge>
+                    </MudTooltip>
+                }
+                else
+                {
+                    <MudTooltip Text="Shopping Cart">
+                        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickShoppingCart" Color="Color.Inherit" />
+                    </MudTooltip>
+                }
+                <MudTooltip Text="Logout">
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="OnClickLogout" Color="Color.Inherit" />
+                </MudTooltip>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
