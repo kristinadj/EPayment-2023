@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Transactions;
 
-namespace WebShop.WebApi.Models
+namespace PSP.WebApi.Models
 {
     [Table("Transactions", Schema = "dbo")]
     public class Transaction
     {
         [Key]
         public int TransactionId { get; set; }
-        public int InvoiceId {get; set; }
+        public int InvoiceId { get; set; }
         public int PaymentMethodId { get; set; }
         public DateTime CreatedTimestamp { get; set; }
 

@@ -10,6 +10,8 @@ namespace WebShop.WebApi.Models
         [Key]
         public int OrderLogId { get; set; }
         public int OrderId { get; set; }
+
+        [Column(TypeName = "nvarchar(24)")]
         public OrderStatus OrderStatus { get; set; }
         public DateTime Timestamp { get; set; }
 

@@ -20,6 +20,7 @@ namespace WebShop.WebApi.Models
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<UserSubscriptionPlan> UserSubscriptionPlans { get; set; }
 
         public WebShopContext(DbContextOptions<WebShopContext> options) : base(options) { }
@@ -89,6 +90,9 @@ namespace WebShop.WebApi.Models
                     .WithOne(x => x.Order)
                     .HasForeignKey<Order>(x => x.InvoiceId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.OrderStatus)
+                    .HasConversion<string>();
             });
 
             builder.Entity<OrderItem>(entity =>
@@ -115,6 +119,9 @@ namespace WebShop.WebApi.Models
                     .WithMany(x => x.OrderLogs)
                     .HasForeignKey(x => x.OrderId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.OrderStatus)
+                    .HasConversion<string>();
             });
 
             builder.Entity<PaymentMethod>(entity =>
@@ -178,6 +185,20 @@ namespace WebShop.WebApi.Models
                     .WithMany(x => x.Transactions)
                     .HasForeignKey(x => x.PaymentMethodId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.TransactionStatus)
+                    .HasConversion<string>();
+            });
+
+            builder.Entity<TransactionLog>(entity =>
+            {
+                entity.HasOne(x => x.Transaction)
+                    .WithMany(x => x.TransactionLogs)
+                    .HasForeignKey(x => x.TransactionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.TransactionStatus)
+                    .HasConversion<string>();
             });
 
             builder.Entity<User>(entity =>
@@ -206,12 +227,12 @@ namespace WebShop.WebApi.Models
             #region Database Initialization
 
             builder.Entity<Currency>().HasData(
-                new Currency("Serbian Dinar", "RSD", "RSD") { CurrencyId = 1},
+                new Currency("Serbian Dinar", "RSD", "RSD") { CurrencyId = 1 },
                 new Currency("Euro", "EUR", "€") { CurrencyId = 2 },
                 new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
                 );
 
-            var merchantId = Guid.NewGuid().ToString();
+            var merchantId = "408b89e8-e8e5-4b97-9c88-f19593d66378";
             var hasher = new PasswordHasher<IdentityUser>();
             builder.Entity<User>().HasData(
                 new User("Law Publishing Web Shop")
@@ -241,7 +262,7 @@ namespace WebShop.WebApi.Models
                 );
 
             builder.Entity<SubscriptionPlan>().HasData(
-                new SubscriptionPlan("One-time Access (1 year)", "Access to the application for a duration of one year.") { SubscriptionPlanId = 1, Price = 300, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = false},
+                new SubscriptionPlan("One-time Access (1 year)", "Access to the application for a duration of one year.") { SubscriptionPlanId = 1, Price = 300, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = false },
                 new SubscriptionPlan("Annual Subscription", "Annual subscription with automatic renewal.") { SubscriptionPlanId = 2, Price = 250, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = true }
                 );
 
