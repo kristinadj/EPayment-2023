@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Base.Services\Base.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\" />
-  </ItemGroup>
-
 </Project>

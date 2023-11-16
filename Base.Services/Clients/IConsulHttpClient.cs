@@ -8,7 +8,6 @@ namespace Base.Services.Clients
     {
         Task<T?> GetAsync<T>(string serviceName, string requestUri);
         Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
-        Task<Dictionary<string, Uri>> GetServiceUrisByTagAsync(string tag);
     }
 
     public class ConsulHttpClient : IConsulHttpClient 
@@ -77,36 +76,6 @@ namespace Base.Services.Clients
             };
 
             return uriBuilder.Uri;
-        }
-
-        public async Task<Dictionary<string, Uri>> GetServiceUrisByTagAsync(string tag)
-        {
-            var allRegisteredServices = await _consulclient.Agent.Services();
-
-            var registeredServices = allRegisteredServices.Response?.Where(s => s.Value.Tags.Contains(tag)).Select(x => x.Value).ToList();
-            var groupedRegisteredServices = registeredServices!.GroupBy(x => x.Service).ToDictionary(x => x.Key, x => x.ToList());
-
-            var result = new Dictionary<string, Uri>();
-
-            foreach (var serviceName in groupedRegisteredServices.Keys)
-            {
-                var service = GetRandomInstance(groupedRegisteredServices[serviceName], serviceName);
-
-                if (service == null)
-                {
-                    throw new Exception($"Consul service: '{serviceName}' was not found.");
-                }
-
-                var uriBuilder = new UriBuilder
-                {
-                    Host = service.Address,
-                    Port = service.Port
-                };
-
-                result[serviceName] = uriBuilder.Uri;
-            }
-
-            return result;
         }
 
         private AgentService GetRandomInstance(IList<AgentService> services, string serviceName)

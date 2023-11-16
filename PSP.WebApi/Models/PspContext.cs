@@ -60,6 +60,8 @@ namespace PSP.WebApi.Models
             builder.Entity<Merchant>(entity =>
             {
                 entity.HasIndex(x => x.MerchantExternalId);
+
+                entity.HasIndex(x => new { x.ServiceName, x.MerchantExternalId }).IsUnique();
             });
 
 

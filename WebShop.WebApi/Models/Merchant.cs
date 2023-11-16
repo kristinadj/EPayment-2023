@@ -8,6 +8,8 @@ namespace WebShop.WebApi.Models
     {
         [Key]
         public int MerchantId { get; set; }
+
+        public int? PspMerchantId { get; set; }
         public string UserId { get; set; }
 
         public User? User { get; set; }

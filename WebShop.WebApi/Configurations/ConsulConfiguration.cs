@@ -2,7 +2,7 @@
 using Base.Services.Clients;
 using Consul;
 
-namespace PSP.WebApi.Configurations
+namespace WebShop.WebApi.Configurations
 {
     public static class ConsulConfiguration
     {
@@ -45,7 +45,8 @@ namespace PSP.WebApi.Configurations
                 Name = consulAppSettings.Service,
                 ID = consulServiceID,
                 Address = consulAppSettings.Address,
-                Port = consulAppSettings.Port
+                Port = consulAppSettings.Port,
+                Tags = new[] { consulAppSettings.Type }
             };
 
             client!.Agent.ServiceRegister(consulServiceRistration);

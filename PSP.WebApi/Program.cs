@@ -29,7 +29,8 @@ builder.Services.AddConsul();
 
 #region Services
 
-builder.Services.AddScoped<IPaymentMethodServices, PaymentMethodServices>();
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IMerchantService, MerchantService>();
 
 #endregion
 

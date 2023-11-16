@@ -6,15 +6,14 @@ using PSP.WebApi.Services;
 
 namespace PSP.WebApi.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
     public class PaymentMethodController : ControllerBase
     {
-        private readonly IPaymentMethodServices _paymentMethodServices;
+        private readonly IPaymentMethodService _paymentMethodServices;
 
-        public PaymentMethodController(IPaymentMethodServices paymentMethodServices)
+        public PaymentMethodController(IPaymentMethodService paymentMethodServices)
         {
             _paymentMethodServices = paymentMethodServices;
         }

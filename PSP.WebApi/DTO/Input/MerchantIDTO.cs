@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PSP.WebApi.Models
+namespace PSP.WebApi.DTO.Input
 {
-    [Table("Merchants", Schema = "dbo")]
-    public class Merchant
+    public class MerchantIDTO
     {
-        public int MerchantId { get; set; }
         public int MerchantExternalId { get; set; }
 
         [Required]
@@ -29,10 +26,7 @@ namespace PSP.WebApi.Models
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
-        public ICollection<PaymentMethodMerchant>? PaymentMethods { get; set; }
-        public ICollection<Invoice>? Invoices { get; set; }
-
-        public Merchant(string name, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public MerchantIDTO(string name, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
             Name = name;
             ServiceName = serviceName;

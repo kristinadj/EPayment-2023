@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebShop.WebApi.AppSettings;
+using WebShop.WebApi.Configurations;
 using WebShop.WebApi.Models;
 using WebShop.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<PspAppSettings>(builder.Configuration.GetSection("PspAppSettings"));
 
 builder.Services.AddDbContext<WebShopContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
 
@@ -55,6 +59,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddConsul();
+
 #region Services
 
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
@@ -62,6 +68,7 @@ builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
 builder.Services.AddScoped<IItemService, ItemServices>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddScoped<IMerchantService, MerchantService>();
 
 #endregion
 
@@ -72,6 +79,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseConsul();
 
 app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();

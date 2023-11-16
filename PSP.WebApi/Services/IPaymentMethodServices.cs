@@ -7,19 +7,19 @@ using PSP.WebApi.Models;
 
 namespace PSP.WebApi.Services
 {
-    public interface IPaymentMethodServices
+    public interface IPaymentMethodService
     {
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
         Task<PaymentMethodODTO?> AddPaymentMethodAsync(PaymentMethodIDTO paymentMethodIDTO);
     }
 
 
-    public class PaymentMethodServices : IPaymentMethodServices
+    public class PaymentMethodService : IPaymentMethodService
     {
         private readonly PspContext _context;
         private readonly IMapper _mapper;
 
-        public PaymentMethodServices(PspContext context, IMapper mapper)
+        public PaymentMethodService(PspContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

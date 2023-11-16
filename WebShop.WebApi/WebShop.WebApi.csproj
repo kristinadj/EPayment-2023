@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Base.Services\Base.Services.csproj" />
     <ProjectReference Include="..\WebShop.DTO\WebShop.DTO.csproj" />
   </ItemGroup>
 
