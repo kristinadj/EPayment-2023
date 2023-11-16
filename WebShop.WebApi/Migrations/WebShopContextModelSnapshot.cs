@@ -310,6 +310,9 @@ namespace WebShop.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantId"), 1L, 1);
 
+                    b.Property<int?>("PspMerchantId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -343,8 +346,9 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -405,8 +409,9 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -595,8 +600,9 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TransactionStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("TransactionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
 
                     b.HasKey("TransactionId");
 
@@ -606,6 +612,31 @@ namespace WebShop.WebApi.Migrations
                     b.HasIndex("PaymentMethodId");
 
                     b.ToTable("Transactions", "dbo");
+                });
+
+            modelBuilder.Entity("WebShop.WebApi.Models.TransactionLog", b =>
+                {
+                    b.Property<int>("TransactionLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionLogId"), 1L, 1);
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TransactionLogId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("TransactionLogs", "dbo");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.User", b =>
@@ -674,6 +705,10 @@ namespace WebShop.WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -689,18 +724,17 @@ namespace WebShop.WebApi.Migrations
                         {
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "adaa2276-290d-4d89-9bc7-4a6d90424ab7",
+                            ConcurrencyStamp = "5193d1cf-43a3-4d37-ac8c-14237726748b",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHx++6UzBh+IKkinQcNXoLkTNqAT1j0sLS8TYsyYIU6dJi1xGFwtvHOUfhAUbbqT7w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHiL1hiAsqmiRA6wjPSR9qdFJZFOUtzakcKHM6EqOaYvHYx1U2m9/SnIfJvRXw8Nxw==",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "a5f89687-76e3-4d5d-8246-6187be0403c1",
-                            TwoFactorEnabled = false,
-                            UserName = "web-shop-admin"
+                            SecurityStamp = "e95c438c-984a-489c-85ed-1a87aa86890b",
+                            TwoFactorEnabled = false
                         });
                 });
 
@@ -952,6 +986,17 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("PaymentMethod");
                 });
 
+            modelBuilder.Entity("WebShop.WebApi.Models.TransactionLog", b =>
+                {
+                    b.HasOne("WebShop.WebApi.Models.Transaction", "Transaction")
+                        .WithMany("TransactionLogs")
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("WebShop.WebApi.Models.UserSubscriptionPlan", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
@@ -1015,6 +1060,11 @@ namespace WebShop.WebApi.Migrations
             modelBuilder.Entity("WebShop.WebApi.Models.SubscriptionPlan", b =>
                 {
                     b.Navigation("UserSubscriptionPlans");
+                });
+
+            modelBuilder.Entity("WebShop.WebApi.Models.Transaction", b =>
+                {
+                    b.Navigation("TransactionLogs");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.User", b =>
