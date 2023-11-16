@@ -13,7 +13,7 @@ namespace PSP.WebApi.Configurations
             var configuration = serviceProvider!.GetService<IConfiguration>();
 
             serviceCollection.Configure<ConsulAppSettings>(configuration!.GetSection("Consul"));
-            serviceCollection.AddTransient<IConsulServices, ConsulServices>();
+            serviceCollection.AddTransient<IConsulService, ConsulService>();
             serviceCollection.AddHttpClient<IConsulHttpClient, ConsulHttpClient>();
 
             var consulAppSettings = configuration!.GetSection("Consul").Get<ConsulAppSettings>();

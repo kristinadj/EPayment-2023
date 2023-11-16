@@ -2,16 +2,16 @@
 
 namespace PSP.WebApi.Services
 {
-    public interface IConsulServices
+    public interface IConsulService
     {
         Task<Dictionary<string, Uri>> GetPaymentServicesAsync();
     }
 
-    public class ConsulServices : IConsulServices 
+    public class ConsulService : IConsulService 
     {
         private readonly IConsulHttpClient _consulHttpClient;
 
-        public ConsulServices(IConsulHttpClient consulHttpClient)
+        public ConsulService(IConsulHttpClient consulHttpClient)
         {
             _consulHttpClient = consulHttpClient;
         }

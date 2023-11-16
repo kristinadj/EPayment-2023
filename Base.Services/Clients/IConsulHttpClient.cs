@@ -1,11 +1,13 @@
 ﻿using Consul;
-using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace Base.Services.Clients
 {
     public interface IConsulHttpClient
     {
-        Task<T?> GetAsync<T>(string serviceName, Uri requestUri);
+        Task<T?> GetAsync<T>(string serviceName, string requestUri);
+        Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
         Task<Dictionary<string, Uri>> GetServiceUrisByTagAsync(string tag);
     }
 
@@ -20,7 +22,7 @@ namespace Base.Services.Clients
             _consulclient = consulclient;
         }
 
-        public async Task<T?> GetAsync<T>(string serviceName, Uri requestUri)
+        public async Task<T?> GetAsync<T>(string serviceName, string requestUri)
         {
             var uri = await GetRequestUriAsync(serviceName, requestUri);
 
@@ -33,10 +35,25 @@ namespace Base.Services.Clients
 
             var content = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<T>(content);
+            return JsonSerializer.Deserialize<T>(content);
         }
 
-        private async Task<Uri> GetRequestUriAsync(string serviceName, Uri uri)
+        public async Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync(uri, requestContent);
+
+            if (!response.IsSuccessStatusCode) return default;
+
+            var content = await response.Content.ReadAsStringAsync();
+            if (content == null) return default;
+
+            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+        }
+
+        private async Task<Uri> GetRequestUriAsync(string serviceName, string uri)
         {
             //Get all services registered on Consul
             var allRegisteredServices = await _consulclient.Agent.Services();
@@ -52,10 +69,11 @@ namespace Base.Services.Clients
                 throw new Exception($"Consul service: '{serviceName}' was not found.");
             }
 
-            var uriBuilder = new UriBuilder(uri)
+            var uriBuilder = new UriBuilder
             {
                 Host = service.Address,
-                Port = service.Port
+                Port = service.Port,
+                Path = uri,
             };
 
             return uriBuilder.Uri;

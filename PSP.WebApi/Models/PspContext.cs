@@ -65,7 +65,7 @@ namespace PSP.WebApi.Models
 
             builder.Entity<PaymentMethod>(entity =>
             {
-                entity.HasIndex(x => x.ServiceName).IsUnique();
+                entity.HasIndex(x => new { x.ServiceName, x.ServiceApiSufix }).IsUnique();
 
             });
 

@@ -14,6 +14,10 @@ namespace PSP.WebApi.Models
         public string Name { get; set; }
 
         [Required]
+        [StringLength(30)]
+        public string ServiceName { get; set; }
+
+        [Required]
         [StringLength(70)]
         public string TransactionSuccessUrl { get; set; }
 

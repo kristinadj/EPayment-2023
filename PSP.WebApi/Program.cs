@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using PSP.WebApi.Configurations;
 using PSP.WebApi.Models;
+using PSP.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddConsul();
+
+#region Services
+
+builder.Services.AddScoped<IPaymentMethodServices, PaymentMethodServices>();
+
+#endregion
 
 var app = builder.Build();
 

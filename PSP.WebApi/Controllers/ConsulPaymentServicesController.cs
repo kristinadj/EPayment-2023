@@ -5,10 +5,10 @@ namespace PSP.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentServicesController : ControllerBase
+    public class ConsulPaymentServicesController : ControllerBase
     {
-        private readonly IConsulServices _consulServices;
-        public PaymentServicesController(IConsulServices consulServices)
+        private readonly IConsulService _consulServices;
+        public ConsulPaymentServicesController(IConsulService consulServices)
         {
             _consulServices = consulServices;
         }
