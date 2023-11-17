@@ -8,8 +8,9 @@ namespace WebShop.WebApi.Services
 {
     public interface IOrderService
     {
-        Task<OrderODTO?> GetByIdAsync(int orderId);
+        Task<OrderODTO?> GetOrderByIdAsync(int orderId);
         Task<OrderODTO?> CreateOrderAsync(int shoppingCartId);
+        Task<OrderODTO?> CancelOrderAsync(int orderId);
     }
 
     public class OrderService : IOrderService
@@ -21,6 +22,51 @@ namespace WebShop.WebApi.Services
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        public async Task<OrderODTO?> CancelOrderAsync(int orderId)
+        {
+            var order = await _context.Orders
+                .Where(x => x.OrderId == orderId)
+                .Include(x => x.OrderLogs)
+                .Include(x => x.OrderItems)
+                .FirstOrDefaultAsync();
+
+            if (order == null) return null;
+
+            var shoppingCart = await _context.ShoppingCarts
+                .Where(x => x.UserId == order.UserId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (shoppingCart == null) return null;
+
+            order.OrderStatus = DTO.Enums.OrderStatus.CANCELED;
+            order.OrderLogs!.Add(new OrderLog
+            {
+                OrderStatus = DTO.Enums.OrderStatus.CANCELED,
+                Timestamp = DateTime.Now
+            });
+
+            var shoppingCartItems = new List<ShoppingCartItem>();
+            foreach (var orderItem in order.OrderItems!)
+            {
+                var shoppingCartItem = new ShoppingCartItem
+                {
+                    ItemId = orderItem.ItemId,
+                    Quantity = orderItem.Quantity,
+                    ShoppingCartId = shoppingCart.ShoppingCartId
+                };
+                shoppingCartItems.Add(shoppingCartItem);
+            }
+
+            await _context.ShoppingCartItems.AddRangeAsync(shoppingCartItems);
+            await _context.SaveChangesAsync();
+
+            return await _context.Orders
+                .Where(x => x.OrderId == order.OrderId)
+                .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<OrderODTO?> CreateOrderAsync(int shoppingCartId)
@@ -43,7 +89,7 @@ namespace WebShop.WebApi.Services
             return _mapper.Map<OrderODTO>(order);
         }
 
-        public async Task<OrderODTO?> GetByIdAsync(int orderId)
+        public async Task<OrderODTO?> GetOrderByIdAsync(int orderId)
         {
             return await _context.Orders
                 .Where(x => x.OrderId == orderId)

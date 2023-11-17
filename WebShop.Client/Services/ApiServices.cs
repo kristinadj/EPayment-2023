@@ -135,5 +135,45 @@ namespace WebShop.Client.Services
 
             return data;
         }
+
+        public async Task<OrderODTO?> CancelOrderAsync(int orderId)
+        {
+            OrderODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.PutAsync($"api/Order/Cancel/{orderId}", null);
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<OrderODTO?> GetOrderByIdAsync(int orderId)
+        {
+            OrderODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Order/ById/{orderId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
     }
 }

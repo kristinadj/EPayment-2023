@@ -20,9 +20,25 @@ namespace WebShop.WebApi.Controllers
         [HttpGet("ById/{orderId}")]
         public async Task<ActionResult<List<ItemODTO>>> GetById([FromRoute] int orderId)
         {
-            var result = await _orderService.GetByIdAsync(orderId);
+            var result = await _orderService.GetOrderByIdAsync(orderId);
             return Ok(result);
         }
 
+        [HttpPut("Cancel/{orderId}")]
+        public async Task<ActionResult> CancelOrder([FromRoute] int orderId)
+        {
+            try
+            {
+                var result = await _orderService.CancelOrderAsync(orderId);
+
+                if (result == null) return BadRequest();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@
 
         public event Action? OnChange;
 
-        public void AddShoppingCartItems(int count)
+        public void UpdateShoppingCartItems(int count)
         {
             ShoppingCartItemsCount += count;
             OnChange?.Invoke();

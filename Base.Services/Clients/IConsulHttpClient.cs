@@ -6,6 +6,7 @@ namespace Base.Services.Clients
 {
     public interface IConsulHttpClient
     {
+        Task GetAsync(string serviceName, string requestUri);
         Task<T?> GetAsync<T>(string serviceName, string requestUri);
         Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
     }
@@ -19,6 +20,14 @@ namespace Base.Services.Clients
         {
             _client = client;
             _consulclient = consulclient;
+        }
+
+        public async Task GetAsync(string serviceName, string requestUri)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+
+            var response = await _client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task<T?> GetAsync<T>(string serviceName, string requestUri)

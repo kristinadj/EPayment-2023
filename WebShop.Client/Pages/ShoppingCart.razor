@@ -1,8 +1,11 @@
-﻿@page "/shoppingcart"
+﻿@page "/shoppingCart"
 
 <MudPaper Elevation="1" Class="d-flex flex-column gap-2 ma-4">
-    @if (shoppingCart == null)
+    @if (isLoading)
     {
+        <div class="d-flex justify-center">
+            <MudProgressCircular Indeterminate="true" />
+        </div>
         
     }
     else
@@ -36,14 +39,18 @@
                 <p>No Items in Shopping Cart</p>
             </NoRecordsContent>
         </MudTable>
-        <div class="d-flex flex-row justify-end pr-3 pb-3">
-            <MudText Typo="Typo.h6" Class="d-flex justify-end">
-                <b>Total Price: @shoppingCart!.ShoppingCartItems![0].Item!.Currency!.Symbol @(@shoppingCart.ShoppingCartItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
-            </MudText>
-        </div>
+        @if(shoppingCart.ShoppingCartItems!.Any())
+        {
+            <div class="d-flex flex-row justify-end pr-3 pb-3">
+                <MudText Typo="Typo.h6" Class="d-flex justify-end">
+                    <b>Total Price: @shoppingCart!.ShoppingCartItems![0].Item!.Currency!.Symbol @(@shoppingCart.ShoppingCartItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
+                </MudText>
+            </div>
+        }
+        
         <div class="d-flex flex-row justify-end pr-3 pb-3">
             <div>
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnClickCheckoutAsync">Proceed to checkout</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@(!shoppingCart.ShoppingCartItems!.Any())" OnClick="OnClickCheckoutAsync">Proceed to checkout</MudButton>
             </div>
         </div>
     }

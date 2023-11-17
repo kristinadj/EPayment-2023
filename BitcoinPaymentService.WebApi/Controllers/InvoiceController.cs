@@ -13,10 +13,9 @@ namespace BitcoinPaymentService.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<RedirectUrlDTO> CreateInvoice()
+        public ActionResult CreateInvoice()
         {
-            var redirectUrl = new RedirectUrlDTO("Success BITCOIN");
-            return Ok(redirectUrl);
+            return Ok();
         }
     }
 }

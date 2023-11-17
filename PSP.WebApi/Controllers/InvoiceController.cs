@@ -15,12 +15,14 @@ namespace PSP.WebApi.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly IPaymentMethodService _paymentMethodService;
+        private readonly IMerchantService _merchantService;
         private readonly IConsulHttpClient _consulHttpClient;
 
         private readonly IMapper _mapper;
 
         public InvoiceController(
             IPaymentMethodService paymentMethodService,
+            IMerchantService merchantService,
             IConsulHttpClient consulHttpClient,
             IMapper mapper)
         {
@@ -33,17 +35,24 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<InvoiceODTO>> CreateInvoice([FromRoute] int paymentMethodId, [FromBody] InvoiceIDTO invoiceIDTO)
         {
             var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
-            if (paymentMethod == null) return NotFound();
+            if (paymentMethod == null) return BadRequest();
 
-            var result = await _consulHttpClient.GetAsync<RedirectUrlDTO>(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/Invoice");
-
-            if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
-            {
-                return BadRequest();
-            }
+            var merchant = await _merchantService.GetMerchantByIdAsync(invoiceIDTO.MerchantId);
+            if (merchant == null) return NotFound();
 
             var invoice = _mapper.Map<InvoiceODTO>(invoiceIDTO);
-            invoice.RedirectUrl = result.RedirectUrl;
+            try
+            {
+                await _consulHttpClient.GetAsync(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/Invoice");
+                invoice.RedirectUrl = merchant.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExtrenalInvoiceId.ToString());
+
+                // TODO: Add for failure
+            }
+            catch (HttpRequestException)
+            {
+                invoice.RedirectUrl = merchant.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExtrenalInvoiceId.ToString());
+            }
+
             return Ok(invoice);
         }
     }

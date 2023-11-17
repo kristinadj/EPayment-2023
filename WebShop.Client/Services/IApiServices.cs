@@ -12,5 +12,7 @@ namespace WebShop.Client.Services
         Task<OrderODTO?> CreateOrderAsync(int shoppingCartId);
         Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId, int paymentMethodId);
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
+        Task<OrderODTO?> CancelOrderAsync(int orderId);
+        Task<OrderODTO?> GetOrderByIdAsync(int orderId);
     }
 }

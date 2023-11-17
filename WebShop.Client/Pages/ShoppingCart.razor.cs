@@ -16,11 +16,19 @@ namespace WebShop.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
+        private bool isLoading = false;
+
         private ShoppingCartODTO? shoppingCart;
 
         protected override async Task OnInitializedAsync()
         {
+            isLoading = true;
             shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
+
+            GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
+            GlobalSettings.UpdateShoppingCartItems(shoppingCart!.ShoppingCartItems!.Select(x => x.Quantity).Sum());
+
+            isLoading = false;
         }
 
         private async Task OnClickCheckoutAsync()
@@ -28,6 +36,7 @@ namespace WebShop.Client.Pages
             var order = await ApiServices.CreateOrderAsync(GlobalSettings.ShoppingCartId!);
             if (order != null)
             {
+                GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
                 NavigationManager.NavigateTo($"/order/{order.OrderId}");
             }
         }

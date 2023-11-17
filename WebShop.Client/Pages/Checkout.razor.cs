@@ -13,8 +13,13 @@ namespace WebShop.Client.Pages
         [Inject]
         private ISnackbar Snackbar { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         [Parameter]
         public int OrderId { get; set; }
+
+        private bool isLoading = false;
 
         private OrderODTO? order;
         private List<PaymentMethodODTO> paymentMethods = new();
@@ -23,10 +28,30 @@ namespace WebShop.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            isLoading = true;
+
+            order = await ApiServices.GetOrderByIdAsync(OrderId);
             paymentMethods = await ApiServices.GetPaymentMethodsAsync();
             if (paymentMethods.Any())
             {
                 selectedPaymentMethod = paymentMethods.First().PaymentMethodId;
+            }
+
+            isLoading = false;
+        }
+
+        private async Task OnClickCancelAsync()
+        {
+            var result = await ApiServices.CancelOrderAsync(OrderId);
+
+            if (result != null)
+            {
+                Snackbar.Add("Order successfully canceled", Severity.Success);
+                NavigationManager.NavigateTo("/shoppingCart");
+            }
+            else
+            {
+                Snackbar.Add("Error", Severity.Error);
             }
         }
 

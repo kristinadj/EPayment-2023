@@ -9,11 +9,14 @@ namespace WebShop.Client.Pages
         [Inject]
         private IApiServices ApiServices { get; set; }
 
+        private bool isLoading = false;
         private List<ItemODTO> items { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {
+            isLoading = true;
             items = await ApiServices.GetItemsAsync();
+            isLoading = false;
         }
     }
 }

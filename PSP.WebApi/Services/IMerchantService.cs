@@ -8,6 +8,7 @@ namespace PSP.WebApi.Services
 {
     public interface IMerchantService
     {
+        Task<Merchant?> GetMerchantByIdAsync(int merchantId);
         Task<MerchantODTO?> AddMerchantAsync(MerchantIDTO merchantIDTO);
     }
 
@@ -34,6 +35,13 @@ namespace PSP.WebApi.Services
             await _context.Merchants.AddAsync(merchant);
             await _context.SaveChangesAsync();
             return _mapper.Map<MerchantODTO>(merchant);
+        }
+
+        public async Task<Merchant?> GetMerchantByIdAsync(int merchantId)
+        {
+            return await _context.Merchants
+                .Where(x => x.MerchantId == merchantId)
+                .FirstOrDefaultAsync();
         }
     }
 }

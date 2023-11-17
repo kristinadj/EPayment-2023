@@ -1,5 +1,4 @@
-﻿using Base.DTO.Shared;
-using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PayPalPaymentService.WebApi.Controllers
@@ -14,10 +13,9 @@ namespace PayPalPaymentService.WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<RedirectUrlDTO> CreateInvoice()
+        public ActionResult CreateInvoice()
         {
-            var redirectUrl = new RedirectUrlDTO("Success PAYPAL");
-            return Ok(redirectUrl);
+            return Ok();
         }
     }
 }
