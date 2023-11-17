@@ -73,6 +73,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 #endregion
 

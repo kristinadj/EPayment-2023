@@ -6,7 +6,6 @@ namespace BankPaymentService.WebApi.Controllers
 {
     [Route("api/qrcode/Invoice")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class InvoiceQrCodeController : ControllerBase
     {
         public InvoiceQrCodeController()

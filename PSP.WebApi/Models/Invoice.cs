@@ -8,7 +8,7 @@ namespace PSP.WebApi.Models
     {
         [Key]
         public int InvoiceId { get; set; }
-        public int ExtrenalInvoiceId { get; set; }
+        public int ExternalInvoiceId { get; set; }
         public int MerchantId { get; set; }
         public int IssuedToUserId { get; set; }
         public double TotalPrice { get; set; }

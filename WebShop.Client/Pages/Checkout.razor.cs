@@ -61,7 +61,7 @@ namespace WebShop.Client.Pages
 
             if (result != null)
             {
-                Snackbar.Add(result.RedirectUrl, Severity.Success);
+                NavigationManager.NavigateTo(result.RedirectUrl);
             }
             else
             {

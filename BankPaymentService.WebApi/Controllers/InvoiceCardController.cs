@@ -6,7 +6,6 @@ namespace BankPaymentService.WebApi.Controllers
 {
     [Route("api/card/Invoice")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class InvoiceCardController : ControllerBase
     {
         public InvoiceCardController()

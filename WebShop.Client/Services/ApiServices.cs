@@ -4,6 +4,7 @@ using System.Text;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
 using Base.DTO.Shared;
+using WebShop.DTO.Enums;
 
 namespace WebShop.Client.Services
 {
@@ -174,6 +175,43 @@ namespace WebShop.Client.Services
             }
 
             return data;
+        }
+
+        public async Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId)
+        {
+            InvoiceODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Invoice/ById/{invoiceId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<InvoiceODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsync($"api/Transaction/{transactionid};{transactionStatus}", null);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
         }
     }
 }

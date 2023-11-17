@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Base.DTO.Shared;
 using PSP.WebApi.DTO.Input;
 using PSP.WebApi.DTO.Output;
 using PSP.WebApi.Models;
@@ -21,7 +22,7 @@ namespace PSP.WebApi.Mappings
             CreateMap<Merchant, MerchantODTO>()
                     .ConstructUsing(x => new MerchantODTO(x.Name, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
-            CreateMap<InvoiceIDTO, InvoiceODTO>();
+            CreateMap<PspInvoiceIDTO, InvoiceODTO>();
         }
     }
 }

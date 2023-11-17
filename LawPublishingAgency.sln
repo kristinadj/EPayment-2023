@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayPalPaymentService.WebApi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinPaymentService.WebApi", "BitcoinPaymentService.WebApi\BitcoinPaymentService.WebApi.csproj", "{BBDED3DC-16ED-46BA-88AA-4A34E589A263}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base.DTO", "Base.DTO\Base.DTO.csproj", "{0A68D029-1993-4904-A35D-62DEAB700B42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base.DTO", "Base.DTO\Base.DTO.csproj", "{0A68D029-1993-4904-A35D-62DEAB700B42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

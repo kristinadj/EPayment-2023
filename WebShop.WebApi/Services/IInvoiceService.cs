@@ -9,6 +9,7 @@ namespace WebShop.WebApi.Services
 {
     public interface IInvoiceService
     {
+        Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
         Task<InvoiceODTO?> CreateInvoiceAsync(int orderId, int paymentMethodId);
         Task UpdateInvoiceTransactionStatusasync(int invoiceId, TransactionStatus transactionStatus);
     }
@@ -59,16 +60,24 @@ namespace WebShop.WebApi.Services
                     }
                 },
             };
+            order.Invoice = invoice;
 
-            await _context.Invoices.AddAsync(invoice);
+            //await _context.Invoices.AddAsync(invoice);
             await _context.SaveChangesAsync();
 
             return await _context.Invoices
                 .Where(x => x.InvoiceId == invoice.InvoiceId)
                 .Include(x => x.Order)
                 .ThenInclude(x => x!.Merchant)
-                .Include(x => x.Order)
                 .Include(x => x.Currency)
+                .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
                 .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }

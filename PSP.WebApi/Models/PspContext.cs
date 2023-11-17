@@ -25,7 +25,7 @@ namespace PSP.WebApi.Models
 
             builder.Entity<Invoice>(entity =>
             {
-                entity.HasIndex(x => x.ExtrenalInvoiceId);
+                entity.HasIndex(x => x.ExternalInvoiceId);
 
                 entity.HasOne(x => x.Merchant)
                     .WithMany(x => x.Invoices)

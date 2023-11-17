@@ -5,7 +5,6 @@ namespace PayPalPaymentService.WebApi.Controllers
 {
     [Route("api/paypal/[controller]")]
     [ApiController]
-    [EnableCors("CorsPolicy")]
     public class InvoiceController : ControllerBase
     {
         public InvoiceController()

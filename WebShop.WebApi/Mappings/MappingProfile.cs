@@ -3,7 +3,6 @@ using Base.DTO.Shared;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
-using WebShop.DTO.PSP;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Mappings
@@ -58,11 +57,10 @@ namespace WebShop.WebApi.Mappings
 
             CreateMap<PaymentMethod, PaymentMethodODTO>();
 
-            CreateMap<InvoiceODTO, PspPaymentIDTO>()
-                .ForMember(x => x.ExtrenalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
+            CreateMap<InvoiceODTO, PspInvoiceIDTO>()
+                .ForMember(x => x.ExternalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
                 .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Order!.Merchant!.PspMerchantId))
-                .ForMember(x => x.IssuedToUserId, x => x.MapFrom(x => x.Order!.UserId))
-                .ConstructUsing(x => new PspPaymentIDTO(x.Currency!.Code));
+                .ConstructUsing(x => new PspInvoiceIDTO(x.Order!.UserId, x.Currency!.Code));
         }
     }
 }

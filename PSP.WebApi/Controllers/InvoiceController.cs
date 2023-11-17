@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Base.Services.Clients;
 using Base.DTO.Shared;
+using Base.Services.Clients;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PSP.WebApi.DTO.Input;
@@ -27,12 +27,13 @@ namespace PSP.WebApi.Controllers
             IMapper mapper)
         {
             _paymentMethodService = paymentMethodService;
+            _merchantService = merchantService;
             _consulHttpClient = consulHttpClient;
             _mapper = mapper;
         }
 
         [HttpPost("{paymentMethodId}")]
-        public async Task<ActionResult<InvoiceODTO>> CreateInvoice([FromRoute] int paymentMethodId, [FromBody] InvoiceIDTO invoiceIDTO)
+        public async Task<ActionResult<InvoiceODTO>> CreateInvoice([FromRoute] int paymentMethodId, [FromBody] PspInvoiceIDTO invoiceIDTO)
         {
             var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
             if (paymentMethod == null) return BadRequest();
@@ -44,13 +45,13 @@ namespace PSP.WebApi.Controllers
             try
             {
                 await _consulHttpClient.GetAsync(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/Invoice");
-                invoice.RedirectUrl = merchant.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExtrenalInvoiceId.ToString());
+                invoice.RedirectUrl = merchant.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString());
 
                 // TODO: Add for failure
             }
             catch (HttpRequestException)
             {
-                invoice.RedirectUrl = merchant.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExtrenalInvoiceId.ToString());
+                invoice.RedirectUrl = merchant.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString());
             }
 
             return Ok(invoice);

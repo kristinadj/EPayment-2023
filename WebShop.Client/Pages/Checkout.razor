@@ -27,7 +27,7 @@
                             <MudTd DataLabel="Price">@context.Item!.Currency!.Symbol @context.Item!.Price.ToString("N2")</MudTd>
                         </RowTemplate>
                     </MudTable>
-                    <div class="d-flex flex-row justify-end pr-3 pb-3">
+                    <div class="d-flex flex-row pr-3 pb-3">
                         <MudText Class="d-flex">
                             <b>Total Price: @order!.OrderItems![0].Item!.Currency!.Symbol @(order.OrderItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
                         </MudText>
@@ -52,8 +52,8 @@
                 }
             </MudCardContent>
             <MudCardActions Class="d-flex gap-4 justify-end">
-                <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="OnClickCancelAsync">Cancel</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickPayAsync">Pay</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickCancelAsync">Cancel</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnClickPayAsync">Pay</MudButton>
             </MudCardActions>
         </MudCard>
     }

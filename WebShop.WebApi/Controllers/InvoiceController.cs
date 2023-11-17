@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
-using Base.Services.AppSettings;
-using Base.Services.Clients;
 using Base.DTO.Shared;
+using Base.Services.Clients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
-using WebShop.DTO.PSP;
 using WebShop.WebApi.AppSettings;
 using WebShop.WebApi.Services;
 
@@ -29,7 +27,7 @@ namespace WebShop.WebApi.Controllers
         private readonly IMapper _mapper;
 
         public InvoiceController(
-            IInvoiceService invoiceService, 
+            IInvoiceService invoiceService,
             IPaymentMethodService paymentMethodService,
             IOptions<PspAppSettings> pspAppSettings,
             IConsulHttpClient consulHttpClient,
@@ -40,6 +38,13 @@ namespace WebShop.WebApi.Controllers
             _pspAppSettings = pspAppSettings.Value;
             _consulHttpClient = consulHttpClient;
             _mapper = mapper;
+        }
+
+        [HttpGet("ById/{invoiceId}")]
+        public async Task<ActionResult<InvoiceODTO?>> GetById([FromRoute] int invoiceId)
+        {
+            var result = await _invoiceService.GetInvoiceByIdAsync(invoiceId);
+            return Ok(result);
         }
 
         [HttpPost("{orderId};{paymentMethodId}")]
@@ -54,16 +59,16 @@ namespace WebShop.WebApi.Controllers
 
             await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
 
-            var pspPayment = _mapper.Map<PspPaymentIDTO>(invoice);
+            var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
             var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice/{paymentMethod.PspPaymentMethodId}", pspPayment);
 
             if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
             {
-                await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.ERROR);
-                return BadRequest();
+                return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
             }
-            
+
             return Ok(new RedirectUrlDTO(result!.RedirectUrl));
         }
+
     }
 }
