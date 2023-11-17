@@ -64,7 +64,10 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExtrenalInvoiceId")
+                    b.Property<int>("ExternalInvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IssuedToUserId")
                         .HasColumnType("int");
 
                     b.Property<int>("MerchantId")
@@ -80,43 +83,11 @@ namespace PSP.WebApi.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("ExtrenalInvoiceId");
+                    b.HasIndex("ExternalInvoiceId");
 
                     b.HasIndex("MerchantId");
 
                     b.ToTable("Invoices", "dbo");
-                });
-
-            modelBuilder.Entity("PSP.WebApi.Models.InvoiceItem", b =>
-                {
-                    b.Property<int>("InvoiceItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceItemId"), 1L, 1);
-
-                    b.Property<int>("CurrencyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExternalItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("InvoiceItemId");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.ToTable("InvoiceItems", "dbo");
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Merchant", b =>
@@ -297,25 +268,6 @@ namespace PSP.WebApi.Migrations
                     b.Navigation("Merchant");
                 });
 
-            modelBuilder.Entity("PSP.WebApi.Models.InvoiceItem", b =>
-                {
-                    b.HasOne("PSP.WebApi.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PSP.WebApi.Models.Invoice", "Invoice")
-                        .WithMany("InvoiceItems")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-
-                    b.Navigation("Invoice");
-                });
-
             modelBuilder.Entity("PSP.WebApi.Models.PaymentMethodMerchant", b =>
                 {
                     b.HasOne("PSP.WebApi.Models.Merchant", "Merchant")
@@ -367,8 +319,6 @@ namespace PSP.WebApi.Migrations
 
             modelBuilder.Entity("PSP.WebApi.Models.Invoice", b =>
                 {
-                    b.Navigation("InvoiceItems");
-
                     b.Navigation("Transaction");
                 });
 

@@ -25,7 +25,7 @@ namespace WebShop.Client.Components
 
         private async Task OnAddToCartAsync()
         {
-            GlobalSettings.AddShoppingCartItems(quantity);
+            GlobalSettings.UpdateShoppingCartItems(quantity);
             var itemIDTO = new ShoppingCartItemIDTO
             {
                 ShoppingCartId = GlobalSettings.ShoppingCartId,

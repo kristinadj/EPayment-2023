@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
 namespace WebShop.WebApi.Services

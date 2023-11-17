@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using WebShop.Client.Authentication;
-using WebShop.Client.Code;
 using WebShop.DTO.Input;
 
 namespace WebShop.Client.Pages

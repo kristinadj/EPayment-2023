@@ -19,7 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Base.DTO\Base.DTO.csproj" />
     <ProjectReference Include="..\Base.Services\Base.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTO\Shared\" />
   </ItemGroup>
 
 </Project>

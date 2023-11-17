@@ -1,4 +1,4 @@
-﻿namespace Base.Services.DTO.Shared
+﻿namespace Base.DTO.Shared
 {
     public class PaymentMethodDTO
     {

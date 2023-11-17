@@ -6,7 +6,6 @@ namespace PSP.WebApi.Models
     {
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
-        public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<PaymentMethodMerchant> PaymentMethodMerchants { get; set; }
@@ -26,7 +25,7 @@ namespace PSP.WebApi.Models
 
             builder.Entity<Invoice>(entity =>
             {
-                entity.HasIndex(x => x.ExtrenalInvoiceId);
+                entity.HasIndex(x => x.ExternalInvoiceId);
 
                 entity.HasOne(x => x.Merchant)
                     .WithMany(x => x.Invoices)
@@ -41,19 +40,6 @@ namespace PSP.WebApi.Models
                 entity.HasOne(x => x.Transaction)
                     .WithOne(x => x.Invoice)
                     .HasForeignKey<Invoice>(x => x.TransactionId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            builder.Entity<InvoiceItem>(entity =>
-            {
-                entity.HasOne(x => x.Currency)
-                    .WithMany()
-                    .HasForeignKey(x => x.CurrencyId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.Invoice)
-                    .WithMany(x => x.InvoiceItems)
-                    .HasForeignKey(x => x.InvoiceId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

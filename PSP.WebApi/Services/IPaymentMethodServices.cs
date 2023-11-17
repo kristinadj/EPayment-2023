@@ -10,6 +10,7 @@ namespace PSP.WebApi.Services
     public interface IPaymentMethodService
     {
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
+        Task<PaymentMethodODTO?> GetPaymentMethodByIdAsync(int id);
         Task<PaymentMethodODTO?> AddPaymentMethodAsync(PaymentMethodIDTO paymentMethodIDTO);
     }
 
@@ -38,6 +39,14 @@ namespace PSP.WebApi.Services
             await _context.PaymentMethods.AddAsync(paymentMethod);
             await _context.SaveChangesAsync();
             return _mapper.Map<PaymentMethodODTO>(paymentMethod);
+        }
+
+        public async Task<PaymentMethodODTO?> GetPaymentMethodByIdAsync(int id)
+        {
+            return await _context.PaymentMethods
+                .Where(x => x.PaymentMethodId == id)
+                .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
         }
 
         public Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync()

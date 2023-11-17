@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Transactions;
+using PSP.WebApi.Enums;
 
 namespace PSP.WebApi.Models
 {

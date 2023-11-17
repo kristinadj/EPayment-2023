@@ -3,13 +3,21 @@
 
 <AuthorizeView>
     <Authorized>
+
         <div class="d-flex flex-wrap gap-4 pa-3 justify-center">
-            @foreach (var item in items)
+            @if (isLoading)
             {
-                <ItemCard Item="@item"></ItemCard>
+                <MudProgressCircular Indeterminate="true" />
+            }
+            else
+            {
+                @foreach (var item in items)
+                {
+                    <ItemCard Item="@item"></ItemCard>
+                }
             }
         </div>
-
+        
     </Authorized>
     <NotAuthorized>
         @{
