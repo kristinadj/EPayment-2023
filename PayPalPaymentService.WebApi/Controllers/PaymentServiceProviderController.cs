@@ -1,6 +1,6 @@
 ﻿using Base.Services.AppSettings;
 using Base.Services.Clients;
-using Base.Services.DTO.Shared;
+using Base.DTO.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

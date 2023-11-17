@@ -343,7 +343,10 @@ namespace WebShop.WebApi.Migrations
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InvoiceId")
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MerchantId")
                         .HasColumnType("int");
 
                     b.Property<string>("OrderStatus")
@@ -357,7 +360,10 @@ namespace WebShop.WebApi.Migrations
                     b.HasKey("OrderId");
 
                     b.HasIndex("InvoiceId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[InvoiceId] IS NOT NULL");
+
+                    b.HasIndex("MerchantId");
 
                     b.HasIndex("UserId");
 
@@ -440,6 +446,9 @@ namespace WebShop.WebApi.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PspPaymentMethodId")
+                        .HasColumnType("int");
 
                     b.HasKey("PaymentMethodId");
 
@@ -724,16 +733,16 @@ namespace WebShop.WebApi.Migrations
                         {
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5193d1cf-43a3-4d37-ac8c-14237726748b",
+                            ConcurrencyStamp = "737b9101-4845-4058-9d2d-6f5bcd646edb",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHiL1hiAsqmiRA6wjPSR9qdFJZFOUtzakcKHM6EqOaYvHYx1U2m9/SnIfJvRXw8Nxw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEL9UIqlmb2lHgebPLrDz5E2XHZBlIQSwteh51UvwsKdBhVkm3Rm0/ikJSYj6XSdavg==",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "e95c438c-984a-489c-85ed-1a87aa86890b",
+                            SecurityStamp = "427b3795-7fc2-434c-b6c0-007a11ee21fd",
                             TwoFactorEnabled = false
                         });
                 });
@@ -855,6 +864,11 @@ namespace WebShop.WebApi.Migrations
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
                         .WithOne("Order")
                         .HasForeignKey("WebShop.WebApi.Models.Order", "InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WebShop.WebApi.Models.Merchant", "Merchant")
+                        .WithMany("Orders")
+                        .HasForeignKey("MerchantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -865,6 +879,8 @@ namespace WebShop.WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
+
+                    b.Navigation("Merchant");
 
                     b.Navigation("User");
                 });
@@ -1036,6 +1052,8 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("Invoices");
 
                     b.Navigation("Items");
+
+                    b.Navigation("Orders");
 
                     b.Navigation("PaymentMethods");
                 });

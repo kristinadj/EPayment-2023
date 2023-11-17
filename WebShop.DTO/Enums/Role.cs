@@ -1,4 +1,4 @@
-﻿namespace WebShop.WebApi.Enums
+﻿namespace WebShop.DTO.Enums
 {
     public enum Role
     {

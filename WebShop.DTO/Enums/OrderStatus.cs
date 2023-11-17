@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace WebShop.WebApi.Enums
+﻿namespace WebShop.DTO.Enums
 {
     public enum OrderStatus
     {

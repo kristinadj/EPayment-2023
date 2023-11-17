@@ -1,0 +1,17 @@
+﻿@page "/order/{OrderId:int}"
+
+<div class="d-flex flex-column justify-center align-content-center gap-3">
+    <h6><b>Order # @OrderId</b></h6>
+    @if (paymentMethods.Any())
+    {
+        <div class="d-flex flex-row gap-2">
+            <MudRadioGroup @bind-SelectedOption="@selectedPaymentMethod">
+                @foreach (var paymentMethod in paymentMethods)
+                {
+                    <MudRadio Option="@paymentMethod.PaymentMethodId" Color="Color.Primary">@paymentMethod.Name</MudRadio>
+                }
+            </MudRadioGroup>
+        </div>
+    }
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClickPayAsync">Pay</MudButton>
+</div>

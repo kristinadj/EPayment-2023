@@ -64,11 +64,15 @@ builder.Services.AddConsul();
 #region Services
 
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
+
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
-builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IItemService, ItemServices>();
-builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddScoped<ISubscriptionPlanService, SubscripionPlanService>();
 
 #endregion
 

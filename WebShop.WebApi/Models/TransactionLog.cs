@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WebShop.WebApi.Enums;
+using WebShop.DTO.Enums;
 
 namespace WebShop.WebApi.Models
 {

@@ -34,7 +34,7 @@ namespace Base.Services.Clients
 
             var content = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<T>(content);
+            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         public async Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody)

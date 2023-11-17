@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
+using Base.DTO.Shared;
 
 namespace WebShop.Client.Services
 {
@@ -73,6 +74,66 @@ namespace WebShop.Client.Services
             }
 
             return isSuccess;
+        }
+
+        public async Task<OrderODTO?> CreateOrderAsync(int shoppingCartId)
+        {
+            OrderODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.PostAsync($"api/ShoppingCart/Checkout/{shoppingCartId}", null);
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId, int paymentMethodId)
+        {
+            RedirectUrlDTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.PostAsync($"api/Invoice/{orderId};{paymentMethodId}", null);
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync()
+        {
+            var data = new List<PaymentMethodODTO>();
+
+            try
+            {
+                var response = await _httpClient.GetAsync("api/PaymentMethod");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodODTO>>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
         }
     }
 }

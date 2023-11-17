@@ -10,6 +10,7 @@ namespace PSP.WebApi.Models
         public int InvoiceId { get; set; }
         public int ExtrenalInvoiceId { get; set; }
         public int MerchantId { get; set; }
+        public int IssuedToUserId { get; set; }
         public double TotalPrice { get; set; }
         public int CurrencyId { get; set; }
         public int TransactionId { get; set; }
@@ -17,6 +18,5 @@ namespace PSP.WebApi.Models
         public Merchant? Merchant { get; set; }
         public Currency? Currency { get; set; }
         public Transaction? Transaction { get; set; }
-        public ICollection<InvoiceItem>? InvoiceItems { get; set; }
     }
 }

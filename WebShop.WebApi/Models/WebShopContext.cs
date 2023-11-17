@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WebShop.WebApi.Enums;
+using WebShop.DTO.Enums;
 
 namespace WebShop.WebApi.Models
 {
@@ -84,6 +84,11 @@ namespace WebShop.WebApi.Models
                 entity.HasOne(x => x.User)
                     .WithMany()
                     .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Merchant)
+                    .WithMany(x => x.Orders)
+                    .HasForeignKey(x => x.MerchantId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Invoice)

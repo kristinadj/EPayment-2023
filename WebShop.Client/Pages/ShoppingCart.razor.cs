@@ -13,11 +13,23 @@ namespace WebShop.Client.Pages
         [Inject]
         protected GlobalUserSettings GlobalSettings { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         private ShoppingCartODTO? shoppingCart;
 
         protected override async Task OnInitializedAsync()
         {
             shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
+        }
+
+        private async Task OnClickCheckoutAsync()
+        {
+            var order = await ApiServices.CreateOrderAsync(GlobalSettings.ShoppingCartId!);
+            if (order != null)
+            {
+                NavigationManager.NavigateTo($"/order/{order.OrderId}");
+            }
         }
     }
 }

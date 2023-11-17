@@ -20,6 +20,8 @@ namespace PSP.WebApi.Mappings
 
             CreateMap<Merchant, MerchantODTO>()
                     .ConstructUsing(x => new MerchantODTO(x.Name, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
+
+            CreateMap<InvoiceIDTO, InvoiceODTO>();
         }
     }
 }
