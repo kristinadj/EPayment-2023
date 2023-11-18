@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinPaymentService.WebAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base.DTO", "Base.DTO\Base.DTO.csproj", "{0A68D029-1993-4904-A35D-62DEAB700B42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank1.WebApi", "Bank1.WebApi\Bank1.WebApi.csproj", "{59C803B1-A0FE-4067-8363-02A6950ED993}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{0A68D029-1993-4904-A35D-62DEAB700B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A68D029-1993-4904-A35D-62DEAB700B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A68D029-1993-4904-A35D-62DEAB700B42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C803B1-A0FE-4067-8363-02A6950ED993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C803B1-A0FE-4067-8363-02A6950ED993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C803B1-A0FE-4067-8363-02A6950ED993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C803B1-A0FE-4067-8363-02A6950ED993}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
