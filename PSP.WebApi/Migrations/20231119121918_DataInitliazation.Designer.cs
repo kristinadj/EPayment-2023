@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PSP.WebApi.Models;
 
@@ -11,9 +12,10 @@ using PSP.WebApi.Models;
 namespace PSP.WebApi.Migrations
 {
     [DbContext(typeof(PspContext))]
-    partial class PspContextModelSnapshot : ModelSnapshot
+    [Migration("20231119121918_DataInitliazation")]
+    partial class DataInitliazation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

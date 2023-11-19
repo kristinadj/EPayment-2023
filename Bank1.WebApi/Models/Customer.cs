@@ -25,15 +25,18 @@ namespace Bank1.WebApi.Models
         [StringLength(30)]
         public string PhoneNumber { get; set; }
 
+        public string Email { get; set; }
+
 
         public ICollection<Account>? Accounts { get; set; }
 
-        public Customer(string firstName, string lastName, string address, string phoneNumber)
+        public Customer(string firstName, string lastName, string address, string phoneNumber, string email)
         {
             FirstName = firstName;
             LastName = lastName;
             Address = address;
             PhoneNumber = phoneNumber;
+            Email = email;
         }
     }
 }

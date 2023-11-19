@@ -1,9 +1,12 @@
 using BankPaymentService.WebApi.AppSettings;
 using BankPaymentService.WebApi.Configurations;
+using BankPaymentService.WebApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddDbContext<BankPaymentServiceContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
+
 
 builder.Services.AddControllers();
 
@@ -17,7 +20,6 @@ builder.Services.AddConsul();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

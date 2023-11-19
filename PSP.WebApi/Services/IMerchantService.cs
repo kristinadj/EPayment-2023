@@ -26,7 +26,7 @@ namespace PSP.WebApi.Services
         public async Task<MerchantODTO?> AddMerchantAsync(MerchantIDTO merchantIDTO)
         {
             var isExists = await _context.Merchants
-                .Where(x => x.ServiceName == merchantIDTO.ServiceName && x.MerchantExternalId == merchantIDTO.MerchantExternalId)
+                .Where(x => x.ServiceName == merchantIDTO.ServiceName && x.MerchantExternalId.Equals(merchantIDTO.MerchantExternalId))
                 .AnyAsync();
 
             if (isExists) return null;

@@ -98,6 +98,32 @@ namespace PSP.WebApi.Models
                     .HasConversion<string>();
             });
 
+
+            #region Database Initialization
+
+            builder.Entity<Currency>().HasData(
+                new Currency("Serbian Dinar", "RSD", "RSD") { CurrencyId = 1 },
+                new Currency("Euro", "EUR", "€") { CurrencyId = 2 },
+                new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
+                );
+
+            // Merchant
+            builder.Entity<Merchant>().HasData(
+                new Merchant("408b89e8-e8e5-4b97-9c88-f19593d66378", "Law Publishing Web Shop", "123 Main Street", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com", "law-publishing-agency", "/invoice/@INVOICE_ID@/success", "/invoice/@INVOICE_ID@/failure", "/invoice/@INVOICE_ID@/error") 
+                { 
+                    MerchantId = 1,
+                });
+
+            builder.Entity<PaymentMethodMerchant>().HasData(
+               new PaymentMethodMerchant("LPAPassword5!") // TODO: Encrypt
+               {
+                   PaymentMethodMerchantId = 1,
+                   MerchantId = 1,
+                   PaymentMethodId = 9,
+                   Code = 1
+               });
+
+            #endregion
         }
     }
 }

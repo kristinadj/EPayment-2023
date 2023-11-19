@@ -4,7 +4,8 @@ namespace PSP.WebApi.DTO.Input
 {
     public class MerchantIDTO
     {
-        public int MerchantExternalId { get; set; }
+        [StringLength(50)]
+        public string MerchantExternalId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -26,8 +27,9 @@ namespace PSP.WebApi.DTO.Input
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
-        public MerchantIDTO(string name, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public MerchantIDTO(string merchantExternalId, string name, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
+            MerchantExternalId = merchantExternalId;
             Name = name;
             ServiceName = serviceName;
             TransactionSuccessUrl = transactionSuccessUrl;
