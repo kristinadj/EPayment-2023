@@ -1,8 +1,8 @@
 ﻿using Bank1.WebApi.AppSettings;
 using Bank1.WebApi.DTO.Input;
-using Bank1.WebApi.Models;
 using Bank1.WebApi.Services;
 using Base.DTO.Output;
+using Base.DTO.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -13,10 +13,13 @@ namespace Bank1.WebApi.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
+        private readonly IAccountService _accountService;
         private readonly UrlAppSettings _urlAppSettings;
-        public TransactionController(ITransactionService transactionService, IOptions<UrlAppSettings> urlAppSettings)
+
+        public TransactionController(ITransactionService transactionService, IAccountService accountService, IOptions<UrlAppSettings> urlAppSettings)
         {
             _transactionService = transactionService;
+            _accountService = accountService;
             _urlAppSettings = urlAppSettings.Value;
         }
 
@@ -39,6 +42,46 @@ namespace Bank1.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> PayTransaction([FromBody] PayTransactionIDTO payTransactionIDTO)
+        {
+            var transaction = await _transactionService.GetTransactionByIdAsync(payTransactionIDTO.TransactionId);
+            if (transaction == null) return NotFound();
+
+            if (transaction.TransactionLogs!.Any(x => x.TransactionStatus == Enums.TransactionStatus.COMPLETED))
+                return BadRequest("Transaction already paid");
+
+            RedirectUrlDTO? redirectUrl = null;
+            try
+            {
+                // TODO: VERIFY CARD
+
+                var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO);
+                if (sender == null)
+                {
+                    // TODO: PCC
+                }
+                else
+                {
+                    var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender);
+                    if (isSuccess)
+                    {
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                    }
+                    else
+                    {
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionErrorUrl);
+            }
+
+            return Ok(redirectUrl);
         }
 
     }

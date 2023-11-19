@@ -20,6 +20,7 @@ namespace WebShop.Client.Pages
         public int OrderId { get; set; }
 
         private bool isLoading = false;
+        private bool isPaymentInProgress = false;
 
         private OrderODTO? order;
         private List<PaymentMethodODTO> paymentMethods = new();
@@ -57,6 +58,7 @@ namespace WebShop.Client.Pages
 
         private async Task OnClickPayAsync()
         {
+            isPaymentInProgress = true;
             var result = await ApiServices.CreateInvoiceAsync(OrderId, (int)selectedPaymentMethod);
 
             if (result != null)
@@ -67,6 +69,7 @@ namespace WebShop.Client.Pages
             {
                 Snackbar.Add("Error", Severity.Error);
             }
+            isPaymentInProgress = false;
         }
     }
 }

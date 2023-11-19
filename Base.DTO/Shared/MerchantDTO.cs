@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Base.DTO.Shared
+﻿namespace Base.DTO.Shared
 {
     public class MerchantDTO
     {
@@ -20,16 +13,16 @@ namespace Base.DTO.Shared
         public string TransactionFailureUrl { get; set; }
         public string TransactionErrorUrl { get; set; }
 
-        public MerchantDTO(string name, string address, string phoneNumber, string email, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public MerchantDTO(string name, string address, string phoneNumber, string email, string serviceName)
         {
             Name = name;
             Address = address;
             PhoneNumber = phoneNumber;
             Email = email;
             ServiceName = serviceName;
-            TransactionSuccessUrl = transactionSuccessUrl;
-            TransactionFailureUrl = transactionFailureUrl;
-            TransactionErrorUrl = transactionErrorUrl;
+            TransactionSuccessUrl = string.Empty;
+            TransactionFailureUrl = string.Empty;
+            TransactionErrorUrl = string.Empty;
         }
     }
 }

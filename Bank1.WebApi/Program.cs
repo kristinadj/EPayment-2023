@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 #region Services
 
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 #endregion

@@ -53,7 +53,13 @@
             </MudCardContent>
             <MudCardActions Class="d-flex gap-4 justify-end">
                 <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickCancelAsync">Cancel</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnClickPayAsync">Pay</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled=@(isPaymentInProgress) OnClick="OnClickPayAsync">
+                    @if (isPaymentInProgress)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Pay
+                </MudButton>
             </MudCardActions>
         </MudCard>
     }

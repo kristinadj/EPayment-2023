@@ -166,7 +166,7 @@ namespace Bank1.WebApi.Models
                 {
                     CardId = 1,
                     AccountId = 2,
-                    ExpiratoryDate = new DateTime(2025, 12, 1),
+                    ExpiratoryDate = "12/25",
                     CVV = 123
                 }); ;
 

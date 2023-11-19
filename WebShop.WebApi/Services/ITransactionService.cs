@@ -12,7 +12,6 @@ namespace WebShop.WebApi.Services
 
     public class TransactionService : ITransactionService
     {
-
         private readonly WebShopContext _context;
         private readonly IMapper _mapper;
 

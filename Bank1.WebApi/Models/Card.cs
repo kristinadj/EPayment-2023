@@ -19,7 +19,7 @@ namespace Bank1.WebApi.Models
         public string PanNumber { get; set; }
 
         [Required]
-        public DateTime ExpiratoryDate { get; set; }
+        public string ExpiratoryDate { get; set; }
 
         [Range(0, 999)]
         public int CVV { get; set; }

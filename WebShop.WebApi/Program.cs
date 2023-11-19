@@ -10,6 +10,7 @@ using WebShop.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<WebShopAppSettings>(builder.Configuration.GetSection("WebShopAppSettings"));
 builder.Services.Configure<PspAppSettings>(builder.Configuration.GetSection("PspAppSettings"));
 
 builder.Services.AddDbContext<WebShopContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
