@@ -4,6 +4,7 @@
     {
         public int InvoiceId { get; set; }
         public double TotalPrice { get; set; }
+        public DateTime Timestamp { get; set; }
 
         public OrderODTO? Order { get; set; }
         public CurrencyODTO? Currency { get; set; }

@@ -1,5 +1,4 @@
-﻿using Base.DTO.Shared;
-using Microsoft.AspNetCore.Cors;
+﻿using Base.DTO.Input;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankPaymentService.WebApi.Controllers
@@ -12,8 +11,8 @@ namespace BankPaymentService.WebApi.Controllers
         {
         }
 
-        [HttpGet]
-        public ActionResult CreateInvoice()
+        [HttpPost]
+        public ActionResult CreateInvoice([FromBody] PaymentRequestIDTO paymentRequestDTO)
         {
             return Ok();
         }

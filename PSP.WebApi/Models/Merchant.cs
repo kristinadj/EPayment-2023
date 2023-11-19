@@ -7,11 +7,15 @@ namespace PSP.WebApi.Models
     public class Merchant
     {
         public int MerchantId { get; set; }
-        public int MerchantExternalId { get; set; }
+        public string MerchantExternalId { get; set; }
 
         [Required]
         [StringLength(50)]
         public string Name { get; set; }
+
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }    
 
         [Required]
         [StringLength(30)]
@@ -32,10 +36,14 @@ namespace PSP.WebApi.Models
         public ICollection<PaymentMethodMerchant>? PaymentMethods { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
 
-        public Merchant(string name, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public Merchant(string merchantExternalId, string name, string address, string phoneNumber, string email, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
+            MerchantExternalId  = merchantExternalId;
             Name = name;
             ServiceName = serviceName;
+            Address = address;
+            PhoneNumber = phoneNumber;
+            Email = email;
             TransactionSuccessUrl = transactionSuccessUrl;
             TransactionFailureUrl = transactionFailureUrl;
             TransactionErrorUrl = transactionErrorUrl;

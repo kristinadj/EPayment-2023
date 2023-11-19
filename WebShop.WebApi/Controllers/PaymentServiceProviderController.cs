@@ -15,6 +15,7 @@ namespace WebShop.WebApi.Controllers
     public class PaymentServiceProviderController : ControllerBase
     {
         private readonly PspAppSettings _pspAppSettings;
+        private readonly WebShopAppSettings _webShopAppSettings;
         private readonly ConsulAppSettings _consulAppSettings;
 
         private readonly IMerchantService _merchantService;
@@ -26,12 +27,14 @@ namespace WebShop.WebApi.Controllers
             IPaymentMethodService paymentMethodService,
             IOptions<PspAppSettings> pspAppSettings,
             IOptions<ConsulAppSettings> consulAppSettings,
+            IOptions<WebShopAppSettings> webShopAppSettings,
             IConsulHttpClient consulHttpClient)
         {
             _merchantService = merchantService;
             _paymentMethodService = paymentMethodService;
             _pspAppSettings = pspAppSettings.Value;
             _consulAppSettings = consulAppSettings.Value;
+            _webShopAppSettings = webShopAppSettings.Value;
             _consulHttpClient = consulHttpClient;
         }
 
@@ -41,9 +44,12 @@ namespace WebShop.WebApi.Controllers
             var merchant = await _merchantService.GetMerchantByIdAsync(merchantId);
             if (merchant == null) return NotFound();
 
-            var merchantDTO = new MerchantDTO(merchant.User!.Name, _consulAppSettings.Service, "/invoice/@INVOICE_ID@/success", "/invoice/@INVOICE_ID@/failure", "/invoice/@INVOICE_ID@/error")
+            var merchantDTO = new MerchantDTO(merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber, merchant.User!.Email, _consulAppSettings.Service)
             {
-                MerchantExternalId = merchant.MerchantId
+                MerchantExternalId = merchant.MerchantId,
+                TransactionSuccessUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/success",
+                TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",
+                TransactionErrorUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/error",
             };
             var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, _pspAppSettings.RegisterMerchantApiEndpoint, merchantDTO);
 

@@ -50,7 +50,8 @@ namespace WebShop.WebApi.Mappings
                 .ForMember(x => x.PspPaymentMethodId, x => x.MapFrom(x => x.PaymentMethodId))
                 .ConstructUsing(x => new PaymentMethod($"{x.ServiceName}/{x.ServiceApiSufix}", x.ServiceName));
 
-            CreateMap<Invoice, InvoiceODTO>();
+            CreateMap<Invoice, InvoiceODTO>()
+                .ForMember(x => x.Timestamp, x => x.MapFrom(x => x.Transaction!.CreatedTimestamp));
 
             CreateMap<Transaction, TransactionODTO>();
             CreateMap<TransactionLog, TransactionLogODTO>();

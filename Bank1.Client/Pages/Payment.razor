@@ -1,0 +1,40 @@
+﻿@page "/payment/{TransactionId:int}"
+
+<div class="d-flex align-content-center justify-center gap-3 mt-3">
+    <MudGrid Class="justify-space-between" Style="max-width: 400px;">
+        <MudItem xs="12">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h6">HSBC Bank</MudText>
+            </div>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Label="Card Holder Name" oninput="@(this.cardHolderName = this.cardHolderName.ToUpper())" MaxLength="70"
+                          @bind-Value="cardHolderName" Variant="@Variant.Text" Clearable />
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
+                          @bind-Value="panNumber" Variant="@Variant.Text" Clearable />
+        </MudItem>
+        <MudItem xs="4">
+            <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
+                          @bind-Value="expiration" Variant="@Variant.Text" />
+        </MudItem>
+        <MudItem xs="4" />
+        <MudItem xs="4">
+            <MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
+                          @bind-Value="cvv" Variant="@Variant.Text" />
+        </MudItem>
+        <MudItem xs=12>
+            <div class="d-flex justify-center">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@(string.IsNullOrEmpty(cardHolderName) || string.IsNullOrEmpty(panNumber) || string.IsNullOrEmpty(expiration) || string.IsNullOrEmpty(cvv) || isLoading)" OnClick="OnPayAsync">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Pay
+                </MudButton>
+            </div>
+
+        </MudItem>
+    </MudGrid>
+</div>

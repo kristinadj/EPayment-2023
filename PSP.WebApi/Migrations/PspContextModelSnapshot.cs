@@ -51,6 +51,29 @@ namespace PSP.WebApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Currencies", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            CurrencyId = 1,
+                            Code = "RSD",
+                            Name = "Serbian Dinar",
+                            Symbol = "RSD"
+                        },
+                        new
+                        {
+                            CurrencyId = 2,
+                            Code = "EUR",
+                            Name = "Euro",
+                            Symbol = "€"
+                        },
+                        new
+                        {
+                            CurrencyId = 3,
+                            Code = "USD",
+                            Name = "American Dollar",
+                            Symbol = "$"
+                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Invoice", b =>
@@ -67,8 +90,9 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IssuedToUserId")
-                        .HasColumnType("int");
+                    b.Property<string>("IssuedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
@@ -98,13 +122,26 @@ namespace PSP.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantId"), 1L, 1);
 
-                    b.Property<int>("MerchantExternalId")
-                        .HasColumnType("int");
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantExternalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
@@ -134,6 +171,21 @@ namespace PSP.WebApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Merchants", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            MerchantId = 1,
+                            Address = "123 Main Street",
+                            Email = "webshopadmin@lawpublishingagency.com",
+                            MerchantExternalId = "408b89e8-e8e5-4b97-9c88-f19593d66378",
+                            Name = "Law Publishing Web Shop",
+                            PhoneNumber = "+1 555-123-4567",
+                            ServiceName = "law-publishing-agency",
+                            TransactionErrorUrl = "https://localhost:7295/invoice/@INVOICE_ID@/error",
+                            TransactionFailureUrl = "https://localhost:7295/invoice/@INVOICE_ID@/failure",
+                            TransactionSuccessUrl = "https://localhost:7295/invoice/@INVOICE_ID@/success"
+                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.PaymentMethod", b =>
@@ -175,6 +227,9 @@ namespace PSP.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentMethodMerchantId"), 1L, 1);
 
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -184,6 +239,10 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("PaymentMethodMerchantId");
 
                     b.HasIndex("MerchantId");
@@ -191,6 +250,17 @@ namespace PSP.WebApi.Migrations
                     b.HasIndex("PaymentMethodId");
 
                     b.ToTable("PaymentMethodMerchants", "dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentMethodMerchantId = 1,
+                            Code = 1,
+                            IsActive = false,
+                            MerchantId = 1,
+                            PaymentMethodId = 9,
+                            Secret = "LPAPassword5!"
+                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>

@@ -29,6 +29,7 @@ builder.Services.AddConsul();
 
 #region Services
 
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
 

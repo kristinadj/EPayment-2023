@@ -244,6 +244,8 @@ namespace WebShop.WebApi.Models
                 {
                     Id = merchantId,
                     Role = Role.MERCHANT,
+                    Address = "123 Main Street",
+                    PhoneNumber = "+1 555-123-4567",
                     PasswordHash = hasher.HashPassword(null, "Admin123#"),
                     Email = "webshopadmin@lawpublishingagency.com",
                     NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
