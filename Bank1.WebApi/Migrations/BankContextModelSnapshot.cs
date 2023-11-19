@@ -354,15 +354,30 @@ namespace Bank1.WebApi.Migrations
                     b.Property<int>("ReceiverAccountId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SenderAccountId")
+                    b.Property<int?>("SenderAccountId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("TransactionErrorUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
+                    b.Property<string>("TransactionFailureUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
                     b.Property<string>("TransactionStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(24)");
+
+                    b.Property<string>("TransactionSuccessUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
 
                     b.HasKey("TransactionId");
 
@@ -477,8 +492,7 @@ namespace Bank1.WebApi.Migrations
                     b.HasOne("Bank1.WebApi.Models.Account", "SenderAccount")
                         .WithMany("TransactionsAsSender")
                         .HasForeignKey("SenderAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Currency");
 

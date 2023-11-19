@@ -1,5 +1,4 @@
-﻿using Base.DTO.Shared;
-using Microsoft.AspNetCore.Cors;
+﻿using Base.DTO.Input;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BitcoinPaymentService.WebApi.Controllers
@@ -12,8 +11,8 @@ namespace BitcoinPaymentService.WebApi.Controllers
         {
         }
 
-        [HttpGet]
-        public ActionResult CreateInvoice()
+        [HttpPost]
+        public ActionResult CreateInvoice([FromBody] PaymentRequestIDTO paymentRequestDTO)
         {
             return Ok();
         }

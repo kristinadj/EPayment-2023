@@ -90,8 +90,9 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IssuedToUserId")
-                        .HasColumnType("int");
+                    b.Property<string>("IssuedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");

@@ -733,16 +733,18 @@ namespace WebShop.WebApi.Migrations
                         {
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "737b9101-4845-4058-9d2d-6f5bcd646edb",
+                            Address = "123 Main Street",
+                            ConcurrencyStamp = "6c4de0d5-96fe-4a82-940f-ea5071b1d544",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEL9UIqlmb2lHgebPLrDz5E2XHZBlIQSwteh51UvwsKdBhVkm3Rm0/ikJSYj6XSdavg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOg9Vx5qbwc+KFQTVFGOPpNYFh9n7Px9G53oDwQ8Y4DGnzlC3mNFD6pmC0JV+0teMg==",
+                            PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "427b3795-7fc2-434c-b6c0-007a11ee21fd",
+                            SecurityStamp = "4321ffcf-4626-45da-98ff-7ccd9c71755f",
                             TwoFactorEnabled = false
                         });
                 });

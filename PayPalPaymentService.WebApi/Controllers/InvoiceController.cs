@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Base.DTO.Input;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PayPalPaymentService.WebApi.Controllers
@@ -11,8 +11,8 @@ namespace PayPalPaymentService.WebApi.Controllers
         {
         }
 
-        [HttpGet]
-        public ActionResult CreateInvoice()
+        [HttpPost]
+        public ActionResult CreateInvoice([FromBody] PaymentRequestIDTO paymentRequestDTO)
         {
             return Ok();
         }

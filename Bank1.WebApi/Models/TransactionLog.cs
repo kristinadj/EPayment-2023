@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Transactions;
+using Bank1.WebApi.Enums;
 
 namespace Bank1.WebApi.Models
 {

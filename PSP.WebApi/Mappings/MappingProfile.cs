@@ -17,10 +17,10 @@ namespace PSP.WebApi.Mappings
                 .ConstructUsing(x => new PaymentMethodODTO(x.Name, x.ServiceName, x.ServiceApiSufix));
 
             CreateMap<MerchantIDTO, Merchant>()
-                .ConstructUsing(x => new Merchant(x.MerchantExternalId, x.Name, "", "", "", x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
+                .ConstructUsing(x => new Merchant(x.MerchantExternalId, x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
             CreateMap<Merchant, MerchantODTO>()
-                    .ConstructUsing(x => new MerchantODTO(x.Name, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
+                    .ConstructUsing(x => new MerchantODTO(x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
             CreateMap<PspInvoiceIDTO, InvoiceODTO>();
         }

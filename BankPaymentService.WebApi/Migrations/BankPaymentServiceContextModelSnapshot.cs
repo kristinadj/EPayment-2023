@@ -56,7 +56,7 @@ namespace BankPaymentService.WebApi.Migrations
                             BankId = 1,
                             BankName = "HSBC Bank",
                             ExternalBankId = 1,
-                            RedirectUrl = "https://localhost:7092/"
+                            RedirectUrl = "https://localhost:7092/api"
                         });
                 });
 
@@ -137,9 +137,24 @@ namespace BankPaymentService.WebApi.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("TransactionErrorUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
+                    b.Property<string>("TransactionFailureUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
                     b.Property<string>("TransactionStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(24)");
+
+                    b.Property<string>("TransactionSuccessUrl")
+                        .IsRequired()
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
 
                     b.HasKey("InvocieId");
 

@@ -41,6 +41,7 @@ namespace PSP.WebApi.Services
         {
             return await _context.Merchants
                 .Where(x => x.MerchantId == merchantId)
+                .Include(x => x.PaymentMethods)
                 .FirstOrDefaultAsync();
         }
     }

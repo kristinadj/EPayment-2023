@@ -1,4 +1,6 @@
-﻿using Consul;
+﻿using Base.DTO.Input;
+using Base.DTO.Output;
+using Consul;
 using System.Text;
 using System.Text.Json;
 
@@ -8,7 +10,9 @@ namespace Base.Services.Clients
     {
         Task GetAsync(string serviceName, string requestUri);
         Task<T?> GetAsync<T>(string serviceName, string requestUri);
+        Task<bool> PutAsync(string serviceName, string requestUri);
         Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
+        Task<PaymentInstructionsODTO?> PostAsync(string serviceName, string requestUri, PaymentRequestIDTO requestBody);
     }
 
     public class ConsulHttpClient : IConsulHttpClient 
@@ -46,6 +50,20 @@ namespace Base.Services.Clients
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
+        public async Task<bool> PutAsync(string serviceName, string requestUri)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+
+            var response = await _client.PutAsync(uri, null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody)
         {
             var uri = await GetRequestUriAsync(serviceName, requestUri);
@@ -59,6 +77,21 @@ namespace Base.Services.Clients
             if (content == null) return default;
 
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+        }
+
+        public async Task<PaymentInstructionsODTO?> PostAsync(string serviceName, string requestUri, PaymentRequestIDTO requestBody)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync(uri, requestContent);
+
+            if (!response.IsSuccessStatusCode) return default;
+
+            var content = await response.Content.ReadAsStringAsync();
+            if (content == null) return default;
+
+            return JsonSerializer.Deserialize<PaymentInstructionsODTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         private async Task<Uri> GetRequestUriAsync(string serviceName, string uri)
