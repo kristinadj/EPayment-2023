@@ -1,11 +1,12 @@
 using Bank1.WebApi.AppSettings;
 using Bank1.WebApi.Models;
 using Bank1.WebApi.Services;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<UrlAppSettings>(builder.Configuration.GetSection("UrlAppSettings"));
+builder.Services.Configure<BankSettings>(builder.Configuration.GetSection("BankSettings"));
 
 builder.Services.AddDbContext<BankContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
 
@@ -14,6 +15,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", new CorsPolicyBuilder()
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin()
+        .Build());
+});
 
 #region Services
 
@@ -30,6 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

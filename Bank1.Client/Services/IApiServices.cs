@@ -1,8 +1,8 @@
-﻿using Bank1.Client.DTO.Input;
+﻿using Base.DTO.Input;
 using Base.DTO.Shared;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace Bank1.Client.Services
 {
@@ -27,7 +27,7 @@ namespace Bank1.Client.Services
             try
             {
                 var content = new StringContent(JsonSerializer.Serialize(payTransactionIDTO), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"/Transaction", content);
+                var response = await _httpClient.PutAsync($"api/Transaction", content);
                 response.EnsureSuccessStatusCode();
 
                 var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();

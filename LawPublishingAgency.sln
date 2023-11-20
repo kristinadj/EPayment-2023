@@ -23,7 +23,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base.DTO", "Base.DTO\Base.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank1.WebApi", "Bank1.WebApi\Bank1.WebApi.csproj", "{59C803B1-A0FE-4067-8363-02A6950ED993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank1.Client", "Bank1.Client\Bank1.Client.csproj", "{7CABBD67-C055-4175-9A74-D432B0B6901B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank1.Client", "Bank1.Client\Bank1.Client.csproj", "{7CABBD67-C055-4175-9A74-D432B0B6901B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank2.WebApi", "Bank2.WebApi\Bank2.WebApi.csproj", "{25285B1C-8CF0-4F53-A99B-BCE877DE43C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank2.Client", "Bank2.Client\Bank2.Client.csproj", "{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentCardCenter.WebApi", "PaymentCardCenter.WebApi\PaymentCardCenter.WebApi.csproj", "{415BADB3-9852-4E1E-8AE2-E7D06D266095}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +81,18 @@ Global
 		{7CABBD67-C055-4175-9A74-D432B0B6901B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CABBD67-C055-4175-9A74-D432B0B6901B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CABBD67-C055-4175-9A74-D432B0B6901B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25285B1C-8CF0-4F53-A99B-BCE877DE43C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25285B1C-8CF0-4F53-A99B-BCE877DE43C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25285B1C-8CF0-4F53-A99B-BCE877DE43C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25285B1C-8CF0-4F53-A99B-BCE877DE43C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿namespace Bank1.WebApi.DTO.Input
+﻿namespace Base.DTO.Input
 {
     public class PayTransactionIDTO
     {
@@ -13,6 +13,13 @@
             CardHolderName = cardHolderName;
             PanNumber = panNumber;
             ExpiratoryDate = expiratoryDate;
+        }
+
+        public PayTransactionIDTO()
+        {
+            CardHolderName = string.Empty;
+            PanNumber= string.Empty;    
+            ExpiratoryDate = string.Empty;
         }
     }
 }

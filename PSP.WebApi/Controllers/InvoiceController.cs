@@ -44,7 +44,7 @@ namespace PSP.WebApi.Controllers
             var merchant = await _merchantService.GetMerchantByIdAsync(invoiceIDTO.MerchantId);
             if (merchant == null)  return NotFound();
 
-            var paymentMethodCredentials = merchant.PaymentMethods!.Where(x => x.PaymentMethodId == paymentMethod.PaymentMethodId).FirstOrDefault();
+            var paymentMethodCredentials = merchant.PaymentMethods!/*.Where(x => x.PaymentMethodId == paymentMethod.PaymentMethodId)*/.FirstOrDefault();
             if (paymentMethodCredentials == null) return NotFound();
 
             var invoice = await _invoiceService.CreateInvoiceAsync(merchant, paymentMethod, invoiceIDTO);

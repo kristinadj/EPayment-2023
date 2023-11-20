@@ -15,7 +15,7 @@ namespace Bank1.WebApi.Models
         public string CardHolderName { get; set; }
 
         [Required]
-        [StringLength(16)]
+        [StringLength(19)]
         public string PanNumber { get; set; }
 
         [Required]
@@ -26,10 +26,11 @@ namespace Bank1.WebApi.Models
 
         public Account? Account { get; set; }
 
-        public Card(string cardHolderName, string panNumber) 
+        public Card(string cardHolderName, string panNumber, string expiratoryDate)
         {
             CardHolderName = cardHolderName;
             PanNumber = panNumber;
+            ExpiratoryDate = expiratoryDate;
         }
     }
 }
