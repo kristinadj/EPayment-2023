@@ -1,7 +1,11 @@
 ﻿using Bank2.WebApi.DTO.Input;
+using Bank2.WebApi.Enums;
 using Bank2.WebApi.Models;
+using Base.DTO.Input;
+using Base.DTO.Output;
 using Base.DTO.Shared;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Bank2.WebApi.Services
@@ -11,7 +15,11 @@ namespace Bank2.WebApi.Services
         Task<Transaction?> CreateTransactionAsync(TransactionIDTO transactionIDTO);
         Task<Transaction?> GetTransactionByIdAsync(int transactionId);
         Task<bool> PayTransctionAsync(Transaction transaction, Account account);
+        Task<bool> PccSendToPayTransctionAsync(Transaction transaction, PayTransactionIDTO payTransactionIDTO, int bankId, string pccUrl);
         Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url);
+        Task<PccTransactionODTO?> PccReceiveToPayTransactionAsync(PccTransactionIDTO transactionIDTO, string cardStartNumbers);
+        Task UpdateTransactionStatusAsync(Transaction transaction, TransactionStatus transactionStatus);
+
     }
 
     public class TransactionService : ITransactionService
@@ -111,6 +119,59 @@ namespace Bank2.WebApi.Services
             return isSuccess;
         }
 
+        public async Task<PccTransactionODTO?> PccReceiveToPayTransactionAsync(PccTransactionIDTO transactionIDTO, string cardStartNumbers)
+        {
+            var currency = await _context.Currencies
+                .Where(x => x.Code == transactionIDTO.CurrencyCode)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (currency == null) return null;
+
+            var isLocalCard = transactionIDTO.PayTransaction!.PanNumber.StartsWith(cardStartNumbers);
+            if (!isLocalCard) return null;
+
+            var issuerAccount = await _context.Accounts
+                .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == transactionIDTO.PayTransaction.PanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
+                .FirstOrDefaultAsync();
+
+            if (issuerAccount == null) return null;
+
+            // TODO: Currency conversion
+            var transaction = new IssuerTransaction(transactionIDTO.Description)
+            {
+                Amount = transactionIDTO.Amount,
+                CurrencyId = currency.CurrencyId,
+                IssuerAccountId = issuerAccount.AccountId,
+                AquirerTransactionId = transactionIDTO.AquirerTransctionId,
+                AquirerTimestamp = transactionIDTO.AquirerTimestamp,
+                Timestamp = DateTime.Now
+            };
+
+            if (issuerAccount.Balance < transactionIDTO.Amount)
+            {
+                transaction.TransactionStatus = Enums.TransactionStatus.FAIL;
+            }
+            else
+            {
+                issuerAccount.Balance -= transaction.Amount;
+                transaction.TransactionStatus = Enums.TransactionStatus.COMPLETED;
+            }
+
+            await _context.IssuerTransactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+
+            var transactionODTO = new PccTransactionODTO(issuerAccount.AccountNumber, transactionIDTO.CurrencyCode)
+            {
+                AquirerTransctionId = transactionIDTO.AquirerTransctionId,
+                AquirerTimestamp = transactionIDTO.AquirerTimestamp,
+                IssuerTransactionId = transaction.TransactionId,
+                IssuerTimestamp = transaction.Timestamp,
+                Amount = transactionIDTO.Amount,
+                IsSuccess = transaction.TransactionStatus == Enums.TransactionStatus.COMPLETED
+            };
+            return transactionODTO;
+        }
+
         public async Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url)
         {
             try
@@ -129,6 +190,53 @@ namespace Bank2.WebApi.Services
             {
                 return null;
             }
+        }
+
+        public async Task<bool> PccSendToPayTransctionAsync(Transaction transaction, PayTransactionIDTO payTransactionIDTO, int bankId, string pccUrl)
+        {
+            var pccTransactionIDTO = new PccTransactionIDTO(transaction.Currency!.Code, transaction.Description)
+            {
+                AquirerBankId = bankId,
+                AquirerTransctionId = transaction.TransactionId,
+                AquirerTimestamp = transaction.Timestamp,
+                Amount = transaction.Amount,
+                PayTransaction = payTransactionIDTO,
+            };
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync($"{pccUrl}/Transaction", pccTransactionIDTO);
+            if (response.IsSuccessStatusCode)
+            {
+                var transactionODTO = await response.Content.ReadFromJsonAsync<PccTransactionODTO?>();
+                if (transactionODTO != null)
+                {
+                    transaction.IssuerTransactionId = transactionODTO.IssuerTransactionId;
+                    transaction.IssuerTimestamp = transactionODTO.IssuerTimestamp;
+
+                    if (transactionODTO.IsSuccess)
+                    {
+                        var account = await _context.Accounts
+                            .Where(x => x.AccountId == transaction.ReceiverAccountId)
+                            .FirstOrDefaultAsync();
+                        account!.Balance += transaction.Amount;
+
+                        transaction.TransactionStatus = Enums.TransactionStatus.COMPLETED;
+                        transaction.TransactionLogs!.Add(new TransactionLog { TransactionStatus = Enums.TransactionStatus.COMPLETED, Timestamp = DateTime.Now });
+                    }
+
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public async Task UpdateTransactionStatusAsync(Transaction transaction, TransactionStatus transactionStatus)
+        {
+            transaction.TransactionStatus = transactionStatus;
+            transaction.TransactionLogs!.Add(new TransactionLog { TransactionStatus = transactionStatus, Timestamp = DateTime.Now });
+            await _context.SaveChangesAsync();
         }
     }
 }

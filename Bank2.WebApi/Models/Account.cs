@@ -20,6 +20,7 @@ namespace Bank2.WebApi.Models
         public ICollection<Card>? Cards { get; set; }
         public ICollection<Transaction>? TransactionsAsSender { get; set; }
         public ICollection<Transaction>? TransactionsAsReceiver { get; set; }
+        public ICollection<IssuerTransaction>? TransactionsAsIssuer { get; set; }
 
         public Account(string accountNumber)
         {

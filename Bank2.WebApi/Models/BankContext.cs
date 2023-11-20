@@ -10,6 +10,7 @@ namespace Bank2.WebApi.Models
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
+        public DbSet<IssuerTransaction> IssuerTransactions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public BankContext(DbContextOptions<BankContext> options) : base(options) { }
@@ -70,6 +71,22 @@ namespace Bank2.WebApi.Models
                 entity.HasOne(x => x.ToCurrency)
                     .WithMany()
                     .HasForeignKey(x => x.ToCurrencyId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<IssuerTransaction>(entity =>
+            {
+                entity.Property(d => d.TransactionStatus)
+                    .HasConversion<string>();
+
+                entity.HasOne(x => x.Currency)
+                    .WithMany()
+                    .HasForeignKey(x => x.CurrencyId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.IsuerAccount)
+                    .WithMany(x => x.TransactionsAsIssuer)
+                    .HasForeignKey(x => x.IssuerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

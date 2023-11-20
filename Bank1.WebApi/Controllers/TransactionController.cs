@@ -61,10 +61,19 @@ namespace Bank1.WebApi.Controllers
             {
                 // TODO: VERIFY CARD
                 var isLocalCard = payTransactionIDTO.PanNumber.StartsWith(_appSettings.CardStartNumbers);
-                
+
                 if (!isLocalCard)
                 {
-                    // TODO: PCC
+                    var isSuccess = await _transactionService.PccSendToPayTransctionAsync(transaction, payTransactionIDTO, _appSettings.PccBankId, _appSettings.PccUrl);
+                    if (isSuccess)
+                    {
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                    }
+                    else
+                    {
+                        await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.FAIL);
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                    }
                 }
                 else
                 {
@@ -82,11 +91,27 @@ namespace Bank1.WebApi.Controllers
             }
             catch (Exception)
             {
+                await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.ERROR);
                 redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionErrorUrl);
             }
 
             return Ok(redirectUrl);
         }
 
+        [HttpPost("PCC")]
+        public async Task<ActionResult<PccTransactionODTO>> PccPayTransaction([FromBody] PccTransactionIDTO pccTransactionIDTO)
+        {
+            try
+            {
+                var transactionODTO = await _transactionService.PccReceiveToPayTransactionAsync(pccTransactionIDTO, _appSettings.CardStartNumbers);
+                if (transactionODTO == null) return BadRequest();
+
+                return Ok(transactionODTO);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

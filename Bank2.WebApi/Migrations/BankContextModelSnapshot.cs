@@ -334,6 +334,49 @@ namespace Bank2.WebApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Bank2.WebApi.Models.IssuerTransaction", b =>
+                {
+                    b.Property<int>("TransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"), 1L, 1);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("AquirerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AquirerTransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IssuerAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
+
+                    b.HasKey("TransactionId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("IssuerAccountId");
+
+                    b.ToTable("IssuerTransactions", "dbo");
+                });
+
             modelBuilder.Entity("Bank2.WebApi.Models.Transaction", b =>
                 {
                     b.Property<int>("TransactionId")
@@ -351,6 +394,12 @@ namespace Bank2.WebApi.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("IssuerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IssuerTransactionId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ReceiverAccountId")
                         .HasColumnType("int");
@@ -476,6 +525,25 @@ namespace Bank2.WebApi.Migrations
                     b.Navigation("ToCurrency");
                 });
 
+            modelBuilder.Entity("Bank2.WebApi.Models.IssuerTransaction", b =>
+                {
+                    b.HasOne("Bank2.WebApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank2.WebApi.Models.Account", "IsuerAccount")
+                        .WithMany("TransactionsAsIssuer")
+                        .HasForeignKey("IssuerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("IsuerAccount");
+                });
+
             modelBuilder.Entity("Bank2.WebApi.Models.Transaction", b =>
                 {
                     b.HasOne("Bank2.WebApi.Models.Currency", "Currency")
@@ -516,6 +584,8 @@ namespace Bank2.WebApi.Migrations
             modelBuilder.Entity("Bank2.WebApi.Models.Account", b =>
                 {
                     b.Navigation("Cards");
+
+                    b.Navigation("TransactionsAsIssuer");
 
                     b.Navigation("TransactionsAsReceiver");
 

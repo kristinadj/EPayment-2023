@@ -15,6 +15,8 @@ namespace Bank1.WebApi.Models
         [Required]
         public string Description { get; set; }
         public int? SenderAccountId { get; set; }
+        public int? IssuerTransactionId { get; set; }
+        public DateTime? IssuerTimestamp { get; set; }
         public int ReceiverAccountId { get; set; }
 
         [Column(TypeName = "nvarchar(24)")]

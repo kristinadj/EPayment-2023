@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank2.WebApi", "Bank2.WebAp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank2.Client", "Bank2.Client\Bank2.Client.csproj", "{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentCardCenter.WebApi", "PaymentCardCenter.WebApi\PaymentCardCenter.WebApi.csproj", "{415BADB3-9852-4E1E-8AE2-E7D06D266095}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B33062B6-7CAF-4EB9-A384-9F379BDCCC31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
