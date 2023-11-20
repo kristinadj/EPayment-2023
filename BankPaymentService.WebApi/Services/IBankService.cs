@@ -42,9 +42,9 @@ namespace BankPaymentService.WebApi.Services
                 Amount = paymentRequestIDTO.Amount,
                 ExternalInvoiceId = invoice.InvocieId,
                 Timestamp = paymentRequestIDTO.Timestamp,
-                TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/{invoice.InvocieId}/Success",
-                TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/{invoice.InvocieId}/Failure",
-                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/{invoice.InvocieId}/Error"
+                TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Success",
+                TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Failure",
+                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Error"
             };
 
             try

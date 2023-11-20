@@ -162,11 +162,10 @@ namespace Bank1.WebApi.Models
                });
 
             builder.Entity<Card>().HasData(
-                new Card("JOHN DOE", "1234567890123456")
+                new Card("JOHN DOE", "1234 5678 9012 3456", "12/25")
                 {
                     CardId = 1,
                     AccountId = 2,
-                    ExpiratoryDate = "12/25",
                     CVV = 123
                 }); ;
 

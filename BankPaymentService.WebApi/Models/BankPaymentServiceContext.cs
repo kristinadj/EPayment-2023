@@ -70,7 +70,8 @@ namespace BankPaymentService.WebApi.Models
                 );
 
             builder.Entity<Bank>().HasData(
-                new Bank("HSBC Bank", "https://localhost:7092/api") { BankId = 1, ExternalBankId = 1 }
+                new Bank("HSBC Bank", "https://localhost:7092/api") { BankId = 1, ExternalBankId = 1 },
+                new Bank("Capital Bank", "https://localhost:7130/api") { BankId = 2, ExternalBankId = 1 }
                 );
 
             // Merchant

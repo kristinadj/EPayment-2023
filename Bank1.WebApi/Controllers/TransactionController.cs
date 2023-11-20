@@ -1,8 +1,10 @@
 ﻿using Bank1.WebApi.AppSettings;
 using Bank1.WebApi.DTO.Input;
 using Bank1.WebApi.Services;
+using Base.DTO.Input;
 using Base.DTO.Output;
 using Base.DTO.Shared;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -10,17 +12,18 @@ namespace Bank1.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("CorsPolicy")]
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
         private readonly IAccountService _accountService;
-        private readonly UrlAppSettings _urlAppSettings;
+        private readonly BankSettings _appSettings;
 
-        public TransactionController(ITransactionService transactionService, IAccountService accountService, IOptions<UrlAppSettings> urlAppSettings)
+        public TransactionController(ITransactionService transactionService, IAccountService accountService, IOptions<BankSettings> appSettings)
         {
             _transactionService = transactionService;
             _accountService = accountService;
-            _urlAppSettings = urlAppSettings.Value;
+            _appSettings = appSettings.Value;
         }
 
         [HttpPost]
@@ -31,7 +34,7 @@ namespace Bank1.WebApi.Controllers
                 var transaction = await _transactionService.CreateTransactionAsync(transactionIDTO);
                 if (transaction == null) return BadRequest();
 
-                var paymentInstructions = new PaymentInstructionsODTO(_urlAppSettings.BankPaymentUrl.Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString()))
+                var paymentInstructions = new PaymentInstructionsODTO(_appSettings.BankPaymentUrl.Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString()))
                 {
                     PaymentId = transaction.TransactionId
                 };
@@ -57,15 +60,16 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 // TODO: VERIFY CARD
-
-                var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO);
-                if (sender == null)
+                var isLocalCard = payTransactionIDTO.PanNumber.StartsWith(_appSettings.CardStartNumbers);
+                
+                if (!isLocalCard)
                 {
                     // TODO: PCC
                 }
                 else
                 {
-                    var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender);
+                    var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO);
+                    var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
                     if (isSuccess)
                     {
                         redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);

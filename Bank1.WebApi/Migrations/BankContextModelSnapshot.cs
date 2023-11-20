@@ -131,8 +131,8 @@ namespace Bank1.WebApi.Migrations
 
                     b.Property<string>("PanNumber")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                        .HasMaxLength(19)
+                        .HasColumnType("nvarchar(19)");
 
                     b.HasKey("CardId");
 
@@ -148,7 +148,7 @@ namespace Bank1.WebApi.Migrations
                             CVV = 123,
                             CardHolderName = "JOHN DOE",
                             ExpiratoryDate = "12/25",
-                            PanNumber = "1234567890123456"
+                            PanNumber = "1234 5678 9012 3456"
                         });
                 });
 

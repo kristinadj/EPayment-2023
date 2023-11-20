@@ -1,5 +1,5 @@
-﻿using Bank1.WebApi.DTO.Input;
-using Bank1.WebApi.Models;
+﻿using Bank1.WebApi.Models;
+using Base.DTO.Input;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bank1.WebApi.Services

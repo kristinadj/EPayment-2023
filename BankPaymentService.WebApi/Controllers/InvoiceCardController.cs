@@ -69,7 +69,7 @@ namespace BankPaymentService.WebApi.Controllers
             try
             {
                 await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Failure");
-                var redirectUrl = new RedirectUrlDTO(invoice.TransactionSuccessUrl);
+                var redirectUrl = new RedirectUrlDTO(invoice.TransactionFailureUrl);
                 return Ok(redirectUrl);
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace BankPaymentService.WebApi.Controllers
             try
             {
                 await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Error");
-                var redirectUrl = new RedirectUrlDTO(invoice.TransactionSuccessUrl);
+                var redirectUrl = new RedirectUrlDTO(invoice.TransactionErrorUrl);
                 return Ok(redirectUrl);
             }
             catch (Exception ex)
