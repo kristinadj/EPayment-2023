@@ -250,17 +250,6 @@ namespace PSP.WebApi.Migrations
                     b.HasIndex("PaymentMethodId");
 
                     b.ToTable("PaymentMethodMerchants", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentMethodMerchantId = 1,
-                            Code = 1,
-                            IsActive = false,
-                            MerchantId = 1,
-                            PaymentMethodId = 9,
-                            Secret = "LPAPassword5!"
-                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>

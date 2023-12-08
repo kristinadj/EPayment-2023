@@ -17,5 +17,6 @@ namespace WebShop.Client.Services
         Task<OrderODTO?> GetOrderByIdAsync(int orderId);
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
         Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus);
+        Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
     }
 }

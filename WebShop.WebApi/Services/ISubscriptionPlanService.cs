@@ -9,6 +9,7 @@ namespace WebShop.WebApi.Services
     public interface ISubscriptionPlanService
     {
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
+        Task<bool> ValidateSubscriptionPlanAsync(string userId);
     }
 
     public class SubscripionPlanService : ISubscriptionPlanService
@@ -27,6 +28,13 @@ namespace WebShop.WebApi.Services
             return await _context.SubscriptionPlans
                 .ProjectTo<SubscriptionPlanODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+        }
+
+        public async Task<bool> ValidateSubscriptionPlanAsync(string userId)
+        {
+            return await _context.UserSubscriptionPlans
+                .Where(x => x.UserId == userId && x.StartTimestamp > DateTime.Today && x.EndTimestamp <= DateTime.Today)
+                .AnyAsync();
         }
     }
 }

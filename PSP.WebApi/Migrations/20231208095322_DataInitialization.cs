@@ -4,7 +4,7 @@
 
 namespace PSP.WebApi.Migrations
 {
-    public partial class DataInitliazation : Migration
+    public partial class DataInitialization : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -57,6 +57,15 @@ namespace PSP.WebApi.Migrations
                 nullable: false,
                 defaultValue: "");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "IssuedToUserId",
+                schema: "dbo",
+                table: "Invoices",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "Currencies",
@@ -72,13 +81,7 @@ namespace PSP.WebApi.Migrations
                 schema: "dbo",
                 table: "Merchants",
                 columns: new[] { "MerchantId", "Address", "Email", "MerchantExternalId", "Name", "PhoneNumber", "ServiceName", "TransactionErrorUrl", "TransactionFailureUrl", "TransactionSuccessUrl" },
-                values: new object[] { 1, "123 Main Street", "webshopadmin@lawpublishingagency.com", "408b89e8-e8e5-4b97-9c88-f19593d66378", "Law Publishing Web Shop", "+1 555-123-4567", "law-publishing-agency", "/invoice/@INVOICE_ID@/error", "/invoice/@INVOICE_ID@/failure", "/invoice/@INVOICE_ID@/success" });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "PaymentMethodMerchants",
-                columns: new[] { "PaymentMethodMerchantId", "Code", "IsActive", "MerchantId", "PaymentMethodId", "Secret" },
-                values: new object[] { 1, 1, false, 1, 9, "LPAPassword5!" });
+                values: new object[] { 1, "123 Main Street", "webshopadmin@lawpublishingagency.com", "408b89e8-e8e5-4b97-9c88-f19593d66378", "Law Publishing Web Shop", "+1 555-123-4567", "law-publishing-agency", "https://localhost:7295/invoice/@INVOICE_ID@/error", "https://localhost:7295/invoice/@INVOICE_ID@/failure", "https://localhost:7295/invoice/@INVOICE_ID@/success" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -100,12 +103,6 @@ namespace PSP.WebApi.Migrations
                 table: "Currencies",
                 keyColumn: "CurrencyId",
                 keyValue: 3);
-
-            migrationBuilder.DeleteData(
-                schema: "dbo",
-                table: "PaymentMethodMerchants",
-                keyColumn: "PaymentMethodMerchantId",
-                keyValue: 1);
 
             migrationBuilder.DeleteData(
                 schema: "dbo",
@@ -146,6 +143,15 @@ namespace PSP.WebApi.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "IssuedToUserId",
+                schema: "dbo",
+                table: "Invoices",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
         }
     }
 }

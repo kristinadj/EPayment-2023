@@ -12,8 +12,8 @@ using PSP.WebApi.Models;
 namespace PSP.WebApi.Migrations
 {
     [DbContext(typeof(PspContext))]
-    [Migration("20231119121918_DataInitliazation")]
-    partial class DataInitliazation
+    [Migration("20231208095322_DataInitialization")]
+    partial class DataInitialization
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -92,8 +92,9 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("IssuedToUserId")
-                        .HasColumnType("int");
+                    b.Property<string>("IssuedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
@@ -183,9 +184,9 @@ namespace PSP.WebApi.Migrations
                             Name = "Law Publishing Web Shop",
                             PhoneNumber = "+1 555-123-4567",
                             ServiceName = "law-publishing-agency",
-                            TransactionErrorUrl = "/invoice/@INVOICE_ID@/error",
-                            TransactionFailureUrl = "/invoice/@INVOICE_ID@/failure",
-                            TransactionSuccessUrl = "/invoice/@INVOICE_ID@/success"
+                            TransactionErrorUrl = "https://localhost:7295/invoice/@INVOICE_ID@/error",
+                            TransactionFailureUrl = "https://localhost:7295/invoice/@INVOICE_ID@/failure",
+                            TransactionSuccessUrl = "https://localhost:7295/invoice/@INVOICE_ID@/success"
                         });
                 });
 
@@ -251,17 +252,6 @@ namespace PSP.WebApi.Migrations
                     b.HasIndex("PaymentMethodId");
 
                     b.ToTable("PaymentMethodMerchants", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            PaymentMethodMerchantId = 1,
-                            Code = 1,
-                            IsActive = false,
-                            MerchantId = 1,
-                            PaymentMethodId = 9,
-                            Secret = "LPAPassword5!"
-                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>

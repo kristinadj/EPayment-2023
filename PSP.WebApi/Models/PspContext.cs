@@ -117,14 +117,14 @@ namespace PSP.WebApi.Models
                     TransactionErrorUrl = $"https://localhost:7295/invoice/@INVOICE_ID@/error",
                 });
 
-            builder.Entity<PaymentMethodMerchant>().HasData(
-               new PaymentMethodMerchant("LPAPassword5!") // TODO: Encrypt
-               {
-                   PaymentMethodMerchantId = 1,
-                   MerchantId = 1,
-                   PaymentMethodId = 9,
-                   Code = 1
-               });
+            //builder.Entity<PaymentMethodMerchant>().HasData(
+            //   new PaymentMethodMerchant("LPAPassword5!") // TODO: Encrypt
+            //   {
+            //       PaymentMethodMerchantId = 1,
+            //       MerchantId = 1,
+            //       PaymentMethodId = 9,
+            //       Code = 1
+            //   });
 
             #endregion
         }

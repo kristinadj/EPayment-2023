@@ -33,7 +33,7 @@ namespace WebShop.WebApi.Controllers
 
 
         [HttpPost("Register")]
-        public async Task<ActionResult> RegisterAsync([FromBody] UserIDTO userDTO)
+        public async Task<ActionResult<AuthenticationODTO>> RegisterAsync([FromBody] UserIDTO userDTO)
         {
             if (!userDTO.Password.Equals(userDTO.ConfirmPassword))
                 return BadRequest("Passwords doesn't match");
@@ -51,7 +51,8 @@ namespace WebShop.WebApi.Controllers
                 return BadRequest(result.Errors);
 
             await _shoppingCartService.CreateShoppingCartAsync(user.Id);
-            return Ok();
+            var token = _tokenCreationService.CreateToken(user);
+            return Ok(token);
         }
 
         [HttpPost("Authenticate")]

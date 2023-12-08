@@ -25,5 +25,12 @@ namespace WebShop.WebApi.Controllers
             var result = await _subscriptionPlanService.GetSubscriptionPlansAsync();
             return Ok(result);
         }
+
+        [HttpGet("ValidateSubscriptionPlan")]
+        public async Task<ActionResult<bool>> ValidateSubscriptionPlan([FromRoute] string userId)
+        {
+            var result = await _subscriptionPlanService.ValidateSubscriptionPlanAsync(userId);
+            return Ok(result);
+        }
     }
 }

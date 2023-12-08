@@ -213,5 +213,25 @@ namespace WebShop.Client.Services
 
             return false;
         }
+
+        public async Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync()
+        {
+            var data = new List<SubscriptionPlanODTO>();
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/SubscriptionPlans");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<List<SubscriptionPlanODTO>>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
     }
 }
