@@ -233,5 +233,76 @@ namespace WebShop.Client.Services
 
             return data;
         }
+
+        public async Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByUserIdAsync(string userId)
+        {
+            var data = new List<PaymentMethodMerchantODTO>();
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/PaymentMethod/ByMerchantId/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodMerchantODTO>>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<bool> UnsubscribeFromPaymentMethodAsync(int paymentMethodId, string userId)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethod/Unsubscribe/{paymentMethodId};{userId}", null);
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
+        }
+
+        public async Task<bool> IsMerchantRegisteredOnPspAsync(string userId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Merchant/IsRegistered/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
+        }
+
+        public async Task<bool> RegisterMerchantOnPspAsync(string userId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Merchant/Register/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
+        }
     }
 }

@@ -15,7 +15,6 @@ namespace WebShop.WebApi.Models
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderLog> OrdersLogs { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<PaymentMethodMerchant> PaymentMethodMerchants { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
@@ -133,19 +132,6 @@ namespace WebShop.WebApi.Models
             {
                 entity.HasIndex(x => x.Code).IsUnique();
 
-            });
-
-            builder.Entity<PaymentMethodMerchant>(entity =>
-            {
-                entity.HasOne(x => x.PaymentMethod)
-                    .WithMany()
-                    .HasForeignKey(x => x.PaymentMethodId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(x => x.Merchant)
-                    .WithMany(x => x.PaymentMethods)
-                    .HasForeignKey(x => x.MerchantId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<ShoppingCart>(entity =>

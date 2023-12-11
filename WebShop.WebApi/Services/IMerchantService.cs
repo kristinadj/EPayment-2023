@@ -7,6 +7,7 @@ namespace WebShop.WebApi.Services
     public interface IMerchantService
     {
         Task<Merchant?> GetMerchantByIdAsync(int merchantId);
+        Task<Merchant?> GetMerchantByUserIdAsync(string userId);
 
         Task<bool> UpdatePspMerchantId(int merchantId, int pspMerchantId);
     }
@@ -26,6 +27,14 @@ namespace WebShop.WebApi.Services
         {
             return await _context.Merchants
                 .Where(x => x.MerchantId == merchantId)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Merchant?> GetMerchantByUserIdAsync(string userId)
+        {
+            return await _context.Merchants
+                .Where(x => x.UserId == userId)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync();
         }

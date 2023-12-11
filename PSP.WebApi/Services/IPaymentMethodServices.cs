@@ -12,6 +12,8 @@ namespace PSP.WebApi.Services
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
         Task<PaymentMethod?> GetPaymentMethodByIdAsync(int id);
         Task<PaymentMethodODTO?> AddPaymentMethodAsync(PaymentMethodIDTO paymentMethodIDTO);
+        Task<bool> UnsubscribeAsync(int paymentMethodId, int merchantId);
+        Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByMerchantIdAsync(int merchantId);
     }
 
 
@@ -53,6 +55,37 @@ namespace PSP.WebApi.Services
             return _context.PaymentMethods
                 .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+        }
+
+        public async Task<bool> UnsubscribeAsync(int paymentMethodId, int merchantId)
+        {
+            var paymentMethodMerchant = await _context.PaymentMethodMerchants
+                .Where(x => x.PaymentMethodId == paymentMethodId && x.MerchantId == merchantId)
+                .FirstOrDefaultAsync();
+
+            if (paymentMethodMerchant  == null) return false;
+
+            paymentMethodMerchant.IsActive = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByMerchantIdAsync(int merchantId)
+        {
+            var paymentMethods = await _context.PaymentMethodMerchants
+                .Where(x => x.MerchantId == merchantId)
+                .ProjectTo<PaymentMethodMerchantODTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            var paymentMethodsIds = paymentMethods.Select(x => x.PaymentMethodMerchantId).ToList();
+
+            var notsubscribedPaymentMethods = await _context.PaymentMethods
+                .Where(x => !paymentMethodsIds.Contains(x.PaymentMethodId))
+                .ProjectTo<PaymentMethodMerchantODTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            paymentMethods.AddRange(notsubscribedPaymentMethods);
+            return paymentMethods;
         }
     }
 }

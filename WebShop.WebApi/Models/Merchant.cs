@@ -14,7 +14,6 @@ namespace WebShop.WebApi.Models
 
         public User? User { get; set; }
         public ICollection<Item>? Items { get; set; }
-        public ICollection<PaymentMethodMerchant>? PaymentMethods { get; set; }
         public ICollection<Order>? Orders { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
 

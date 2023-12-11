@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebShop.DTO.Output;
 using WebShop.WebApi.Services;
@@ -8,6 +9,7 @@ namespace WebShop.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("CorsPolicy")]
+    [Authorize(Roles = "MERCHANT")]
     public class PaymentMethodController : ControllerBase
     {
         private readonly IPaymentMethodService _paymentMethodService;
