@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebShop.WebApi.AppSettings;
 using WebShop.WebApi.Configurations;
+using WebShop.WebApi.HostedServices;
 using WebShop.WebApi.Models;
 using WebShop.WebApi.Services;
 
@@ -63,6 +64,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddConsul();
 
 #region Services
+
+builder.Services.AddHostedService<ImportPaymentMethodsHostedService>();
 
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
 
