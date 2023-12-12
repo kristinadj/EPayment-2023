@@ -4,7 +4,7 @@
 
 namespace PSP.WebApi.Migrations
 {
-    public partial class DataInitialization : Migration
+    public partial class DataInitalization : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,18 +70,19 @@ namespace PSP.WebApi.Migrations
                 schema: "dbo",
                 table: "Currencies",
                 columns: new[] { "CurrencyId", "Code", "Name", "Symbol" },
-                values: new object[,]
-                {
-                    { 1, "RSD", "Serbian Dinar", "RSD" },
-                    { 2, "EUR", "Euro", "€" },
-                    { 3, "USD", "American Dollar", "$" }
-                });
+                values: new object[] { 1, "RSD", "Serbian Dinar", "RSD" });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Merchants",
-                columns: new[] { "MerchantId", "Address", "Email", "MerchantExternalId", "Name", "PhoneNumber", "ServiceName", "TransactionErrorUrl", "TransactionFailureUrl", "TransactionSuccessUrl" },
-                values: new object[] { 1, "123 Main Street", "webshopadmin@lawpublishingagency.com", "408b89e8-e8e5-4b97-9c88-f19593d66378", "Law Publishing Web Shop", "+1 555-123-4567", "law-publishing-agency", "https://localhost:7295/invoice/@INVOICE_ID@/error", "https://localhost:7295/invoice/@INVOICE_ID@/failure", "https://localhost:7295/invoice/@INVOICE_ID@/success" });
+                table: "Currencies",
+                columns: new[] { "CurrencyId", "Code", "Name", "Symbol" },
+                values: new object[] { 2, "EUR", "Euro", "€" });
+
+            migrationBuilder.InsertData(
+                schema: "dbo",
+                table: "Currencies",
+                columns: new[] { "CurrencyId", "Code", "Name", "Symbol" },
+                values: new object[] { 3, "USD", "American Dollar", "$" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -103,12 +104,6 @@ namespace PSP.WebApi.Migrations
                 table: "Currencies",
                 keyColumn: "CurrencyId",
                 keyValue: 3);
-
-            migrationBuilder.DeleteData(
-                schema: "dbo",
-                table: "Merchants",
-                keyColumn: "MerchantId",
-                keyValue: 1);
 
             migrationBuilder.DropColumn(
                 name: "Code",

@@ -58,11 +58,11 @@
                                     <MudTd>
                                         @if (context.IsActive)
                                         {
-                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary">Unsubscribe</MudButton>
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="(() => OnUnsubscribeButtonClicked(context.PaymentMethod!.PaymentMethodId))">Unsubscribe</MudButton>
                                         }
                                         else
                                         {
-                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary">Subscribe</MudButton>
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="(() => OnSubscribeButtonClicked(context.PaymentMethod!.PaymentMethodId))">Subscribe</MudButton>
                                         }
                                     </MudTd>
                                 </RowTemplate>

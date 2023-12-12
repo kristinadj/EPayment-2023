@@ -3,6 +3,7 @@ using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using WebShop.DTO.Input;
 using WebShop.DTO.Output;
 using WebShop.WebApi.AppSettings;
 using WebShop.WebApi.Services;
@@ -50,11 +51,10 @@ namespace WebShop.WebApi.Controllers
         public async Task<ActionResult<MerchantDTO>> Register([FromRoute] string userId)
         {
             var merchant = await _merchantService.GetMerchantByUserIdAsync(userId);
-            if (merchant == null || merchant.PspMerchantId == null) return NotFound();
+            if (merchant == null) return NotFound();
 
-            var merchantDTO = new MerchantDTO(merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber, merchant.User!.Email, _consulAppSettings.Service)
+            var merchantDTO = new MerchantDTO(merchant.MerchantId.ToString(), merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber, merchant.User!.Email, _consulAppSettings.Service)
             {
-                MerchantExternalId = merchant.MerchantId,
                 TransactionSuccessUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/success",
                 TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",
                 TransactionErrorUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/error",
@@ -99,6 +99,35 @@ namespace WebShop.WebApi.Controllers
 
                 var result = await _consulHttpClient.GetAsync<List<PaymentMethodMerchantODTO>>(_pspAppSettings.ServiceName, $"/api/PaymentMethod/ByMerchantId/{merchant.PspMerchantId}");
                 if (result == null) return BadRequest();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("PaymentMethods/Subscribe")]
+        public async Task<ActionResult> Unsubscribe([FromBody] PaymentMethodSubscribeIDTO paymentMethodSubscribeIDTO)
+        {
+            try
+            {
+                var merchant = await _merchantService.GetMerchantByUserIdAsync(paymentMethodSubscribeIDTO.UserId);
+                if (merchant == null || merchant.PspMerchantId == null) return NotFound();
+
+                var paymentMethod = await _paymentMethodService.GetPaymentMethodById(paymentMethodSubscribeIDTO.PaymentMethodId);
+                if (paymentMethod == null) return NotFound();
+
+                var pspPaymentMethodSubscribe = new PspPaymentMethodSubscribeIDTO(paymentMethodSubscribeIDTO.Secret)
+                {
+                    MerchantId = (int)merchant.PspMerchantId,
+                    PaymentMethodId = paymentMethod.PspPaymentMethodId,
+                    Code = paymentMethodSubscribeIDTO.Code
+                };
+
+                var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Subscribe", pspPaymentMethodSubscribe);
+                if (!isSuccess) return BadRequest();
 
                 return Ok();
             }

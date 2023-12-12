@@ -240,7 +240,7 @@ namespace WebShop.Client.Services
 
             try
             {
-                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/PaymentMethod/ByMerchantId/{userId}");
+                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/PaymentMethods/ByMerchantId/{userId}");
                 response.EnsureSuccessStatusCode();
 
                 var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodMerchantODTO>>();
@@ -254,11 +254,31 @@ namespace WebShop.Client.Services
             return data;
         }
 
+        public async Task<bool> SubscribeToPaymentMethodAsync(PaymentMethodSubscribeIDTO paymentMethodSubscribeIDTO)
+        {
+            var isSuccess = false;
+
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(paymentMethodSubscribeIDTO), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Subscribe", content);
+                response.EnsureSuccessStatusCode();
+
+                isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return isSuccess;
+        }
+
         public async Task<bool> UnsubscribeFromPaymentMethodAsync(int paymentMethodId, string userId)
         {
             try
             {
-                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethod/Unsubscribe/{paymentMethodId};{userId}", null);
+                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Unsubscribe/{paymentMethodId};{userId}", null);
                 response.EnsureSuccessStatusCode();
 
                 return true;
@@ -292,7 +312,7 @@ namespace WebShop.Client.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Merchant/Register/{userId}");
+                var response = await _httpClient.PostAsync($"api/PaymentServiceProvider/Merchant/Register/{userId}", null);
                 response.EnsureSuccessStatusCode();
 
                 return true;

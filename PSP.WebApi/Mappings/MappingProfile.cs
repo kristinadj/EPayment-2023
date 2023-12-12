@@ -20,7 +20,7 @@ namespace PSP.WebApi.Mappings
                 .ConstructUsing(x => new Merchant(x.MerchantExternalId, x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
             CreateMap<Merchant, MerchantODTO>()
-                    .ConstructUsing(x => new MerchantODTO(x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
+                    .ConstructUsing(x => new MerchantODTO(x.MerchantExternalId, x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
             CreateMap<PspInvoiceIDTO, InvoiceODTO>();
 

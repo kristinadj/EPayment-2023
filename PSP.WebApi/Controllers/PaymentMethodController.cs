@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Base.DTO.Shared;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PSP.WebApi.DTO.Input;
 using PSP.WebApi.DTO.Output;
@@ -40,6 +41,20 @@ namespace PSP.WebApi.Controllers
         {
             var result = await _paymentMethodServices.GetPaymentMethodsByMerchantIdAsync(merchantId);
             return Ok(result);
+        }
+
+        [HttpPut("Subscribe")]
+        public async Task<ActionResult<bool>> Subscribe([FromBody] PspPaymentMethodSubscribeIDTO paymentMethodSubscribe)
+        {
+            try
+            {
+                var result = await _paymentMethodServices.SubscribeAsync(paymentMethodSubscribe);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("Unsubscribe/{paymentMethodId};{merchantId}")]

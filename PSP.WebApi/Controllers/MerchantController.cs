@@ -19,7 +19,7 @@ namespace PSP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentMethodODTO>> AddMerchant([FromBody] MerchantIDTO merchant)
+        public async Task<ActionResult<MerchantODTO>> AddMerchant([FromBody] MerchantIDTO merchant)
         {
             var result = await _merchantServices.AddMerchantAsync(merchant);
 

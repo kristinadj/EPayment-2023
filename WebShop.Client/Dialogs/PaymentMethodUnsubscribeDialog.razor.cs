@@ -12,11 +12,14 @@ namespace WebShop.Client.Dialogs
         [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
         [Parameter]
-        public int PaymentMethodMerchantId { get; set; }
+        public string UserId { get; set; }
+
+        [Parameter]
+        public int PaymentMethodId { get; set; }
 
         async void Submit()
         {
-            var isSuccess = true;
+            var isSuccess = await ApiServices.UnsubscribeFromPaymentMethodAsync(PaymentMethodId, UserId);
             MudDialog.Close(DialogResult.Ok(isSuccess));
         }
 

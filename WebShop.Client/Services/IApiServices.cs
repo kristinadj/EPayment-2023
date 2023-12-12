@@ -19,6 +19,7 @@ namespace WebShop.Client.Services
         Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus);
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
         Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByUserIdAsync(string userId);
+        Task<bool> SubscribeToPaymentMethodAsync(PaymentMethodSubscribeIDTO paymentMethodSubscribeIDTO);
         Task<bool> UnsubscribeFromPaymentMethodAsync(int paymentMethodId, string userId);
         Task<bool> IsMerchantRegisteredOnPspAsync(string userId);
         Task<bool> RegisterMerchantOnPspAsync(string userId);

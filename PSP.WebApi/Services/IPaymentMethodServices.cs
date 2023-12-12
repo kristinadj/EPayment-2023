@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Base.DTO.Shared;
 using Microsoft.EntityFrameworkCore;
 using PSP.WebApi.DTO.Input;
 using PSP.WebApi.DTO.Output;
@@ -13,6 +14,7 @@ namespace PSP.WebApi.Services
         Task<PaymentMethod?> GetPaymentMethodByIdAsync(int id);
         Task<PaymentMethodODTO?> AddPaymentMethodAsync(PaymentMethodIDTO paymentMethodIDTO);
         Task<bool> UnsubscribeAsync(int paymentMethodId, int merchantId);
+        Task<bool> SubscribeAsync(PspPaymentMethodSubscribeIDTO paymentMethodSubscribe);
         Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByMerchantIdAsync(int merchantId);
     }
 
@@ -66,6 +68,34 @@ namespace PSP.WebApi.Services
             if (paymentMethodMerchant  == null) return false;
 
             paymentMethodMerchant.IsActive = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> SubscribeAsync(PspPaymentMethodSubscribeIDTO paymentMethodSubscribe)
+        {
+            var paymentMethodMerchant = await _context.PaymentMethodMerchants
+                .Where(x => x.PaymentMethodId == paymentMethodSubscribe.PaymentMethodId && x.MerchantId == paymentMethodSubscribe.MerchantId)
+                .FirstOrDefaultAsync();
+
+            if (paymentMethodMerchant == null)
+            {
+                paymentMethodMerchant = new PaymentMethodMerchant(paymentMethodSubscribe.Secret)
+                {
+                    MerchantId = paymentMethodSubscribe.MerchantId,
+                    PaymentMethodId = paymentMethodSubscribe.PaymentMethodId,
+                    Code = paymentMethodSubscribe.Code,
+                    IsActive = true
+                };
+                await _context.PaymentMethodMerchants.AddAsync(paymentMethodMerchant);
+            }
+            else
+            {
+                paymentMethodMerchant.IsActive = true;
+                paymentMethodMerchant.Code = paymentMethodSubscribe.Code;
+                paymentMethodMerchant.Secret = paymentMethodSubscribe.Secret;
+            }
+            
             await _context.SaveChangesAsync();
             return true;
         }

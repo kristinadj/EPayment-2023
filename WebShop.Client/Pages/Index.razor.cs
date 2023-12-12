@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using System.Security.Claims;
 using WebShop.Client.Code;
+using WebShop.Client.Dialogs;
 using WebShop.Client.Services;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
@@ -15,6 +17,12 @@ namespace WebShop.Client.Pages
 
         [Inject]
         protected GlobalUserSettings GlobalSettings { get; set; }
+
+        [Inject]
+        private ISnackbar Snackbar { get; set; }
+
+        [Inject]
+        private IDialogService DialogService { get; set; }
 
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
@@ -73,9 +81,62 @@ namespace WebShop.Client.Pages
             isLoading = false;
         }
 
-        private void OnUnsubscribeButtonClicked(int paymentMethodMerchantId)
+        private async Task OnUnsubscribeButtonClicked(int paymentMethodId)
         {
+            var parameters = new DialogParameters<PaymentMethodUnsubscribeDialog>
+            {
+                { x => x.PaymentMethodId, paymentMethodId },
+                { x => x.UserId, GlobalSettings.UserId }
+            };
 
+            var dialog = await DialogService.ShowAsync<PaymentMethodUnsubscribeDialog>(string.Empty, parameters);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                var isSuccess = (bool)result.Data;
+                if (isSuccess)
+                {
+                    isLoading = true;
+                    Snackbar.Add("Successfuly unsubscribed", Severity.Success);
+                    paymentMethods = await ApiServices.GetPaymentMethodsByUserIdAsync(GlobalSettings.UserId!);
+                    isLoading = false;
+                    StateHasChanged();
+                }
+                else
+                {
+                    Snackbar.Add("Error - unsubscribing", Severity.Error);
+                }
+            }
+        }
+
+        private async Task OnSubscribeButtonClicked(int paymentMethodId)
+        {
+            var parameters = new DialogParameters<PaymentMethodSubscribeDialog>
+            {
+                { x => x.PaymentMethodId, paymentMethodId },
+                { x => x.UserId, GlobalSettings.UserId }
+            };
+
+            var dialog = await DialogService.ShowAsync<PaymentMethodSubscribeDialog>(string.Empty, parameters);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                var isSuccess = (bool)result.Data;
+                if (isSuccess)
+                {
+                    isLoading = true;
+                    Snackbar.Add("Successfuly subscribed", Severity.Success);
+                    paymentMethods = await ApiServices.GetPaymentMethodsByUserIdAsync(GlobalSettings.UserId!);
+                    isLoading = false;
+                    StateHasChanged();
+                }
+                else
+                {
+                    Snackbar.Add("Error - subscribing", Severity.Error);
+                }
+            }
         }
 
         private async void OnRegisterOnPspClicked() 
@@ -85,9 +146,16 @@ namespace WebShop.Client.Pages
             if (isSuccess)
             {
                 paymentMethods = await ApiServices.GetPaymentMethodsByUserIdAsync(GlobalSettings.UserId!);
-                StateHasChanged();
+                isMerchantRegistered = true;
+                Snackbar.Add("Successfuly registered on PSP", Severity.Success);
             }
+            else
+            {
+                Snackbar.Add("Error", Severity.Error);
+            }
+
             isRegistrationInProgress = false;
+            StateHasChanged();
         }
     }
 }

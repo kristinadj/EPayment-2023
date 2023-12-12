@@ -171,21 +171,6 @@ namespace PSP.WebApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Merchants", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            MerchantId = 1,
-                            Address = "123 Main Street",
-                            Email = "webshopadmin@lawpublishingagency.com",
-                            MerchantExternalId = "408b89e8-e8e5-4b97-9c88-f19593d66378",
-                            Name = "Law Publishing Web Shop",
-                            PhoneNumber = "+1 555-123-4567",
-                            ServiceName = "law-publishing-agency",
-                            TransactionErrorUrl = "https://localhost:7295/invoice/@INVOICE_ID@/error",
-                            TransactionFailureUrl = "https://localhost:7295/invoice/@INVOICE_ID@/failure",
-                            TransactionSuccessUrl = "https://localhost:7295/invoice/@INVOICE_ID@/success"
-                        });
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.PaymentMethod", b =>
