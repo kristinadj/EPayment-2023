@@ -238,7 +238,7 @@ namespace WebShop.WebApi.Models
                 });
 
             builder.Entity<Merchant>().HasData(
-                new Merchant(merchantId) { MerchantId = 1 }
+                new Merchant(merchantId) { MerchantId = 1, IsMasterMerchant = true }
                 );
 
             builder.Entity<Item>().HasData(

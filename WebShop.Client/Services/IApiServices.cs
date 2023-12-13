@@ -23,5 +23,6 @@ namespace WebShop.Client.Services
         Task<bool> UnsubscribeFromPaymentMethodAsync(int paymentMethodId, string userId);
         Task<bool> IsMerchantRegisteredOnPspAsync(string userId);
         Task<bool> RegisterMerchantOnPspAsync(string userId);
+        Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId);
     }
 }

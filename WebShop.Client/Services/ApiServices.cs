@@ -77,6 +77,25 @@ namespace WebShop.Client.Services
             return isSuccess;
         }
 
+        public async Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId)
+        {
+            var isSuccess = false;
+
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/ShoppingCartItem/{shoppingCartItemId}");
+                response.EnsureSuccessStatusCode();
+
+                isSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return isSuccess;
+        }
+
         public async Task<OrderODTO?> CreateOrderAsync(int shoppingCartId)
         {
             OrderODTO? data = null;

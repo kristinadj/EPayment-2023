@@ -11,6 +11,7 @@ namespace WebShop.WebApi.Models
 
         public int? PspMerchantId { get; set; }
         public string UserId { get; set; }
+        public bool IsMasterMerchant { get; set; }
 
         public User? User { get; set; }
         public ICollection<Item>? Items { get; set; }

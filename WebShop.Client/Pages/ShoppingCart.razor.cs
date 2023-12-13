@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using WebShop.Client.Code;
 using WebShop.Client.Services;
 using WebShop.DTO.Output;
@@ -15,6 +16,9 @@ namespace WebShop.Client.Pages
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        private ISnackbar Snackbar { get; set; }
 
         private bool isLoading = false;
 
@@ -38,6 +42,24 @@ namespace WebShop.Client.Pages
             {
                 GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
                 NavigationManager.NavigateTo($"/order/{order.OrderId}");
+            }
+        }
+
+        private async Task OnClickDeleteAsync(int shoppingCartItemId, int quantity)
+        {
+            var isSuccess = await ApiServices.DeleteItemInShoppingCartAsync(shoppingCartItemId);
+            if (isSuccess)
+            {
+                Snackbar.Add("Succesfully removed", Severity.Success);
+                GlobalSettings.UpdateShoppingCartItems(-quantity);
+                isLoading = true;
+                shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
+                isLoading = false;
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add("Error while removing", Severity.Error);
             }
         }
     }

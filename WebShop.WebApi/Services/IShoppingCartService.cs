@@ -12,6 +12,7 @@ namespace WebShop.WebApi.Services
         Task<ShoppingCartODTO?> GetShoppingCartByUserAsync(string userId);
         Task CreateShoppingCartAsync(string userId);
         Task<bool> AddItemInShoppingCartAsync(ShoppingCartItemIDTO itemDTO);
+        Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId);
     }
 
     public class ShoppingCartService : IShoppingCartService
@@ -57,6 +58,20 @@ namespace WebShop.WebApi.Services
             var shoppingCart = new ShoppingCart(userId);
             await _context.ShoppingCarts.AddAsync(shoppingCart);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId)
+        {
+            var shoppingCartItem = await _context.ShoppingCartItems
+                .Where(x => x.ShoppingCartItemId == shoppingCartItemId)
+                .FirstOrDefaultAsync();
+
+            if (shoppingCartItem == null) return false;
+
+            _context.ShoppingCartItems.Remove(shoppingCartItem);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<ShoppingCartODTO?> GetShoppingCartByUserAsync(string userId)
