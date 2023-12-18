@@ -24,6 +24,9 @@ namespace WebShop.Client.Pages
         [Inject]
         private IDialogService DialogService { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
@@ -57,6 +60,12 @@ namespace WebShop.Client.Pages
                 if (role != null)
                 {
                     GlobalSettings.Role = role.Value.ToString() == Role.BUYER.ToString() ? Role.BUYER : Role.MERCHANT;
+                }
+
+                var isSubscriptionValid = user.Claims.Where(x => x.Type == "IsSubscriptionValid").FirstOrDefault();
+                if (isSubscriptionValid == null || !bool.Parse(isSubscriptionValid.Value))
+                {
+                    NavigationManager.NavigateTo("/subscription");
                 }
             }
             else

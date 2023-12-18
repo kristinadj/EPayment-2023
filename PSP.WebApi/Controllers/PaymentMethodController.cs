@@ -43,6 +43,13 @@ namespace PSP.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Active/ByMerchantId/{merchantId}")]
+        public async Task<ActionResult<List<PaymentMethodODTO>>> GetActivePaymentMethodsByMerchantId([FromRoute] int merchantId)
+        {
+            var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId);
+            return Ok(result);
+        }
+
         [HttpPut("Subscribe")]
         public async Task<ActionResult<bool>> Subscribe([FromBody] PspPaymentMethodSubscribeIDTO paymentMethodSubscribe)
         {

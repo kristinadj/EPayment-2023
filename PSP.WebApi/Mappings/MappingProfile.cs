@@ -29,6 +29,10 @@ namespace PSP.WebApi.Mappings
                 .ForMember(x => x.IsActive, x => x.MapFrom(x => false))
                 .ForMember(x => x.PaymentMethod, x => x.MapFrom(x => x));
 
+            CreateMap<PaymentMethodMerchant, PaymentMethodODTO>()
+               .ForMember(x => x.PaymentMethodId, x => x.MapFrom(x => x.PaymentMethod!.PaymentMethodId))
+               .ConstructUsing(x => new PaymentMethodODTO(x.PaymentMethod!.Name, x.PaymentMethod!.ServiceName, x.PaymentMethod!.ServiceApiSufix));
+
             CreateMap<PaymentMethodMerchant, PaymentMethodMerchantODTO>();
         }
     }
