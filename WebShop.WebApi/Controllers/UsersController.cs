@@ -18,16 +18,19 @@ namespace WebShop.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ITokenCreationService _tokenCreationService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
         private readonly IMapper _mapper;
         public UsersController(
             UserManager<User> userManager,
             ITokenCreationService tokenCreationService,
             IShoppingCartService shoppingCartService,
+            ISubscriptionPlanService subscriptionPlanService,
             IMapper mapper)
         {
             _userManager = userManager;
             _tokenCreationService = tokenCreationService;
             _shoppingCartService = shoppingCartService;
+            _subscriptionPlanService = subscriptionPlanService;
             _mapper = mapper;
         }
 
@@ -51,7 +54,7 @@ namespace WebShop.WebApi.Controllers
                 return BadRequest(result.Errors);
 
             await _shoppingCartService.CreateShoppingCartAsync(user.Id);
-            var token = _tokenCreationService.CreateToken(user);
+            var token = _tokenCreationService.CreateToken(user, false);
             return Ok(token);
         }
 
@@ -66,7 +69,8 @@ namespace WebShop.WebApi.Controllers
             if (!isPasswordValid)
                 return BadRequest("Bad credentials");
 
-            var token = _tokenCreationService.CreateToken(user);
+            var isSubscriptionValid = await _subscriptionPlanService.IsSubscriptionPlanValidAsync(user.Id);
+            var token = _tokenCreationService.CreateToken(user, isSubscriptionValid);
             return Ok(token);
         }
     }

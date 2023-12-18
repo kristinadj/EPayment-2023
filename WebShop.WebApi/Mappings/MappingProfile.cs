@@ -22,7 +22,7 @@ namespace WebShop.WebApi.Mappings
             CreateMap<Item, ItemODTO>();
 
             CreateMap<Merchant, MerchantODTO>()
-                .ConstructUsing(x => new MerchantODTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber, x.User.Email));
+                .ConstructUsing(x => new MerchantODTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber!, x.User.Email!));
 
             CreateMap<ShoppingCart, ShoppingCartODTO>();
 

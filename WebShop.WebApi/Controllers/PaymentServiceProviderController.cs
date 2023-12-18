@@ -53,7 +53,7 @@ namespace WebShop.WebApi.Controllers
             var merchant = await _merchantService.GetMerchantByUserIdAsync(userId);
             if (merchant == null) return NotFound();
 
-            var merchantDTO = new MerchantDTO(merchant.MerchantId.ToString(), merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber, merchant.User!.Email, _consulAppSettings.Service)
+            var merchantDTO = new MerchantDTO(merchant.MerchantId.ToString(), merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber!, merchant.User!.Email!, _consulAppSettings.Service)
             {
                 TransactionSuccessUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/success",
                 TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",
