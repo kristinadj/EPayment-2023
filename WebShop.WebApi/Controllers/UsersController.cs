@@ -54,7 +54,7 @@ namespace WebShop.WebApi.Controllers
                 return BadRequest(result.Errors);
 
             await _shoppingCartService.CreateShoppingCartAsync(user.Id);
-            var token = _tokenCreationService.CreateToken(user, false);
+            var token = _tokenCreationService.CreateToken(user);
             return Ok(token);
         }
 
@@ -69,8 +69,7 @@ namespace WebShop.WebApi.Controllers
             if (!isPasswordValid)
                 return BadRequest("Bad credentials");
 
-            var isSubscriptionValid = await _subscriptionPlanService.IsSubscriptionPlanValidAsync(user.Id);
-            var token = _tokenCreationService.CreateToken(user, isSubscriptionValid);
+            var token = _tokenCreationService.CreateToken(user);
             return Ok(token);
         }
     }

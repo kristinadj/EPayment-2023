@@ -9,7 +9,7 @@ namespace WebShop.WebApi.Services
 {
     public interface ITokenCreationService
     {
-        AuthenticationODTO CreateToken(User user, bool isSubscriptionValid);
+        AuthenticationODTO CreateToken(User user);
     }
 
     public class JwtService : ITokenCreationService
@@ -22,13 +22,13 @@ namespace WebShop.WebApi.Services
             _configuration = configuration;
         }
 
-        public AuthenticationODTO CreateToken(User user, bool isSubscriptionValid)
+        public AuthenticationODTO CreateToken(User user)
         {
             var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]!);
             var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
             var token = CreateJwtToken(
-                CreateClaims(user, isSubscriptionValid),
+                CreateClaims(user),
                 CreateSigningCredentials(),
                 expiration
             );
@@ -50,14 +50,14 @@ namespace WebShop.WebApi.Services
                 signingCredentials: credentials
             );
 
-        private Claim[] CreateClaims(User user, bool isSubscriptionValid) =>
+        private Claim[] CreateClaims(User user) =>
             new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Email, user.Email!),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
