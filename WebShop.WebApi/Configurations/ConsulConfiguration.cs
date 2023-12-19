@@ -18,9 +18,9 @@ namespace WebShop.WebApi.Configurations
 
             return serviceCollection.AddSingleton<IConsulClient>(c => new ConsulClient(cfg =>
             {
-                if (!string.IsNullOrEmpty(consulAppSettings.Host))
+                if (!string.IsNullOrEmpty(consulAppSettings!.Host))
                 {
-                    cfg.Address = new Uri(consulAppSettings.Host);
+                    cfg.Address = new Uri(consulAppSettings!.Host);
                 }
             }));
         }
@@ -32,7 +32,7 @@ namespace WebShop.WebApi.Configurations
 
             var consulAppSettings = configuration!.GetSection("Consul").Get<ConsulAppSettings>();
 
-            if (!consulAppSettings.Enabled)
+            if (!consulAppSettings!.Enabled)
                 return string.Empty;
 
             Guid serviceId = Guid.NewGuid();

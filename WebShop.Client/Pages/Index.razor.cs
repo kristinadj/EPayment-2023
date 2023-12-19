@@ -24,6 +24,9 @@ namespace WebShop.Client.Pages
         [Inject]
         private IDialogService DialogService { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
 

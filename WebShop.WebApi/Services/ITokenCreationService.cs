@@ -9,7 +9,7 @@ namespace WebShop.WebApi.Services
 {
     public interface ITokenCreationService
     {
-        AuthenticationODTO CreateToken(User user);
+        AuthenticationODTO CreateToken(User user, bool isSubscriptionValid);
     }
 
     public class JwtService : ITokenCreationService
@@ -22,13 +22,13 @@ namespace WebShop.WebApi.Services
             _configuration = configuration;
         }
 
-        public AuthenticationODTO CreateToken(User user)
+        public AuthenticationODTO CreateToken(User user, bool isSubscriptionValid)
         {
-            var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]);
+            var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]!);
             var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
             var token = CreateJwtToken(
-                CreateClaims(user),
+                CreateClaims(user, isSubscriptionValid),
                 CreateSigningCredentials(),
                 expiration
             );
@@ -50,9 +50,9 @@ namespace WebShop.WebApi.Services
                 signingCredentials: credentials
             );
 
-        private Claim[] CreateClaims(User user) =>
+        private Claim[] CreateClaims(User user, bool isSubscriptionValid) =>
             new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -64,7 +64,7 @@ namespace WebShop.WebApi.Services
         private SigningCredentials CreateSigningCredentials() =>
             new SigningCredentials(
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
+                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
                 ),
                 SecurityAlgorithms.HmacSha256
             );

@@ -16,6 +16,7 @@ namespace PSP.WebApi.Services
         Task<bool> UnsubscribeAsync(int paymentMethodId, int merchantId);
         Task<bool> SubscribeAsync(PspPaymentMethodSubscribeIDTO paymentMethodSubscribe);
         Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByMerchantIdAsync(int merchantId);
+        Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId);
     }
 
 
@@ -116,6 +117,14 @@ namespace PSP.WebApi.Services
 
             paymentMethods.AddRange(notsubscribedPaymentMethods);
             return paymentMethods;
+        }
+
+        public async Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId)
+        {
+            return await _context.PaymentMethodMerchants
+                .Where(x => x.MerchantId == merchantId && x.IsActive)
+                .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
     }
 }

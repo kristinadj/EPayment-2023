@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Text;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
+using System.Net.Http.Json;
+using System.IO.Pipelines;
 
 namespace WebShop.Client.Authentication
 {
@@ -12,7 +14,7 @@ namespace WebShop.Client.Authentication
     {
         Task<AuthenticationODTO> Login(AuthenticateIDTO model);
         Task Logout();
-        Task<bool> Register(UserIDTO model);
+        Task<AuthenticationODTO?> Register(UserIDTO model);
     }
 
     public class AuthService : IAuthService
@@ -38,16 +40,15 @@ namespace WebShop.Client.Authentication
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            var loginResult = JsonSerializer.Deserialize<AuthenticationODTO>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (loginResult == null)
+            var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
+            if (authResult == null)
                 return null;
 
-            await _localStorage.SetItemAsync("authToken", loginResult.Token);
+            await _localStorage.SetItemAsync("authToken", authResult.Token);
             ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(model.Email);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResult.Token);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Token);
 
-            return loginResult;
+            return authResult;
         }
 
         public async Task Logout()
@@ -57,15 +58,23 @@ namespace WebShop.Client.Authentication
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
-        public async Task<bool> Register(UserIDTO model)
+        public async Task<AuthenticationODTO?> Register(UserIDTO model)
         {
             var content = JsonSerializer.Serialize(model);
             var response = await _httpClient.PostAsync("api/Users/Register", new StringContent(content, Encoding.UTF8, "application/json"));
 
-            if (response.IsSuccessStatusCode)
-                return true;
-            else
-                return false;
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
+            if (authResult == null)
+                return null;
+
+            await _localStorage.SetItemAsync("authToken", authResult.Token);
+            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(model.Email);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Token);
+
+            return authResult;
         }
     }
 }
