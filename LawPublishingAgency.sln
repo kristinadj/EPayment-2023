@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank2.Client", "Bank2.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentCardCenter.WebApi", "PaymentCardCenter.WebApi\PaymentCardCenter.WebApi.csproj", "{415BADB3-9852-4E1E-8AE2-E7D06D266095}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Client", "PSP.Client\PSP.Client.csproj", "{100FEE1F-072A-4351-BAF7-19E566EE235F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{415BADB3-9852-4E1E-8AE2-E7D06D266095}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
