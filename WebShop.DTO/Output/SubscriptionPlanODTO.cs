@@ -6,9 +6,9 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public double Price { get; set; }
-        public int CurrencyId { get; set; }
         public int DurationInDays { get; set; }
         public bool AutomaticRenewel { get; set; }
+        public CurrencyODTO? Currency { get; set; }
 
         public SubscriptionPlanODTO(string name, string description)
         {

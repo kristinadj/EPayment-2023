@@ -11,10 +11,10 @@ namespace WebShop.WebApi.Models
 
         public int? PspMerchantId { get; set; }
         public string UserId { get; set; }
+        public bool IsMasterMerchant { get; set; }
 
         public User? User { get; set; }
         public ICollection<Item>? Items { get; set; }
-        public ICollection<PaymentMethodMerchant>? PaymentMethods { get; set; }
         public ICollection<Order>? Orders { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
 

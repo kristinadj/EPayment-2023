@@ -18,6 +18,7 @@ namespace WebShop.WebApi.Models
         public Role Role { get; set; }
 
         public ICollection<UserSubscriptionPlan>? UserSubscriptionPlans { get; set; }
+        public ICollection<Invoice>? Invoices { get; set; }
 
         public User(string name)
         {

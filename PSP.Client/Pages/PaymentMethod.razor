@@ -1,0 +1,43 @@
+﻿@page "/paymentMethods/{InvoiceId:int}"
+
+<div class="d-flex align-content-center justify-center gap-3 mt-3">
+    @if (isLoading)
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h6">Payment Service Provider</MudText>
+            </div>
+            @if (paymentMethods.Any())
+            {
+                <div class="d-flex justify-center">
+                    <MudText><b>Select payment method:</b></MudText>
+                </div>
+                <MudRadioGroup @bind-Value="@selectedPaymentMethod">
+                    @foreach (var paymentMethod in paymentMethods)
+                    {
+                        <div class="d-flex justify-center"><MudRadio Value="@paymentMethod.PaymentMethodId" Color="Color.Primary">@paymentMethod.Name</MudRadio></div>
+                    }
+                </MudRadioGroup>
+                <div class="d-flex justify-center">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnClickedContinueAsync" Disabled="isRedirectInProgress">
+                        @if (isRedirectInProgress)
+                        {
+                            <span class="spinner-border spinner-border-sm mr-1"></span>
+                        }
+                        Continue
+                    </MudButton>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-center">
+                    <MudText>The merchant has no selected payment methods</MudText>
+                </div>
+            }
+        </div>
+    }
+</div>

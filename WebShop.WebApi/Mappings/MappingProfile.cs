@@ -4,6 +4,7 @@ using WebShop.DTO.Enums;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
+using TransactionLog = WebShop.WebApi.Models.TransactionLog;
 
 namespace WebShop.WebApi.Mappings
 {
@@ -22,7 +23,7 @@ namespace WebShop.WebApi.Mappings
             CreateMap<Item, ItemODTO>();
 
             CreateMap<Merchant, MerchantODTO>()
-                .ConstructUsing(x => new MerchantODTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber, x.User.Email));
+                .ConstructUsing(x => new MerchantODTO(x.User!.Id, x.User.Name, x.User.Address!, x.User.PhoneNumber!, x.User.Email!));
 
             CreateMap<ShoppingCart, ShoppingCartODTO>();
 
@@ -60,8 +61,8 @@ namespace WebShop.WebApi.Mappings
 
             CreateMap<InvoiceODTO, PspInvoiceIDTO>()
                 .ForMember(x => x.ExternalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
-                .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Order!.Merchant!.PspMerchantId))
-                .ConstructUsing(x => new PspInvoiceIDTO(x.Order!.UserId, x.Currency!.Code));
+                .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Merchant!.PspMerchantId))
+                .ConstructUsing(x => new PspInvoiceIDTO(x!.UserId, x.Currency!.Code));
         }
     }
 }

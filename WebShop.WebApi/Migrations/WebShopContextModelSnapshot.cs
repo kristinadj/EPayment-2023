@@ -153,10 +153,11 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MerchantId")
-                        .HasColumnType("int");
+                    b.Property<string>("InvoiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("MerchantId")
                         .HasColumnType("int");
 
                     b.Property<double>("TotalPrice")
@@ -165,11 +166,20 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("InvoiceId");
 
                     b.HasIndex("CurrencyId");
 
                     b.HasIndex("MerchantId");
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Invoices", "dbo");
                 });
@@ -299,6 +309,96 @@ namespace WebShop.WebApi.Migrations
                             MerchantId = 1,
                             Name = "Ethics and Compliance Training",
                             Price = 750.0
+                        },
+                        new
+                        {
+                            ItemId = 11,
+                            CurrencyId = 2,
+                            Description = "Professional drafting of legal contracts.",
+                            MerchantId = 2,
+                            Name = "Contract Drafting Services",
+                            Price = 600.0
+                        },
+                        new
+                        {
+                            ItemId = 12,
+                            CurrencyId = 2,
+                            Description = "Assistance with trademark registration.",
+                            MerchantId = 2,
+                            Name = "Trademark Registration",
+                            Price = 900.0
+                        },
+                        new
+                        {
+                            ItemId = 13,
+                            CurrencyId = 2,
+                            Description = "Support for filing patents.",
+                            MerchantId = 2,
+                            Name = "Patent Filing Support",
+                            Price = 750.0
+                        },
+                        new
+                        {
+                            ItemId = 14,
+                            CurrencyId = 2,
+                            Description = "Accurate translations of legal documents.",
+                            MerchantId = 2,
+                            Name = "Legal Translations",
+                            Price = 150.0
+                        },
+                        new
+                        {
+                            ItemId = 15,
+                            CurrencyId = 2,
+                            Description = "Consultation on corporate governance.",
+                            MerchantId = 2,
+                            Name = "Corporate Governance Advisory",
+                            Price = 700.0
+                        },
+                        new
+                        {
+                            ItemId = 16,
+                            CurrencyId = 2,
+                            Description = "Thorough legal research assistance.",
+                            MerchantId = 2,
+                            Name = "Legal Research Services",
+                            Price = 550.0
+                        },
+                        new
+                        {
+                            ItemId = 17,
+                            CurrencyId = 2,
+                            Description = "Ensuring compliance with data privacy laws.",
+                            MerchantId = 2,
+                            Name = "Data Privacy Compliance",
+                            Price = 800.0
+                        },
+                        new
+                        {
+                            ItemId = 18,
+                            CurrencyId = 2,
+                            Description = "Expertise in international legal matters.",
+                            MerchantId = 2,
+                            Name = "International Law Consultation",
+                            Price = 850.0
+                        },
+                        new
+                        {
+                            ItemId = 19,
+                            CurrencyId = 2,
+                            Description = "Assistance in resolving legal disputes.",
+                            MerchantId = 2,
+                            Name = "Dispute Resolution Services",
+                            Price = 700.0
+                        },
+                        new
+                        {
+                            ItemId = 20,
+                            CurrencyId = 2,
+                            Description = "Seminars on various legal topics.",
+                            MerchantId = 2,
+                            Name = "Legal Training Seminars",
+                            Price = 750.0
                         });
                 });
 
@@ -309,6 +409,9 @@ namespace WebShop.WebApi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantId"), 1L, 1);
+
+                    b.Property<bool>("IsMasterMerchant")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("PspMerchantId")
                         .HasColumnType("int");
@@ -328,7 +431,14 @@ namespace WebShop.WebApi.Migrations
                         new
                         {
                             MerchantId = 1,
+                            IsMasterMerchant = true,
                             UserId = "408b89e8-e8e5-4b97-9c88-f19593d66378"
+                        },
+                        new
+                        {
+                            MerchantId = 2,
+                            IsMasterMerchant = false,
+                            UserId = "2e87d106-2e43-4a19-bd4c-843920dcf3e9"
                         });
                 });
 
@@ -458,32 +568,6 @@ namespace WebShop.WebApi.Migrations
                     b.ToTable("PaymentMethods", "dbo");
                 });
 
-            modelBuilder.Entity("WebShop.WebApi.Models.PaymentMethodMerchant", b =>
-                {
-                    b.Property<int>("PaymentMethodMerchantId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentMethodMerchantId"), 1L, 1);
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MerchantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentMethodId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PaymentMethodMerchantId");
-
-                    b.HasIndex("MerchantId");
-
-                    b.HasIndex("PaymentMethodId");
-
-                    b.ToTable("PaymentMethodMerchants", "dbo");
-                });
-
             modelBuilder.Entity("WebShop.WebApi.Models.ShoppingCart", b =>
                 {
                     b.Property<int>("ShoppingCartId")
@@ -603,10 +687,7 @@ namespace WebShop.WebApi.Migrations
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentMethodId")
+                    b.Property<int?>("PaymentMethodId")
                         .HasColumnType("int");
 
                     b.Property<string>("TransactionStatus")
@@ -614,9 +695,6 @@ namespace WebShop.WebApi.Migrations
                         .HasColumnType("nvarchar(24)");
 
                     b.HasKey("TransactionId");
-
-                    b.HasIndex("InvoiceId")
-                        .IsUnique();
 
                     b.HasIndex("PaymentMethodId");
 
@@ -734,17 +812,35 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "6c4de0d5-96fe-4a82-940f-ea5071b1d544",
+                            ConcurrencyStamp = "f055c66c-be5f-44e0-a3af-eae72813e08f",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOg9Vx5qbwc+KFQTVFGOPpNYFh9n7Px9G53oDwQ8Y4DGnzlC3mNFD6pmC0JV+0teMg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBzAR0WNyCfWIVKg3bjWL4XytfYHOKCkFj3Dh9arOCbABzTQDHVIg6FKEZ5TCyvfvw==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "4321ffcf-4626-45da-98ff-7ccd9c71755f",
+                            SecurityStamp = "af72a6d3-1198-4bf0-90b7-188e824af1e5",
+                            TwoFactorEnabled = false
+                        },
+                        new
+                        {
+                            Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
+                            AccessFailedCount = 0,
+                            Address = "456 Oak Avenue",
+                            ConcurrencyStamp = "6954c8c9-27f5-47b0-abad-6677f5792eb5",
+                            Email = "agencyadmin@legaldocsagency.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "Legal Documents Agency",
+                            NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPREph/Kj5UYvmdiZ49LbHNeRiKxwC8GtGzXOcpOsIyhrFmVo/zkG/nYyfkYfa7LQQ==",
+                            PhoneNumber = "+1 555-987-6543",
+                            PhoneNumberConfirmed = false,
+                            Role = 0,
+                            SecurityStamp = "d2fbdf1b-b89d-45e0-816a-4dd84c5d5f64",
                             TwoFactorEnabled = false
                         });
                 });
@@ -760,7 +856,7 @@ namespace WebShop.WebApi.Migrations
                     b.Property<DateTime>("EndTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("InvoiceId")
+                    b.Property<int?>("InvoiceId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTimestamp")
@@ -776,7 +872,8 @@ namespace WebShop.WebApi.Migrations
                     b.HasKey("UserSubscriptionPlanId");
 
                     b.HasIndex("InvoiceId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[InvoiceId] IS NOT NULL");
 
                     b.HasIndex("SubscriptionPlanId");
 
@@ -826,9 +923,25 @@ namespace WebShop.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WebShop.WebApi.Models.Transaction", "Transaction")
+                        .WithOne("Invoice")
+                        .HasForeignKey("WebShop.WebApi.Models.Invoice", "TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WebShop.WebApi.Models.User", "User")
+                        .WithMany("Invoices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Currency");
 
                     b.Navigation("Merchant");
+
+                    b.Navigation("Transaction");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.Item", b =>
@@ -864,7 +977,7 @@ namespace WebShop.WebApi.Migrations
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
-                        .WithOne("Order")
+                        .WithOne()
                         .HasForeignKey("WebShop.WebApi.Models.Order", "InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -925,25 +1038,6 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebShop.WebApi.Models.PaymentMethodMerchant", b =>
-                {
-                    b.HasOne("WebShop.WebApi.Models.Merchant", "Merchant")
-                        .WithMany("PaymentMethods")
-                        .HasForeignKey("MerchantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("WebShop.WebApi.Models.PaymentMethod", "PaymentMethod")
-                        .WithMany()
-                        .HasForeignKey("PaymentMethodId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Merchant");
-
-                    b.Navigation("PaymentMethod");
-                });
-
             modelBuilder.Entity("WebShop.WebApi.Models.ShoppingCart", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.User", "User")
@@ -987,19 +1081,10 @@ namespace WebShop.WebApi.Migrations
 
             modelBuilder.Entity("WebShop.WebApi.Models.Transaction", b =>
                 {
-                    b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
-                        .WithOne("Transaction")
-                        .HasForeignKey("WebShop.WebApi.Models.Transaction", "InvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("WebShop.WebApi.Models.PaymentMethod", "PaymentMethod")
                         .WithMany("Transactions")
                         .HasForeignKey("PaymentMethodId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("PaymentMethod");
                 });
@@ -1020,8 +1105,7 @@ namespace WebShop.WebApi.Migrations
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
                         .WithOne()
                         .HasForeignKey("WebShop.WebApi.Models.UserSubscriptionPlan", "InvoiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WebShop.WebApi.Models.SubscriptionPlan", "SubscriptionPlan")
                         .WithMany("UserSubscriptionPlans")
@@ -1042,13 +1126,6 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebShop.WebApi.Models.Invoice", b =>
-                {
-                    b.Navigation("Order");
-
-                    b.Navigation("Transaction");
-                });
-
             modelBuilder.Entity("WebShop.WebApi.Models.Merchant", b =>
                 {
                     b.Navigation("Invoices");
@@ -1056,8 +1133,6 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("PaymentMethods");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
@@ -1084,11 +1159,15 @@ namespace WebShop.WebApi.Migrations
 
             modelBuilder.Entity("WebShop.WebApi.Models.Transaction", b =>
                 {
+                    b.Navigation("Invoice");
+
                     b.Navigation("TransactionLogs");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.User", b =>
                 {
+                    b.Navigation("Invoices");
+
                     b.Navigation("UserSubscriptionPlans");
                 });
 #pragma warning restore 612, 618

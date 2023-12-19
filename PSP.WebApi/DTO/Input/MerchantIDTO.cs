@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace PSP.WebApi.DTO.Input
 {
@@ -30,6 +29,7 @@ namespace PSP.WebApi.DTO.Input
         [Required]
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
+
 
         public MerchantIDTO(string merchantExternalId, string name, string address, string phoneNumber, string email, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {

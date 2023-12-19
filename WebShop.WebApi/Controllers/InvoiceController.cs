@@ -70,5 +70,13 @@ namespace WebShop.WebApi.Controllers
             return Ok(new RedirectUrlDTO(result!.RedirectUrl));
         }
 
+        [HttpPut("UpdatePaymentMethod/{invoiceId};{pspPaymentMethodId}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<RedirectUrlDTO>> UpdatePaymentMethod([FromRoute] int invoiceId, [FromRoute] int pspPaymentMethodId)
+        {
+            await _invoiceService.UpdatePaymentMethodAsync(invoiceId, pspPaymentMethodId);
+            return Ok();
+        }
+
     }
 }

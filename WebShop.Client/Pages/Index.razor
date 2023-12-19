@@ -1,22 +1,96 @@
 ﻿@page "/"
 @inject NavigationManager Navigation
 
-<AuthorizeView>
+<AuthorizeView Context="outerContext">
     <Authorized>
-
-        <div class="d-flex flex-wrap gap-4 pa-3 justify-center">
-            @if (isLoading)
-            {
-                <MudProgressCircular Indeterminate="true" />
-            }
-            else
-            {
-                @foreach (var item in items)
+        <AuthorizeView Roles="BUYER" Context="buyerContext">
+            <div class="d-flex flex-wrap gap-4 pa-3 justify-center">
+                @if (isLoading)
                 {
-                    <ItemCard Item="@item"></ItemCard>
+                    <MudProgressCircular Indeterminate="true" />
                 }
-            }
-        </div>
+                else
+                {
+                    @if (items.Any()) 
+                    {
+                        @foreach (var item in items)
+                        {
+                            <ItemCard Item="@item"></ItemCard>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No available items in the web shop</MudText>
+                    }
+                }
+            </div>
+        </AuthorizeView>
+        <AuthorizeView Roles="MERCHANT" Context="merchantContext">
+            <div class="d-flex flex-row justify-center gap-4 pa-4">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Indeterminate="true" />
+                }
+                else
+                {
+                    @if (isMerchantRegistered)
+                    {
+                        <div class="d-flex flex-row justify-center gap-4 pa-4">
+                            <MudPaper Class="pa-4">Transactions</MudPaper>
+                            <MudTable Items="@paymentMethods" Dense="false">
+                                <ToolBarContent>
+                                    <MudText Typo="Typo.h6">Supported Payment Methods</MudText>
+                                </ToolBarContent>
+                                <HeaderContent>
+                                    <MudTh>Payment Method</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Payment Method">@context.PaymentMethod!.Name</MudTd>
+                                        <MudTd DataLabel="Status">
+                                            @if (context.IsActive)
+                                        {
+                                            <MudChip Color="Color.Success">Active</MudChip>
+                                        }
+                                        else if (context.PaymentMethodMerchantId != 0)
+                                        {
+                                            <MudChip Color="Color.Error">Inactive</MudChip>
+                                        }
+                                        else
+                                        {
+                                            <MudChip>Not Subscribed</MudChip>
+                                        }
+                                    </MudTd>
+                                    <MudTd>
+                                        @if (context.IsActive)
+                                        {
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="(() => OnUnsubscribeButtonClicked(context.PaymentMethod!.PaymentMethodId))">Unsubscribe</MudButton>
+                                        }
+                                        else
+                                        {
+                                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="(() => OnSubscribeButtonClicked(context.PaymentMethod!.PaymentMethodId))">Subscribe</MudButton>
+                                        }
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-row justify-center pa-4">
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnRegisterOnPspClicked" Disabled="isRegistrationInProgress">
+                                @if (isRegistrationInProgress)
+                                {
+                                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                                }
+                                Register On Payment Service Provider
+                            </MudButton>
+                        </div>
+                    }
+                }
+            </div>
+        </AuthorizeView>
         
     </Authorized>
     <NotAuthorized>

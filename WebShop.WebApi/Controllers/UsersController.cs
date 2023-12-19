@@ -18,22 +18,25 @@ namespace WebShop.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ITokenCreationService _tokenCreationService;
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly ISubscriptionPlanService _subscriptionPlanService;
         private readonly IMapper _mapper;
         public UsersController(
             UserManager<User> userManager,
             ITokenCreationService tokenCreationService,
             IShoppingCartService shoppingCartService,
+            ISubscriptionPlanService subscriptionPlanService,
             IMapper mapper)
         {
             _userManager = userManager;
             _tokenCreationService = tokenCreationService;
             _shoppingCartService = shoppingCartService;
+            _subscriptionPlanService = subscriptionPlanService;
             _mapper = mapper;
         }
 
 
         [HttpPost("Register")]
-        public async Task<ActionResult> RegisterAsync([FromBody] UserIDTO userDTO)
+        public async Task<ActionResult<AuthenticationODTO>> RegisterAsync([FromBody] UserIDTO userDTO)
         {
             if (!userDTO.Password.Equals(userDTO.ConfirmPassword))
                 return BadRequest("Passwords doesn't match");
@@ -51,7 +54,8 @@ namespace WebShop.WebApi.Controllers
                 return BadRequest(result.Errors);
 
             await _shoppingCartService.CreateShoppingCartAsync(user.Id);
-            return Ok();
+            var token = _tokenCreationService.CreateToken(user);
+            return Ok(token);
         }
 
         [HttpPost("Authenticate")]

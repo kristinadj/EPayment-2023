@@ -95,14 +95,14 @@ namespace WebShop.Client.Pages
                 if (isValid && userDTO != null)
                 {
                     isLoading = true;
-                    var isSuccessful = await AuthService.Register(userDTO);
-                    if (isSuccessful)
+                    var authResult = await AuthService.Register(userDTO);
+                    if (authResult == null)
                     {
-                        NavigationManager.NavigateTo("/login");
+                        Snackbar.Add("Email is taken", Severity.Error);
                     }
                     else
                     {
-                        Snackbar.Add("Bad Credentials", Severity.Error);
+                        NavigationManager.NavigateTo("/subscription");
                     }
                 }
             }

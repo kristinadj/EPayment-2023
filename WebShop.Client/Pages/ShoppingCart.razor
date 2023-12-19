@@ -31,7 +31,7 @@
                 <MudTd DataLabel="Total Price">@context.Item!.Currency!.Symbol @((context.Quantity * context.Item!.Price).ToString("N2"))</MudTd>
                 <MudTd>
                     <MudTooltip Text="Remove">
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => OnClickDeleteAsync(context.ShoppingCartItemId, context.Quantity))"></MudIconButton>
                     </MudTooltip>
                 </MudTd>
             </RowTemplate>

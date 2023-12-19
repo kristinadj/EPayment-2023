@@ -1,0 +1,19 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @ref="@form" @bind-IsValid="@isValid" Class="d-flex flex-column gap-2">
+            <MudTextField T="string" Label="Payment Service Code" @bind-Value="@paymentMethodSubscribe.StrCode" Required="true" RequiredError="Code is required!" />
+            <MudTextField T="string" Label="Payment Service Secret" @bind-Value="@paymentMethodSubscribe.Secret" Required="true" RequiredError="Secret is required!" InputType="@passwordInputType" Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="OnShowPassword" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="isSubscribing">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="isSubscribing || !isValid">
+            @if (isSubscribing)
+            {
+                <span class="spinner-border spinner-border-sm mr-1"></span>
+            }
+            Subscribe
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+

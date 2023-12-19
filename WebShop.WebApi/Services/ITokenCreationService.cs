@@ -24,7 +24,7 @@ namespace WebShop.WebApi.Services
 
         public AuthenticationODTO CreateToken(User user)
         {
-            var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]);
+            var expirationMinutes = int.Parse(_configuration["Jwt:ExpiresInMinutes"]!);
             var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
 
             var token = CreateJwtToken(
@@ -52,19 +52,19 @@ namespace WebShop.WebApi.Services
 
         private Claim[] CreateClaims(User user) =>
             new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString() )
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
         private SigningCredentials CreateSigningCredentials() =>
             new SigningCredentials(
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
+                    Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
                 ),
                 SecurityAlgorithms.HmacSha256
             );

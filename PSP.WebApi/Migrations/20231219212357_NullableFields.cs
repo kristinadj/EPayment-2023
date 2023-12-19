@@ -4,16 +4,16 @@
 
 namespace PSP.WebApi.Migrations
 {
-    public partial class IssuedToUserIdString : Migration
+    public partial class NullableFields : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "IssuedToUserId",
+            migrationBuilder.AlterColumn<int>(
+                name: "PaymentMethodId",
                 schema: "dbo",
-                table: "Invoices",
-                type: "nvarchar(max)",
-                nullable: false,
+                table: "Transactions",
+                type: "int",
+                nullable: true,
                 oldClrType: typeof(int),
                 oldType: "int");
         }
@@ -21,13 +21,15 @@ namespace PSP.WebApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<int>(
-                name: "IssuedToUserId",
+                name: "PaymentMethodId",
                 schema: "dbo",
-                table: "Invoices",
+                table: "Transactions",
                 type: "int",
                 nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                defaultValue: 0,
+                oldClrType: typeof(int),
+                oldType: "int",
+                oldNullable: true);
         }
     }
 }

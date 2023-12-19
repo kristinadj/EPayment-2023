@@ -1,6 +1,8 @@
 ﻿<MudCard Elevation="1" Style="width:300px">
     <MudCardContent Style="height:95px">
-        <MudText>@Item!.Name</MudText>
+        <MudText><b>@Item!.Name</b></MudText>
+        <MudText Style="font-size:12px">@Item!.Merchant!.Name </MudText>
+        <MudDivider></MudDivider>
         <MudText Typo="Typo.body2">@Item!.Description </MudText>
     </MudCardContent>
     <MudCardActions Class="d-flex justify-content-between align-baseline  ps-4">

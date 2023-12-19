@@ -19,13 +19,22 @@ namespace WebShop.Client.Pages
         private bool unexpectedError = false;
 
         private InvoiceODTO? invoice;
+        private OrderODTO? order;
 
         protected override async Task OnInitializedAsync()
         {
             isLoading = true;
 
             invoice = await ApiServices.GetInvoiceByIdAsync(InvoiceId);
-            if (invoice == null) unexpectedError = true;
+            if (invoice == null)
+            {
+                unexpectedError = true;
+            }
+            else if (invoice.InvoiceType == DTO.Enums.InvoiceType.ORDER)
+            {
+                order = await ApiServices.GetOrderByIdAsync(InvoiceId);
+                if (order == null) unexpectedError = true;
+            }
 
             var isSuccess = await ApiServices.UpdateTransactionStatusAsync(invoice!.Transaction!.TransactionId, DTO.Enums.TransactionStatus.ERROR);
             if (!isSuccess) unexpectedError = true;

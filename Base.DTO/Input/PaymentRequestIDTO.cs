@@ -6,6 +6,8 @@ namespace Base.DTO.Input
     {
         public int MerchantId { get; set; }
 
+        public int Code { get; set; }
+
         [Required]
         [StringLength(30)]
         public string Secret { get; set; }
@@ -29,13 +31,13 @@ namespace Base.DTO.Input
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
-        public PaymentRequestIDTO(string secret, string currencyCode, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public PaymentRequestIDTO(string secret, string currencyCode)
         {
             Secret = secret;
             CurrencyCode = currencyCode;
-            TransactionSuccessUrl = transactionSuccessUrl;
-            TransactionFailureUrl = transactionFailureUrl;
-            TransactionErrorUrl = transactionErrorUrl;
+            TransactionSuccessUrl = string.Empty;
+            TransactionFailureUrl = string.Empty;
+            TransactionErrorUrl = string.Empty;
         }
     }
 }

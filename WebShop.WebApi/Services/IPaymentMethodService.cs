@@ -40,9 +40,26 @@ namespace WebShop.WebApi.Services
         }
 
         public async Task ImportFromPspAsync(List<PaymentMethodDTO> paymentMethodsIDTO)
-        { 
+        {
+            var existingPaymentMethods = await _context.PaymentMethods.ToListAsync();
             var paymentMethods = _mapper.Map<List<PaymentMethod>>(paymentMethodsIDTO);
-            await _context.PaymentMethods.AddRangeAsync(paymentMethods);
+
+            foreach (var paymentMethod in paymentMethods)
+            {
+                var existingPaymentMethod = existingPaymentMethods.Where(x => x.PspPaymentMethodId == paymentMethod.PspPaymentMethodId).FirstOrDefault();
+                if (existingPaymentMethod == null)
+                {
+                    await _context.PaymentMethods.AddAsync(paymentMethod);
+                }
+                else
+                {
+                    existingPaymentMethod.Code = paymentMethod.Code;
+                    existingPaymentMethod.Name = paymentMethod.Name;
+                }
+            }
+
+            var removedPaymentMethods = existingPaymentMethods.Where(x => paymentMethodsIDTO.All(xx => xx.PaymentMethodId != x.PspPaymentMethodId)).ToList();
+            _context.PaymentMethods.RemoveRange(removedPaymentMethods);
             await _context.SaveChangesAsync();
         }
     }

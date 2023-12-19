@@ -11,6 +11,7 @@ namespace Base.Services.Clients
         Task GetAsync(string serviceName, string requestUri);
         Task<T?> GetAsync<T>(string serviceName, string requestUri);
         Task<bool> PutAsync(string serviceName, string requestUri);
+        Task<bool> PutAsync<T>(string serviceName, string requestUri, T requestBody);
         Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
         Task<PaymentInstructionsODTO?> PostAsync(string serviceName, string requestUri, PaymentRequestIDTO requestBody);
     }
@@ -53,14 +54,20 @@ namespace Base.Services.Clients
         public async Task<bool> PutAsync(string serviceName, string requestUri)
         {
             var uri = await GetRequestUriAsync(serviceName, requestUri);
-
             var response = await _client.PutAsync(uri, null);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return false;
-            }
+            if (!response.IsSuccessStatusCode) return false;
+            return true;
+        }
 
+        public async Task<bool> PutAsync<T>(string serviceName, string requestUri, T requestBody)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+
+            var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var response = await _client.PutAsync(uri, requestContent);
+
+            if (!response.IsSuccessStatusCode) return false;
             return true;
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Base.DTO.Shared;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PSP.WebApi.DTO.Input;
 using PSP.WebApi.DTO.Output;
@@ -33,6 +34,48 @@ namespace PSP.WebApi.Controllers
             if (result == null) return BadRequest();
 
             return Ok(result);
+        }
+
+        [HttpGet("ByMerchantId/{merchantId}")]
+        public async Task<ActionResult<List<PaymentMethodMerchantODTO>>> GetPaymentMethodsByMerchantId([FromRoute] int merchantId)
+        {
+            var result = await _paymentMethodServices.GetPaymentMethodsByMerchantIdAsync(merchantId);
+            return Ok(result);
+        }
+
+        [HttpGet("Active/ByMerchantId/{merchantId}")]
+        public async Task<ActionResult<List<PaymentMethodODTO>>> GetActivePaymentMethodsByMerchantId([FromRoute] int merchantId)
+        {
+            var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId);
+            return Ok(result);
+        }
+
+        [HttpPut("Subscribe")]
+        public async Task<ActionResult<bool>> Subscribe([FromBody] PspPaymentMethodSubscribeIDTO paymentMethodSubscribe)
+        {
+            try
+            {
+                var result = await _paymentMethodServices.SubscribeAsync(paymentMethodSubscribe);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Unsubscribe/{paymentMethodId};{merchantId}")]
+        public async Task<ActionResult<bool>> Unsubscribe([FromRoute] int paymentMethodId, [FromRoute] int merchantId)
+        {
+            try
+            {
+                var result = await _paymentMethodServices.UnsubscribeAsync(paymentMethodId, merchantId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

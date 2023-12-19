@@ -26,8 +26,6 @@ namespace WebShop.WebApi.Services
             var transaction = await _context.Transactions
                 .Where(x => x.TransactionId == transactionId)
                 .Include(x => x.Invoice)
-                .ThenInclude(x => x!.Order)
-                .ThenInclude(x => x!.OrderLogs)
                 .Include(x => x.TransactionLogs)
                 .FirstOrDefaultAsync();
 
@@ -40,25 +38,35 @@ namespace WebShop.WebApi.Services
                 Timestamp = DateTime.Now
             });
 
-            if (transactionStatus == TransactionStatus.COMPLETED)
+            if (transaction.Invoice!.InvoiceType == InvoiceType.ORDER)
             {
-                transaction.Invoice!.Order!.OrderStatus = OrderStatus.COMPLETED;
-                transaction.Invoice!.Order!.OrderLogs!.Add(new OrderLog
-                {
-                    OrderStatus = OrderStatus.COMPLETED,
-                    Timestamp = DateTime.Now
-                });
-            }
-            else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
-            {
-                transaction.Invoice!.Order!.OrderStatus = OrderStatus.INVALID;
-                transaction.Invoice!.Order!.OrderLogs!.Add(new OrderLog
-                {
-                    OrderStatus = OrderStatus.INVALID,
-                    Timestamp = DateTime.Now
-                });
-            }
+                var order = await _context.Orders
+                .Where(x => x.InvoiceId == transaction.Invoice!.InvoiceId)
+                .Include(x => x.OrderLogs)
+                .FirstOrDefaultAsync();
 
+                if (order == null) return false;
+
+                if (transactionStatus == TransactionStatus.COMPLETED)
+                {
+                    order.OrderStatus = OrderStatus.COMPLETED;
+                    order.OrderLogs!.Add(new OrderLog
+                    {
+                        OrderStatus = OrderStatus.COMPLETED,
+                        Timestamp = DateTime.Now
+                    });
+                }
+                else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
+                {
+                    order.OrderStatus = OrderStatus.INVALID;
+                    order.OrderLogs!.Add(new OrderLog
+                    {
+                        OrderStatus = OrderStatus.INVALID,
+                        Timestamp = DateTime.Now
+                    });
+                }
+            }
+            
             await _context.SaveChangesAsync();
             return true;
         }
