@@ -2,10 +2,6 @@
 {
     public class WebShopAppSettings
     {
-        public  string ClientUrl { get; set; }
-        public WebShopAppSettings()
-        {
-            ClientUrl = string.Empty;
-        }
+        public  string ClientUrl { get; set; } = string.Empty;
     }
 }

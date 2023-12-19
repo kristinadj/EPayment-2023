@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using PSP.WebApi.AppSettings;
 using PSP.WebApi.Configurations;
 using PSP.WebApi.Models;
 using PSP.WebApi.Services;
@@ -7,6 +8,9 @@ using PSP.WebApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<PspContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
+
+builder.Services.Configure<PspAppSettings>(builder.Configuration.GetSection("PspAppSettings"));
+
 
 builder.Services.AddCors(options =>
 {

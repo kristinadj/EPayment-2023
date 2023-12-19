@@ -19,7 +19,13 @@
                         <MudText Class="d-flex justify-content-center" Typo="Typo.h4">@subscriptionPlan!.Currency!.Symbol @subscriptionPlan!.Price</MudText>
                     </MudCardContent>
                     <MudCardActions Class="d-flex justify-center">
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => OnChooseSubscriptionPlanAsync(subscriptionPlan.SubscriptionPlanId)">Choose</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => OnChooseSubscriptionPlanAsync(subscriptionPlan.SubscriptionPlanId)">
+                            @if (isPaymentInProgress[subscriptionPlan.SubscriptionPlanId])
+                            {
+                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                            }
+                            Choose
+                        </MudButton>
                     </MudCardActions>
                 </MudCard>
             }

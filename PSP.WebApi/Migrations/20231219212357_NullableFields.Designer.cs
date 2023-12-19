@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PSP.WebApi.Models;
 
@@ -11,9 +12,10 @@ using PSP.WebApi.Models;
 namespace PSP.WebApi.Migrations
 {
     [DbContext(typeof(PspContext))]
-    partial class PspContextModelSnapshot : ModelSnapshot
+    [Migration("20231219212357_NullableFields")]
+    partial class NullableFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,9 +112,6 @@ namespace PSP.WebApi.Migrations
                     b.HasIndex("ExternalInvoiceId");
 
                     b.HasIndex("MerchantId");
-
-                    b.HasIndex("TransactionId")
-                        .IsUnique();
 
                     b.ToTable("Invoices", "dbo");
                 });
@@ -251,6 +250,9 @@ namespace PSP.WebApi.Migrations
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PaymentMethodId")
                         .HasColumnType("int");
 
@@ -259,6 +261,9 @@ namespace PSP.WebApi.Migrations
                         .HasColumnType("nvarchar(24)");
 
                     b.HasKey("TransactionId");
+
+                    b.HasIndex("InvoiceId")
+                        .IsUnique();
 
                     b.HasIndex("PaymentMethodId");
 
@@ -304,17 +309,9 @@ namespace PSP.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PSP.WebApi.Models.Transaction", "Transaction")
-                        .WithOne("Invoice")
-                        .HasForeignKey("PSP.WebApi.Models.Invoice", "TransactionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Currency");
 
                     b.Navigation("Merchant");
-
-                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.PaymentMethodMerchant", b =>
@@ -338,10 +335,18 @@ namespace PSP.WebApi.Migrations
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>
                 {
+                    b.HasOne("PSP.WebApi.Models.Invoice", "Invoice")
+                        .WithOne("Transaction")
+                        .HasForeignKey("PSP.WebApi.Models.Transaction", "InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("PSP.WebApi.Models.PaymentMethod", "PaymentMethod")
                         .WithMany()
                         .HasForeignKey("PaymentMethodId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Invoice");
 
                     b.Navigation("PaymentMethod");
                 });
@@ -357,6 +362,11 @@ namespace PSP.WebApi.Migrations
                     b.Navigation("Transaction");
                 });
 
+            modelBuilder.Entity("PSP.WebApi.Models.Invoice", b =>
+                {
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("PSP.WebApi.Models.Merchant", b =>
                 {
                     b.Navigation("Invoices");
@@ -366,8 +376,6 @@ namespace PSP.WebApi.Migrations
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>
                 {
-                    b.Navigation("Invoice");
-
                     b.Navigation("TransactionLogs");
                 });
 #pragma warning restore 612, 618

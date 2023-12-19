@@ -1,4 +1,4 @@
-﻿namespace PSP.WebApi.DTO.Output
+﻿namespace PSP.Client.DTO.Output
 {
     public class InvoiceODTO
     {
@@ -7,7 +7,5 @@
         public string IssuedToUserId { get; set; } = string.Empty;
         public double TotalPrice { get; set; }
         public string CurrencyCode { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; }
-        public string? RedirectUrl { get; set; }
     }
 }

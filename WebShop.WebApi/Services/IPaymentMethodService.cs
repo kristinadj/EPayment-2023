@@ -44,7 +44,7 @@ namespace WebShop.WebApi.Services
             var existingPaymentMethods = await _context.PaymentMethods.ToListAsync();
             var paymentMethods = _mapper.Map<List<PaymentMethod>>(paymentMethodsIDTO);
 
-            foreach (var paymentMethod in existingPaymentMethods)
+            foreach (var paymentMethod in paymentMethods)
             {
                 var existingPaymentMethod = existingPaymentMethods.Where(x => x.PspPaymentMethodId == paymentMethod.PspPaymentMethodId).FirstOrDefault();
                 if (existingPaymentMethod == null)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.WebApi.Models;
 
@@ -11,9 +12,10 @@ using WebShop.WebApi.Models;
 namespace WebShop.WebApi.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20231219222647_InvoiceType")]
+    partial class InvoiceType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -812,17 +814,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "f055c66c-be5f-44e0-a3af-eae72813e08f",
+                            ConcurrencyStamp = "26b301ef-f544-4fe9-a864-b91b40ec928b",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBzAR0WNyCfWIVKg3bjWL4XytfYHOKCkFj3Dh9arOCbABzTQDHVIg6FKEZ5TCyvfvw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMcj0G2wOlRgsJvPy3VBjXwrmIFBG6sAiqNDlQEX8pcqop7u7t4b+nBvlPWQCS9znQ==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "af72a6d3-1198-4bf0-90b7-188e824af1e5",
+                            SecurityStamp = "f7aa5fef-1f99-46f3-ab0d-c787fa0747fe",
                             TwoFactorEnabled = false
                         },
                         new
@@ -830,17 +832,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "6954c8c9-27f5-47b0-abad-6677f5792eb5",
+                            ConcurrencyStamp = "d4b0bd63-7ff8-481f-b506-96012a0b61e4",
                             Email = "agencyadmin@legaldocsagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPREph/Kj5UYvmdiZ49LbHNeRiKxwC8GtGzXOcpOsIyhrFmVo/zkG/nYyfkYfa7LQQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIErxEEkMV6ATloEmmwV/8FjYYOpurKBJmAMDdcfVoemg/S0jUqjWW/leQKnWtRXyw==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "d2fbdf1b-b89d-45e0-816a-4dd84c5d5f64",
+                            SecurityStamp = "d109ed56-13ea-4d4f-b29d-e805f1f3af8d",
                             TwoFactorEnabled = false
                         });
                 });
@@ -977,7 +979,7 @@ namespace WebShop.WebApi.Migrations
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
-                        .WithOne()
+                        .WithOne("Order")
                         .HasForeignKey("WebShop.WebApi.Models.Order", "InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -1124,6 +1126,11 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("SubscriptionPlan");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebShop.WebApi.Models.Invoice", b =>
+                {
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.Merchant", b =>

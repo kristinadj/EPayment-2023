@@ -30,14 +30,14 @@ namespace BankPaymentService.WebApi.DTO.Bank.Input
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
-        public TransactionIDTO(string secret, string accountNumber, string currencyCode, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
+        public TransactionIDTO(string secret, string accountNumber, string currencyCode)
         {
             Secret = secret;
             AccountNumber = accountNumber;
             CurrencyCode = currencyCode;
-            TransactionSuccessUrl = transactionSuccessUrl;
-            TransactionFailureUrl = transactionFailureUrl;
-            TransactionErrorUrl = transactionErrorUrl;
+            TransactionSuccessUrl = string.Empty;
+            TransactionFailureUrl = string.Empty;
+            TransactionErrorUrl = string.Empty;
         }
     }
 }

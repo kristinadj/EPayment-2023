@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\Shared\**" />
+    <Content Remove="DTO\Shared\**" />
+    <EmbeddedResource Remove="DTO\Shared\**" />
+    <None Remove="DTO\Shared\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Consul" Version="1.7.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.25" />
@@ -21,10 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Base.DTO\Base.DTO.csproj" />
     <ProjectReference Include="..\Base.Services\Base.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTO\Shared\" />
   </ItemGroup>
 
 </Project>

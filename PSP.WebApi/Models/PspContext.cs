@@ -73,11 +73,6 @@ namespace PSP.WebApi.Models
 
             builder.Entity<Transaction>(entity =>
             {
-                entity.HasOne(x => x.Invoice)
-                    .WithOne(x => x.Transaction)
-                    .HasForeignKey<Transaction>(x => x.InvoiceId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.PaymentMethod)
                     .WithMany()
                     .HasForeignKey(x => x.PaymentMethodId)

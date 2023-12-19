@@ -16,6 +16,7 @@ namespace WebShop.Client.Services
         Task<OrderODTO?> CancelOrderAsync(int orderId);
         Task<OrderODTO?> GetOrderByIdAsync(int orderId);
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
+        Task<OrderODTO?> GeOrderByInvoiceIdAsync(int invoiceId);
         Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus);
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
         Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByUserIdAsync(string userId);
@@ -25,5 +26,6 @@ namespace WebShop.Client.Services
         Task<bool> RegisterMerchantOnPspAsync(string userId);
         Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId);
         Task<bool> IsSubscriptionPlanValidAsync(string userId);
+        Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
     }
 }

@@ -30,6 +30,7 @@ namespace PSP.WebApi.DTO.Input
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
+
         public MerchantIDTO(string merchantExternalId, string name, string address, string phoneNumber, string email, string serviceName, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
             MerchantExternalId = merchantExternalId;

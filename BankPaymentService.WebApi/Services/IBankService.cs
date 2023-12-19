@@ -29,16 +29,16 @@ namespace BankPaymentService.WebApi.Services
         public async Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO)
         {
             var merchant = await _context.Merchants
-                .Where(x => x.PaymentServiceMerchantId == invoice.MerchantId)
+                .Where(x => x.MerchantId == invoice.MerchantId)
                 .Include(x => x.Bank)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (merchant == null || merchant.Bank == null) return null;
 
-            var transaction = new TransactionIDTO(paymentRequestIDTO.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode, "", "", "")
+            var transaction = new TransactionIDTO(paymentRequestIDTO.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode)
             {
-                SenderId = paymentRequestIDTO.MerchantId,
+                SenderId = paymentRequestIDTO.Code,
                 Amount = paymentRequestIDTO.Amount,
                 ExternalInvoiceId = invoice.InvocieId,
                 Timestamp = paymentRequestIDTO.Timestamp,

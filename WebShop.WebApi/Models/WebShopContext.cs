@@ -36,14 +36,14 @@ namespace WebShop.WebApi.Models
 
             builder.Entity<Invoice>(entity =>
             {
-                entity.HasOne(x => x.Order)
-                    .WithOne(x => x.Invoice)
-                    .HasForeignKey<Invoice>(x => x.OrderId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.Merchant)
                     .WithMany(x => x.Invoices)
                     .HasForeignKey(x => x.MerchantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.User)
+                    .WithMany(x => x.Invoices)
+                    .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Currency)
@@ -55,6 +55,9 @@ namespace WebShop.WebApi.Models
                     .WithOne(x => x.Invoice)
                     .HasForeignKey<Invoice>(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.InvoiceType)
+                    .HasConversion<string>();
             });
 
             builder.Entity<Item>(entity =>
@@ -91,7 +94,7 @@ namespace WebShop.WebApi.Models
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Invoice)
-                    .WithOne(x => x.Order)
+                    .WithOne()
                     .HasForeignKey<Order>(x => x.InvoiceId)
                     .OnDelete(DeleteBehavior.Restrict);
 
@@ -167,11 +170,6 @@ namespace WebShop.WebApi.Models
 
             builder.Entity<Transaction>(entity =>
             {
-                entity.HasOne(x => x.Invoice)
-                    .WithOne(x => x.Transaction)
-                    .HasForeignKey<Transaction>(x => x.InvoiceId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(x => x.PaymentMethod)
                     .WithMany(x => x.Transactions)
                     .HasForeignKey(x => x.PaymentMethodId)

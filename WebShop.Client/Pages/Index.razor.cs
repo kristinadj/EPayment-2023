@@ -62,11 +62,14 @@ namespace WebShop.Client.Pages
                     GlobalSettings.Role = role.Value.ToString() == Role.BUYER.ToString() ? Role.BUYER : Role.MERCHANT;
                 }
 
-                var isSubscriptionPlanValid = await ApiServices.IsSubscriptionPlanValidAsync(GlobalSettings.UserId!);
-                GlobalSettings.IsSubscriptionPlanValid = isSubscriptionPlanValid;
-                if (!isSubscriptionPlanValid)
+                if (GlobalSettings.Role == Role.BUYER)
                 {
-                    Navigation!.NavigateTo("/plan");
+                    var isSubscriptionPlanValid = await ApiServices.IsSubscriptionPlanValidAsync(GlobalSettings.UserId!);
+                    GlobalSettings.IsSubscriptionPlanValid = isSubscriptionPlanValid;
+                    if (!isSubscriptionPlanValid)
+                    {
+                        Navigation!.NavigateTo("/plan");
+                    }
                 }
             }
             else

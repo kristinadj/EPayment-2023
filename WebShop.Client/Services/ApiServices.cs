@@ -216,6 +216,26 @@ namespace WebShop.Client.Services
             return data;
         }
 
+        public async Task<OrderODTO?> GeOrderByInvoiceIdAsync(int invoiceId)
+        {
+            OrderODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
         public async Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus)
         {
             try
@@ -360,6 +380,27 @@ namespace WebShop.Client.Services
             }
 
             return false;
+        }
+
+        public async Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
+        {
+            RedirectUrlDTO? data = null;
+
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(userSubscriptionPlanIDTO), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"api/SubscriptionPlans/Choose", content);
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
         }
     }
 }

@@ -17,8 +17,9 @@ namespace PSP.Client.Pages
         private ISnackbar Snackbar { get; set; }
 
         [Parameter]
-        public int MerchantId { get; set; }
+        public int InvoiceId { get; set; }
 
+        private InvoiceODTO? invoice { get; set; }
         private List<PaymentMethodODTO> paymentMethods = new();
 
         private bool isLoading = false;
@@ -29,13 +30,33 @@ namespace PSP.Client.Pages
         {
             isLoading = true;
 
-            paymentMethods = await ApiServices.GetPaymentMethodsAsync(MerchantId);
-            if (paymentMethods.Any())
+            invoice = await ApiServices.GetInvoiceByIdAsync(InvoiceId);
+
+            if (invoice != null)
             {
-                selectedPaymentMethod = paymentMethods.First().PaymentMethodId;
+                paymentMethods = await ApiServices.GetPaymentMethodsAsync(invoice.MerchantId);
+                if (paymentMethods.Any())
+                {
+                    selectedPaymentMethod = paymentMethods.First().PaymentMethodId;
+                }
             }
+            
 
             isLoading = false;
+        }
+
+        private async Task OnClickedContinueAsync()
+        {
+            isRedirectInProgress = true;
+
+            var redirectUrl = await ApiServices.UpdatePaymentMethodAsync(InvoiceId, selectedPaymentMethod);
+
+            if (redirectUrl != null)
+                NavigationManager.NavigateTo(redirectUrl.RedirectUrl);
+            else
+                Snackbar.Add("Error", Severity.Error);
+
+            isRedirectInProgress = false;
         }
     }
 }

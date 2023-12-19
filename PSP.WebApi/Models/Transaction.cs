@@ -9,8 +9,7 @@ namespace PSP.WebApi.Models
     {
         [Key]
         public int TransactionId { get; set; }
-        public int InvoiceId { get; set; }
-        public int PaymentMethodId { get; set; }
+        public int? PaymentMethodId { get; set; }
         public DateTime CreatedTimestamp { get; set; }
 
         [Column(TypeName = "nvarchar(24)")]

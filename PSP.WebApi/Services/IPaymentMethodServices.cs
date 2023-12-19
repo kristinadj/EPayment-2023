@@ -108,7 +108,7 @@ namespace PSP.WebApi.Services
                 .ProjectTo<PaymentMethodMerchantODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            var paymentMethodsIds = paymentMethods.Select(x => x.PaymentMethodMerchantId).ToList();
+            var paymentMethodsIds = paymentMethods.Select(x => x.PaymentMethod!.PaymentMethodId).ToList();
 
             var notsubscribedPaymentMethods = await _context.PaymentMethods
                 .Where(x => !paymentMethodsIds.Contains(x.PaymentMethodId))

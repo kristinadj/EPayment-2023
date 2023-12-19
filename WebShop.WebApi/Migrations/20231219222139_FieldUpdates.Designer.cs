@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.WebApi.Models;
 
@@ -11,9 +12,10 @@ using WebShop.WebApi.Models;
 namespace WebShop.WebApi.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20231219222139_FieldUpdates")]
+    partial class FieldUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,10 +155,6 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InvoiceType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
 
@@ -166,10 +164,6 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("InvoiceId");
 
                     b.HasIndex("CurrencyId");
@@ -178,8 +172,6 @@ namespace WebShop.WebApi.Migrations
 
                     b.HasIndex("TransactionId")
                         .IsUnique();
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Invoices", "dbo");
                 });
@@ -812,17 +804,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "f055c66c-be5f-44e0-a3af-eae72813e08f",
+                            ConcurrencyStamp = "3b99c95f-861c-4109-8f85-e1bf7d6ea8d3",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBzAR0WNyCfWIVKg3bjWL4XytfYHOKCkFj3Dh9arOCbABzTQDHVIg6FKEZ5TCyvfvw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKtUAcAcBr3xbhveaxSVkm8S0ZvaK2kcHLR72SzauOm9TRj8TXT3WISmW+dut/66cA==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "af72a6d3-1198-4bf0-90b7-188e824af1e5",
+                            SecurityStamp = "60800aa1-729d-47f1-82c7-986db280bac4",
                             TwoFactorEnabled = false
                         },
                         new
@@ -830,17 +822,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "6954c8c9-27f5-47b0-abad-6677f5792eb5",
+                            ConcurrencyStamp = "648899a7-fbd1-4a94-b127-2f981f66179d",
                             Email = "agencyadmin@legaldocsagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPREph/Kj5UYvmdiZ49LbHNeRiKxwC8GtGzXOcpOsIyhrFmVo/zkG/nYyfkYfa7LQQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFyH/fsXqFhK0BRrPv+N4lpPdHhxuDtSLM3wFsKtPOExNTxKYrSmDkH8fWY+OOLoog==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "d2fbdf1b-b89d-45e0-816a-4dd84c5d5f64",
+                            SecurityStamp = "ce1263ae-278c-4f2d-bc08-5b2217832b15",
                             TwoFactorEnabled = false
                         });
                 });
@@ -929,19 +921,11 @@ namespace WebShop.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebShop.WebApi.Models.User", "User")
-                        .WithMany("Invoices")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Currency");
 
                     b.Navigation("Merchant");
 
                     b.Navigation("Transaction");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.Item", b =>
@@ -977,7 +961,7 @@ namespace WebShop.WebApi.Migrations
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
-                        .WithOne()
+                        .WithOne("Order")
                         .HasForeignKey("WebShop.WebApi.Models.Order", "InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -1126,6 +1110,11 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebShop.WebApi.Models.Invoice", b =>
+                {
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("WebShop.WebApi.Models.Merchant", b =>
                 {
                     b.Navigation("Invoices");
@@ -1166,8 +1155,6 @@ namespace WebShop.WebApi.Migrations
 
             modelBuilder.Entity("WebShop.WebApi.Models.User", b =>
                 {
-                    b.Navigation("Invoices");
-
                     b.Navigation("UserSubscriptionPlans");
                 });
 #pragma warning restore 612, 618

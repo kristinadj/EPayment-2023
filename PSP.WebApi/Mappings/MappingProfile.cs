@@ -23,6 +23,8 @@ namespace PSP.WebApi.Mappings
                     .ConstructUsing(x => new MerchantODTO(x.MerchantExternalId, x.Name, x.Address, x.PhoneNumber, x.Email, x.ServiceName, x.TransactionSuccessUrl, x.TransactionFailureUrl, x.TransactionErrorUrl));
 
             CreateMap<PspInvoiceIDTO, InvoiceODTO>();
+            CreateMap<Invoice, InvoiceODTO>()
+                .ForMember(x => x.CurrencyCode, x=> x.MapFrom(x => x.Currency!.Code));
 
             CreateMap<PaymentMethod, PaymentMethodMerchantODTO>()
                 .ForMember(x => x.PaymentMethodMerchantId, x => x.MapFrom(x => 0))
