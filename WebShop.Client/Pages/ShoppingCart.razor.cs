@@ -32,6 +32,17 @@ namespace WebShop.Client.Pages
             GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
             GlobalSettings.UpdateShoppingCartItems(shoppingCart!.ShoppingCartItems!.Select(x => x.Quantity).Sum());
 
+            if (GlobalSettings.IsSubscriptionPlanValid == null)
+            {
+                var isSubscriptionPlanValid = await ApiServices.IsSubscriptionPlanValidAsync(GlobalSettings.UserId!);
+                GlobalSettings.IsSubscriptionPlanValid = isSubscriptionPlanValid;
+            }
+            
+            if (!(bool)GlobalSettings.IsSubscriptionPlanValid)
+            {
+                NavigationManager!.NavigateTo("/plan");
+            }
+
             isLoading = false;
         }
 

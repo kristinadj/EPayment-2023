@@ -15,24 +15,17 @@ namespace WebShop.Client.Pages
         private Task<AuthenticationState> AuthenticationStateTask { get; set; }
 
         private List<SubscriptionPlanODTO> subscriptionPlans = new();
-        private List<PaymentMethodODTO> paymentMethods = new();
 
         private bool isLoading = false;
 
         private string userId;
         private bool isPaymentInProgress = false;
-        private int selectedPaymentMethod;
 
         protected override async Task OnInitializedAsync()
         {
             isLoading = true;
 
             subscriptionPlans = await ApiServices.GetSubscriptionPlansAsync();
-            paymentMethods = await ApiServices.GetPaymentMethodsAsync();
-            if (paymentMethods.Any())
-            {
-                selectedPaymentMethod = paymentMethods.First().PaymentMethodId;
-            }
 
             var user = (await AuthenticationStateTask).User;
             if (user != null && user.Identity!.IsAuthenticated)

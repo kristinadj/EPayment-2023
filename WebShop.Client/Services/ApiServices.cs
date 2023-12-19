@@ -343,5 +343,23 @@ namespace WebShop.Client.Services
 
             return false;
         }
+
+        public async Task<bool> IsSubscriptionPlanValidAsync(string userId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/SubscriptionPlans/IsValid/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadAsStringAsync();
+                if (tempData != null && bool.TryParse(tempData, out var isValid)) { return isValid; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
+        }
     }
 }

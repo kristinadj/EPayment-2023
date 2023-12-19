@@ -11,9 +11,16 @@
                 }
                 else
                 {
-                    @foreach (var item in items)
+                    @if (items.Any()) 
                     {
-                        <ItemCard Item="@item"></ItemCard>
+                        @foreach (var item in items)
+                        {
+                            <ItemCard Item="@item"></ItemCard>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No available items in the web shop</MudText>
                     }
                 }
             </div>

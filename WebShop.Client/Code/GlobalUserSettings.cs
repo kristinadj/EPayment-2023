@@ -8,6 +8,7 @@ namespace WebShop.Client.Code
         public int ShoppingCartId { get; set; }
         public int ShoppingCartItemsCount { get; set; }
         public Role Role { get; set; }
+        public bool? IsSubscriptionPlanValid { get; set; }
 
         public event Action? OnChange;
 

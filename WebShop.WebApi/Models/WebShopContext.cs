@@ -232,7 +232,7 @@ namespace WebShop.WebApi.Models
                     Role = Role.MERCHANT,
                     Address = "123 Main Street",
                     PhoneNumber = "+1 555-123-4567",
-                    PasswordHash = hasher.HashPassword(null, "Admin123#"),
+                    PasswordHash = hasher.HashPassword(null!, "Admin123#"),
                     Email = "webshopadmin@lawpublishingagency.com",
                     NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
                 });
@@ -252,6 +252,36 @@ namespace WebShop.WebApi.Models
                 new Item("Public Policy Advocacy", "Advocacy services for public policy initiatives.") { ItemId = 8, MerchantId = 1, Price = 550, CurrencyId = 2 },
                 new Item("Government Litigation Support", "Legal support during governmental litigation.") { ItemId = 9, MerchantId = 1, Price = 700, CurrencyId = 2 },
                 new Item("Ethics and Compliance Training", "Training programs for governmental ethics and compliance.") { ItemId = 10, MerchantId = 1, Price = 750, CurrencyId = 2 }
+                );
+
+            var secondMerchantId = "2e87d106-2e43-4a19-bd4c-843920dcf3e9";
+            builder.Entity<User>().HasData(
+                new User("Legal Documents Agency")
+                {
+                    Id = secondMerchantId,
+                    Role = Role.MERCHANT,
+                    Address = "456 Oak Avenue",
+                    PhoneNumber = "+1 555-987-6543",
+                    PasswordHash = hasher.HashPassword(null!, "AgencyPass456$"),
+                    Email = "agencyadmin@legaldocsagency.com",
+                    NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
+                });
+
+            builder.Entity<Merchant>().HasData(
+                new Merchant(secondMerchantId) { MerchantId = 2, IsMasterMerchant = false }
+                );
+
+            builder.Entity<Item>().HasData(
+                new Item("Contract Drafting Services", "Professional drafting of legal contracts.") { ItemId = 11, MerchantId = 2, Price = 600, CurrencyId = 2 },
+                new Item("Trademark Registration", "Assistance with trademark registration.") { ItemId = 12, MerchantId = 2, Price = 900, CurrencyId = 2 },
+                new Item("Patent Filing Support", "Support for filing patents.") { ItemId = 13, MerchantId = 2, Price = 750, CurrencyId = 2 },
+                new Item("Legal Translations", "Accurate translations of legal documents.") { ItemId = 14, MerchantId = 2, Price = 150, CurrencyId = 2 },
+                new Item("Corporate Governance Advisory", "Consultation on corporate governance.") { ItemId = 15, MerchantId = 2, Price = 700, CurrencyId = 2 },
+                new Item("Legal Research Services", "Thorough legal research assistance.") { ItemId = 16, MerchantId = 2, Price = 550, CurrencyId = 2 },
+                new Item("Data Privacy Compliance", "Ensuring compliance with data privacy laws.") { ItemId = 17, MerchantId = 2, Price = 800, CurrencyId = 2 },
+                new Item("International Law Consultation", "Expertise in international legal matters.") { ItemId = 18, MerchantId = 2, Price = 850, CurrencyId = 2 },
+                new Item("Dispute Resolution Services", "Assistance in resolving legal disputes.") { ItemId = 19, MerchantId = 2, Price = 700, CurrencyId = 2 },
+                new Item("Legal Training Seminars", "Seminars on various legal topics.") { ItemId = 20, MerchantId = 2, Price = 750, CurrencyId = 2 }
                 );
 
             builder.Entity<SubscriptionPlan>().HasData(

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
 
@@ -9,7 +10,7 @@ namespace WebShop.WebApi.Services
     public interface ISubscriptionPlanService
     {
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
-        Task<bool> ValidateSubscriptionPlanAsync(string userId);
+        Task<bool> IsSubscriptionPlanValidAsync(string userId);
     }
 
     public class SubscripionPlanService : ISubscriptionPlanService
@@ -30,10 +31,10 @@ namespace WebShop.WebApi.Services
                 .ToListAsync();
         }
 
-        public async Task<bool> ValidateSubscriptionPlanAsync(string userId)
+        public async Task<bool> IsSubscriptionPlanValidAsync(string userId)
         {
             return await _context.UserSubscriptionPlans
-                .Where(x => x.UserId == userId && x.StartTimestamp > DateTime.Today && x.EndTimestamp <= DateTime.Today)
+                .Where(x => x.UserId == userId && x.StartTimestamp > DateTime.Today && x.EndTimestamp <= DateTime.Today && x.Invoice!.Transaction!.TransactionStatus == TransactionStatus.COMPLETED)
                 .AnyAsync();
         }
     }
