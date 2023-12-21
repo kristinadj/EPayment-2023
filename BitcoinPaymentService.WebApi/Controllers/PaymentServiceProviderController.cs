@@ -3,6 +3,8 @@ using Base.Services.Clients;
 using Base.DTO.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Base.DTO.Input;
+using BitcoinPaymentService.WebApi.Services;
 
 namespace BitcoinPaymentService.WebApi.Controllers
 {
@@ -14,11 +16,14 @@ namespace BitcoinPaymentService.WebApi.Controllers
         private readonly ConsulAppSettings _consulAppSettings;
         private readonly IConsulHttpClient _consulHttpClient;
 
-        public PaymentServiceProviderController(IOptions<PaymentMethod> paymentMethod, IOptions<ConsulAppSettings> consulAppSettings, IConsulHttpClient consulHttpClient)
+        private readonly IMerchantService _merchantService;
+
+        public PaymentServiceProviderController(IOptions<PaymentMethod> paymentMethod, IOptions<ConsulAppSettings> consulAppSettings, IConsulHttpClient consulHttpClient, IMerchantService merchantService)
         {
             _paymentMethod = paymentMethod.Value;
             _consulAppSettings = consulAppSettings.Value;
             _consulHttpClient = consulHttpClient;
+            _merchantService = merchantService;
         }
 
         [HttpPost("Register")]
@@ -30,6 +35,15 @@ namespace BitcoinPaymentService.WebApi.Controllers
             if (result == null) return BadRequest();
 
             return Ok(result);
+        }
+
+        [HttpPut("Merchant/UpdateCredentials")]
+        public async Task<ActionResult<PaymentMethodDTO>> UpdateMerchantCredentials(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO)
+        {
+            var isSuccess = await _merchantService.UpdateMerchantCredentialsAsync(updateMerchantCredentialsIDTO);
+            if (!isSuccess) return BadRequest();
+
+            return Ok();
         }
     }
 }
