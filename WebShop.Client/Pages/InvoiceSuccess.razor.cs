@@ -33,7 +33,7 @@ namespace WebShop.Client.Pages
             }
             else if (invoice.InvoiceType == DTO.Enums.InvoiceType.ORDER)
             {
-                order = await ApiServices.GetOrderByIdAsync(InvoiceId);
+                order = await ApiServices.GetOrderByInvoiceIdAsync(InvoiceId);
                 if (order == null) unexpectedError = true;
             }
 

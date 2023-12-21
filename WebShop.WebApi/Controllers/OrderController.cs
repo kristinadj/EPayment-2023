@@ -21,6 +21,17 @@ namespace WebShop.WebApi.Controllers
         public async Task<ActionResult<List<ItemODTO>>> GetById([FromRoute] int orderId)
         {
             var result = await _orderService.GetOrderByIdAsync(orderId);
+            if (result == null) return NotFound();
+
+            return Ok(result);
+        }
+
+        [HttpGet("ByInvoiceId/{invoiceId}")]
+        public async Task<ActionResult<List<ItemODTO>>> GetByInvoiceId([FromRoute] int invoiceId)
+        {
+            var result = await _orderService.GetOrderByInvoiceIdAsync(invoiceId);
+            if (result == null) return NotFound();
+
             return Ok(result);
         }
 

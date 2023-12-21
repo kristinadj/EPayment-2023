@@ -23,21 +23,12 @@ namespace WebShop.Client.Pages
         private bool isPaymentInProgress = false;
 
         private OrderODTO? order;
-        private List<PaymentMethodODTO> paymentMethods = new();
-
-        private int selectedPaymentMethod { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             isLoading = true;
 
             order = await ApiServices.GetOrderByIdAsync(OrderId);
-            paymentMethods = await ApiServices.GetPaymentMethodsAsync();
-            if (paymentMethods.Any())
-            {
-                selectedPaymentMethod = paymentMethods.First().PaymentMethodId;
-            }
-
             isLoading = false;
         }
 
@@ -59,7 +50,7 @@ namespace WebShop.Client.Pages
         private async Task OnClickPayAsync()
         {
             isPaymentInProgress = true;
-            var result = await ApiServices.CreateInvoiceAsync(OrderId, (int)selectedPaymentMethod);
+            var result = await ApiServices.CreateInvoiceAsync(OrderId);
 
             if (result != null)
             {

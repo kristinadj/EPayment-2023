@@ -11,10 +11,11 @@ namespace WebShop.Client.Services
         Task<ShoppingCartODTO?> GetShoppingCartByUserAsync(string userId);
         Task<bool> AddItemInShoppingCartAsync(ShoppingCartItemIDTO itemDTO);
         Task<OrderODTO?> CreateOrderAsync(int shoppingCartId);
-        Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId, int paymentMethodId);
+        Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId);
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
         Task<OrderODTO?> CancelOrderAsync(int orderId);
         Task<OrderODTO?> GetOrderByIdAsync(int orderId);
+        Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId);
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
         Task<OrderODTO?> GeOrderByInvoiceIdAsync(int invoiceId);
         Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus);

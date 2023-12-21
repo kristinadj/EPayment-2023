@@ -34,22 +34,6 @@
                     </div>
                 </MudPaper>
                 <MudDivider></MudDivider>
-                @if (paymentMethods.Any())
-                {
-                    <MudText><b>Select payment method:</b></MudText>
-                    <div class="d-flex flex-row gap-2">
-                        <MudRadioGroup @bind-SelectedOption="@selectedPaymentMethod">
-                            @foreach (var paymentMethod in paymentMethods)
-                            {
-                                <MudRadio Option="@paymentMethod.PaymentMethodId" Color="Color.Primary">@paymentMethod.Name</MudRadio>
-                            }
-                        </MudRadioGroup>
-                    </div>
-                }
-                else
-                {
-                    <MudText>The merchant has no selected payment methods</MudText>
-                }
             </MudCardContent>
             <MudCardActions Class="d-flex gap-4 justify-end">
                 <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickCancelAsync">Cancel</MudButton>
@@ -58,7 +42,7 @@
                     {
                         <span class="spinner-border spinner-border-sm mr-1"></span>
                     }
-                    Pay
+                    Continue
                 </MudButton>
             </MudCardActions>
         </MudCard>

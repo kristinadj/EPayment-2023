@@ -9,6 +9,7 @@ namespace WebShop.WebApi.Services
     public interface IOrderService
     {
         Task<OrderODTO?> GetOrderByIdAsync(int orderId);
+        Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId);
         Task<OrderODTO?> CreateOrderAsync(int shoppingCartId);
         Task<OrderODTO?> CancelOrderAsync(int orderId);
     }
@@ -93,6 +94,14 @@ namespace WebShop.WebApi.Services
         {
             return await _context.Orders
                 .Where(x => x.OrderId == orderId)
+                .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId)
+        {
+            return await _context.Orders
+                .Where(x => x.InvoiceId == invoiceId)
                 .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }
