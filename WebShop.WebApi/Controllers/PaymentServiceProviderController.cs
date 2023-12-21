@@ -119,11 +119,10 @@ namespace WebShop.WebApi.Controllers
                 var paymentMethod = await _paymentMethodService.GetPaymentMethodById(paymentMethodSubscribeIDTO.PaymentMethodId);
                 if (paymentMethod == null) return NotFound();
 
-                var pspPaymentMethodSubscribe = new PspPaymentMethodSubscribeIDTO(paymentMethodSubscribeIDTO.Secret)
+                var pspPaymentMethodSubscribe = new PspPaymentMethodSubscribeIDTO(paymentMethodSubscribeIDTO.Code.ToString(), paymentMethodSubscribeIDTO.Secret)
                 {
                     MerchantId = (int)merchant.PspMerchantId,
-                    PaymentMethodId = paymentMethod.PspPaymentMethodId,
-                    Code = paymentMethodSubscribeIDTO.Code
+                    PaymentMethodId = paymentMethod.PspPaymentMethodId
                 };
 
                 var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Subscribe", pspPaymentMethodSubscribe);

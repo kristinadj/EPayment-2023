@@ -11,6 +11,7 @@ namespace BankPaymentService.WebApi.Models
         public int PaymentServiceMerchantId { get; set; }
         public int BankMerchantId { get; set; }
         public int BankId { get; set; }
+        public string Secret { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -19,9 +20,10 @@ namespace BankPaymentService.WebApi.Models
         public Bank? Bank { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
 
-        public Merchant(string preferredAccountNumber)
+        public Merchant(string preferredAccountNumber, string secret)
         {
             PreferredAccountNumber = preferredAccountNumber;
+            Secret = secret;
         }
     }
 }

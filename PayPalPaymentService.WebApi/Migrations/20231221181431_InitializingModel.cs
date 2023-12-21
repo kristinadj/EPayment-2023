@@ -3,30 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace BankPaymentService.WebApi.Migrations
+namespace PayPalPaymentService.WebApi.Migrations
 {
-    public partial class IntializingModel : Migration
+    public partial class InitializingModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "dbo");
-
-            migrationBuilder.CreateTable(
-                name: "Banks",
-                schema: "dbo",
-                columns: table => new
-                {
-                    BankId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ExternalBankId = table.Column<int>(type: "int", nullable: false),
-                    BankName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    RedirectUrl = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Banks", x => x.BankId);
-                });
 
             migrationBuilder.CreateTable(
                 name: "Currencies",
@@ -52,20 +36,12 @@ namespace BankPaymentService.WebApi.Migrations
                     MerchantId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentServiceMerchantId = table.Column<int>(type: "int", nullable: false),
-                    BankMerchantId = table.Column<int>(type: "int", nullable: false),
-                    BankId = table.Column<int>(type: "int", nullable: false),
-                    PreferredAccountNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Secret = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Merchants", x => x.MerchantId);
-                    table.ForeignKey(
-                        name: "FK_Merchants_Banks_BankId",
-                        column: x => x.BankId,
-                        principalSchema: "dbo",
-                        principalTable: "Banks",
-                        principalColumn: "BankId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -76,9 +52,13 @@ namespace BankPaymentService.WebApi.Migrations
                     InvocieId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExternalInvoiceId = table.Column<int>(type: "int", nullable: false),
+                    PayPalOrderId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MerchantId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     CurrencyId = table.Column<int>(type: "int", nullable: false),
+                    TransactionSuccessUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    TransactionFailureUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    TransactionErrorUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TransactionStatus = table.Column<string>(type: "nvarchar(24)", nullable: false)
                 },
@@ -126,12 +106,6 @@ namespace BankPaymentService.WebApi.Migrations
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Banks",
-                columns: new[] { "BankId", "BankName", "ExternalBankId", "RedirectUrl" },
-                values: new object[] { 1, "HSBC Bank", 1, "https://localhost:7092/" });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
                 table: "Currencies",
                 columns: new[] { "CurrencyId", "Code", "Name", "Symbol" },
                 values: new object[,]
@@ -144,15 +118,8 @@ namespace BankPaymentService.WebApi.Migrations
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "Merchants",
-                columns: new[] { "MerchantId", "BankId", "BankMerchantId", "PaymentServiceMerchantId", "PreferredAccountNumber" },
-                values: new object[] { 1, 1, 1, 1, "9876543210" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Banks_ExternalBankId",
-                schema: "dbo",
-                table: "Banks",
-                column: "ExternalBankId",
-                unique: true);
+                columns: new[] { "MerchantId", "ClientId", "PaymentServiceMerchantId", "Secret" },
+                values: new object[] { 1, "AV3Z4kgHI5D0Dbmcx9Aad6ES4BNG2TgPSipgEEtc2x0sq44FjQcDD3nbbKd9swsAz2wuW_HLKu6L64uh", 1, "AV3Z4kgHI5D0Dbmcx9Aad6ES4BNG2TgPSipgEEtc2x0sq44FjQcDD3nbbKd9swsAz2wuW_HLKu6L64uh" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Currencies_Code",
@@ -178,12 +145,6 @@ namespace BankPaymentService.WebApi.Migrations
                 schema: "dbo",
                 table: "Invoices",
                 column: "MerchantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Merchants_BankId",
-                schema: "dbo",
-                table: "Merchants",
-                column: "BankId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -202,10 +163,6 @@ namespace BankPaymentService.WebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Merchants",
-                schema: "dbo");
-
-            migrationBuilder.DropTable(
-                name: "Banks",
                 schema: "dbo");
         }
     }

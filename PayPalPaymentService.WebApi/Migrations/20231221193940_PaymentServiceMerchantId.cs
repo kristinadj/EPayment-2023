@@ -2,30 +2,30 @@
 
 #nullable disable
 
-namespace BankPaymentService.WebApi.Migrations
+namespace PayPalPaymentService.WebApi.Migrations
 {
-    public partial class BankUrlFix : Migration
+    public partial class PaymentServiceMerchantId : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.UpdateData(
                 schema: "dbo",
-                table: "Banks",
-                keyColumn: "BankId",
+                table: "Merchants",
+                keyColumn: "MerchantId",
                 keyValue: 1,
-                column: "RedirectUrl",
-                value: "https://localhost:7092/api");
+                column: "PaymentServiceMerchantId",
+                value: 2);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.UpdateData(
                 schema: "dbo",
-                table: "Banks",
-                keyColumn: "BankId",
+                table: "Merchants",
+                keyColumn: "MerchantId",
                 keyValue: 1,
-                column: "RedirectUrl",
-                value: "https://localhost:7092/");
+                column: "PaymentServiceMerchantId",
+                value: 1);
         }
     }
 }

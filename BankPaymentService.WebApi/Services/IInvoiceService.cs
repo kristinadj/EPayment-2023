@@ -60,7 +60,7 @@ namespace BankPaymentService.WebApi.Services
         public async Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus)
         {
             var invoice = await _context.Invoices
-                .Where(x => x.InvocieId == invoiceId)
+                .Where(x => x.InvoiceId == invoiceId)
                 .Include(x => x.InvoiceLogs)
                 .FirstOrDefaultAsync();
 

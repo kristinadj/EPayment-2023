@@ -36,15 +36,15 @@ namespace BankPaymentService.WebApi.Services
 
             if (merchant == null || merchant.Bank == null) return null;
 
-            var transaction = new TransactionIDTO(paymentRequestIDTO.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode)
+            var transaction = new TransactionIDTO(merchant.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode)
             {
-                SenderId = paymentRequestIDTO.Code,
+                SenderId = merchant.BankMerchantId,
                 Amount = paymentRequestIDTO.Amount,
-                ExternalInvoiceId = invoice.InvocieId,
+                ExternalInvoiceId = invoice.InvoiceId,
                 Timestamp = paymentRequestIDTO.Timestamp,
-                TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Success",
-                TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Failure",
-                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvocieId}/Error"
+                TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Success",
+                TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Failure",
+                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Error"
             };
 
             try

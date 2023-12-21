@@ -5,12 +5,6 @@ namespace Base.DTO.Input
     public class PaymentRequestIDTO
     {
         public int MerchantId { get; set; }
-
-        public int Code { get; set; }
-
-        [Required]
-        [StringLength(30)]
-        public string Secret { get; set; }
         public double Amount { get; set; }
 
         [Required]
@@ -21,23 +15,19 @@ namespace Base.DTO.Input
 
         [Required]
         [StringLength(70)]
-        public string TransactionSuccessUrl { get; set; }
+        public string TransactionSuccessUrl { get; set; } = string.Empty;
 
         [Required]
         [StringLength(70)]
-        public string TransactionFailureUrl { get; set; }
+        public string TransactionFailureUrl { get; set; } = string.Empty;
 
         [Required]
         [StringLength(70)]
-        public string TransactionErrorUrl { get; set; }
+        public string TransactionErrorUrl { get; set; } = string.Empty;
 
-        public PaymentRequestIDTO(string secret, string currencyCode)
+        public PaymentRequestIDTO(string currencyCode)
         {
-            Secret = secret;
             CurrencyCode = currencyCode;
-            TransactionSuccessUrl = string.Empty;
-            TransactionFailureUrl = string.Empty;
-            TransactionErrorUrl = string.Empty;
         }
     }
 }

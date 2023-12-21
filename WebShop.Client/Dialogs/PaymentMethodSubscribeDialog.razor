@@ -1,7 +1,7 @@
 ﻿<MudDialog>
     <DialogContent>
         <MudForm @ref="@form" @bind-IsValid="@isValid" Class="d-flex flex-column gap-2">
-            <MudTextField T="string" Label="Payment Service Code" @bind-Value="@paymentMethodSubscribe.StrCode" Required="true" RequiredError="Code is required!" />
+            <MudTextField T="string" Label="Payment Service Code" @bind-Value="@paymentMethodSubscribe.Code" Required="true" RequiredError="Code is required!" />
             <MudTextField T="string" Label="Payment Service Secret" @bind-Value="@paymentMethodSubscribe.Secret" Required="true" RequiredError="Secret is required!" InputType="@passwordInputType" Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="OnShowPassword" />
         </MudForm>
     </DialogContent>

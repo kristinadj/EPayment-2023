@@ -45,9 +45,6 @@ namespace BankPaymentService.WebApi.Migrations
 
                     b.HasKey("BankId");
 
-                    b.HasIndex("ExternalBankId")
-                        .IsUnique();
-
                     b.ToTable("Banks", "dbo");
 
                     b.HasData(
@@ -57,6 +54,13 @@ namespace BankPaymentService.WebApi.Migrations
                             BankName = "HSBC Bank",
                             ExternalBankId = 1,
                             RedirectUrl = "https://localhost:7092/api"
+                        },
+                        new
+                        {
+                            BankId = 2,
+                            BankName = "Capital Bank",
+                            ExternalBankId = 1,
+                            RedirectUrl = "https://localhost:7130/api"
                         });
                 });
 
@@ -116,11 +120,11 @@ namespace BankPaymentService.WebApi.Migrations
 
             modelBuilder.Entity("BankPaymentService.WebApi.Models.Invoice", b =>
                 {
-                    b.Property<int>("InvocieId")
+                    b.Property<int>("InvoiceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvocieId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"), 1L, 1);
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
@@ -156,7 +160,7 @@ namespace BankPaymentService.WebApi.Migrations
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
-                    b.HasKey("InvocieId");
+                    b.HasKey("InvoiceId");
 
                     b.HasIndex("CurrencyId");
 
@@ -212,6 +216,10 @@ namespace BankPaymentService.WebApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("MerchantId");
 
                     b.HasIndex("BankId");
@@ -225,7 +233,8 @@ namespace BankPaymentService.WebApi.Migrations
                             BankId = 1,
                             BankMerchantId = 1,
                             PaymentServiceMerchantId = 1,
-                            PreferredAccountNumber = "9876543210"
+                            PreferredAccountNumber = "9876543210",
+                            Secret = "LPAPassword5!"
                         });
                 });
 

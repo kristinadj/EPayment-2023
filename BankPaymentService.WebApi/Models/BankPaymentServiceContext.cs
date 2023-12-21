@@ -16,10 +16,6 @@ namespace BankPaymentService.WebApi.Models
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Bank>(entity =>
-            {
-                entity.HasIndex(x => x.ExternalBankId).IsUnique();
-            });
 
             builder.Entity<Currency>(entity =>
             {
@@ -76,7 +72,7 @@ namespace BankPaymentService.WebApi.Models
 
             // Merchant
             builder.Entity<Merchant>().HasData(
-                new Merchant("9876543210") { MerchantId = 1, PaymentServiceMerchantId = 1, BankMerchantId = 1, BankId = 1 });
+                new Merchant("9876543210", "LPAPassword5!") { MerchantId = 1, PaymentServiceMerchantId = 1, BankMerchantId = 1, BankId = 1 });
 
             #endregion
         }

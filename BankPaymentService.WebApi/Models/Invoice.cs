@@ -8,7 +8,7 @@ namespace BankPaymentService.WebApi.Models
     public class Invoice
     {
         [Key]
-        public int InvocieId { get; set; }
+        public int InvoiceId { get; set; }
         public int ExternalInvoiceId { get; set; }
         public int MerchantId { get; set; }
         public double Amount { get; set; }

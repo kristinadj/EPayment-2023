@@ -215,9 +215,6 @@ namespace PSP.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentMethodMerchantId"), 1L, 1);
 
-                    b.Property<int>("Code")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -226,10 +223,6 @@ namespace PSP.WebApi.Migrations
 
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Secret")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PaymentMethodMerchantId");
 

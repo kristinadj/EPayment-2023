@@ -81,11 +81,10 @@ namespace PSP.WebApi.Services
 
             if (paymentMethodMerchant == null)
             {
-                paymentMethodMerchant = new PaymentMethodMerchant(paymentMethodSubscribe.Secret)
+                paymentMethodMerchant = new PaymentMethodMerchant
                 {
                     MerchantId = paymentMethodSubscribe.MerchantId,
                     PaymentMethodId = paymentMethodSubscribe.PaymentMethodId,
-                    Code = paymentMethodSubscribe.Code,
                     IsActive = true
                 };
                 await _context.PaymentMethodMerchants.AddAsync(paymentMethodMerchant);
@@ -93,8 +92,6 @@ namespace PSP.WebApi.Services
             else
             {
                 paymentMethodMerchant.IsActive = true;
-                paymentMethodMerchant.Code = paymentMethodSubscribe.Code;
-                paymentMethodMerchant.Secret = paymentMethodSubscribe.Secret;
             }
             
             await _context.SaveChangesAsync();

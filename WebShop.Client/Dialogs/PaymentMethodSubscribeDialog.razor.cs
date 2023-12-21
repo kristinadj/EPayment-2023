@@ -33,14 +33,9 @@ namespace WebShop.Client.Dialogs
 
         async void Submit()
         {
-            if (!int.TryParse(paymentMethodSubscribe.StrCode, out int tempCode))
-            {
-                Snackbar.Add("Code must be a numberic field", Severity.Warning);
-            }
-            else if (isValid) 
+            if (isValid) 
             {
                 isSubscribing = true;
-                paymentMethodSubscribe.Code = tempCode;
                 paymentMethodSubscribe.UserId = UserId;
                 paymentMethodSubscribe.PaymentMethodId = PaymentMethodId;
                 var isSuccess = await ApiServices.SubscribeToPaymentMethodAsync(paymentMethodSubscribe);
