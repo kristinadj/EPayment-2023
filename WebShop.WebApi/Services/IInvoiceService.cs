@@ -10,7 +10,7 @@ namespace WebShop.WebApi.Services
     public interface IInvoiceService
     {
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
-        Task<InvoiceODTO?> CreateInvoiceAsync(int orderId, int paymentMethodId);
+        Task<InvoiceODTO?> CreateInvoiceAsync(int orderId);
         Task<InvoiceODTO?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan);
         Task UpdateInvoiceTransactionStatusasync(int invoiceId, TransactionStatus transactionStatus);
         Task<bool> UpdatePaymentMethodAsync(int invoiceId, int pspPaymentMethodId);
@@ -27,21 +27,16 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<InvoiceODTO?> CreateInvoiceAsync(int orderId, int paymentMethodId)
+        public async Task<InvoiceODTO?> CreateInvoiceAsync(int orderId)
         {
             var order = await _context.Orders
                 .Where(x => x.OrderId == orderId && x.OrderStatus == OrderStatus.CREATED)
                 .Include(x => x.OrderItems)
                 .FirstOrDefaultAsync();
 
-            var paymentMethod = await _context.PaymentMethods
-                .Where(x => x.PaymentMethodId == paymentMethodId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            if (order == null) return null;
 
-            if (order == null || paymentMethod == null) return null;
-
-            var invoice = new Invoice(string.Empty) // TODO: Fix
+            var invoice = new Invoice(order.UserId)
             {
                 InvoiceType = InvoiceType.ORDER,
                 MerchantId = order.MerchantId,
@@ -49,12 +44,11 @@ namespace WebShop.WebApi.Services
                 CurrencyId = order.OrderItems!.Select(x => x.CurrencyId).FirstOrDefault(),
                 Transaction = new Transaction
                 {
-                    PaymentMethodId = paymentMethod.PaymentMethodId,
                     CreatedTimestamp = DateTime.Now,
                     TransactionStatus = TransactionStatus.CREATED,
                     TransactionLogs = new List<TransactionLog>
                     {
-                        new TransactionLog
+                        new()
                         {
                             TransactionStatus = TransactionStatus.CREATED,
                             Timestamp = DateTime.Now,
@@ -62,15 +56,12 @@ namespace WebShop.WebApi.Services
                     }
                 },
             };
-            order.Invoice = invoice;
 
-            //await _context.Invoices.AddAsync(invoice);
+            order.Invoice = invoice;
             await _context.SaveChangesAsync();
 
             return await _context.Invoices
                 .Where(x => x.InvoiceId == invoice.InvoiceId)
-                .Include(x => x!.Merchant)
-                .Include(x => x.Currency)
                 .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }

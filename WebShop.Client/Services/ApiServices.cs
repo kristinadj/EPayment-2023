@@ -116,13 +116,13 @@ namespace WebShop.Client.Services
             return data;
         }
 
-        public async Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId, int paymentMethodId)
+        public async Task<RedirectUrlDTO?> CreateInvoiceAsync(int orderId)
         {
             RedirectUrlDTO? data = null;
 
             try
             {
-                var response = await _httpClient.PostAsync($"api/Invoice/{orderId};{paymentMethodId}", null);
+                var response = await _httpClient.PostAsync($"api/Invoice/{orderId}", null);
                 response.EnsureSuccessStatusCode();
 
                 var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();
@@ -183,6 +183,26 @@ namespace WebShop.Client.Services
             try
             {
                 var response = await _httpClient.GetAsync($"api/Order/ById/{orderId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
+        public async Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId)
+        {
+            OrderODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
                 response.EnsureSuccessStatusCode();
 
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();

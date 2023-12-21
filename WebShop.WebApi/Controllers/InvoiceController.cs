@@ -47,20 +47,17 @@ namespace WebShop.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost("{orderId};{paymentMethodId}")]
-        public async Task<ActionResult<RedirectUrlDTO>> CreateInvoice([FromRoute] int orderId, [FromRoute] int paymentMethodId)
+        [HttpPost("{orderId}")]
+        public async Task<ActionResult<RedirectUrlDTO>> CreateInvoice([FromRoute] int orderId)
         {
-            var paymentMethod = await _paymentMethodService.GetPaymentMethodById(paymentMethodId);
-            if (paymentMethod == null) return NotFound();
-
-            var invoice = await _invoiceService.CreateInvoiceAsync(orderId, paymentMethodId);
+            var invoice = await _invoiceService.CreateInvoiceAsync(orderId);
 
             if (invoice == null) return BadRequest();
 
             await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
 
             var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
-            var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice/{paymentMethod.PspPaymentMethodId}", pspPayment);
+            var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
 
             if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
             {
