@@ -9,14 +9,14 @@ namespace PayPalPaymentService.WebApi.Models
         [Key]
         public int MerchantId { get; set; }
         public int PaymentServiceMerchantId { get; set; }
-        public string Email { get; set; }
+        public string ClientId { get; set; }
         public string Secret { get; set; }
 
         public ICollection<Invoice>? Invoices { get; set; }
 
-        public Merchant(string email, string secret)
+        public Merchant(string clientId, string secret)
         {
-            Email = email;
+            ClientId = clientId;
             Secret = secret;
         }
     }

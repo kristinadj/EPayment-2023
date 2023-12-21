@@ -76,7 +76,7 @@ namespace PSP.WebApi.Controllers
 
                 try
                 {
-                    var isSuccess = await _consulHttpClient.PutAsync(paymentMethod.ServiceName, "Merchant/UpdateCredentials", updateMerchantCredentials);
+                    var isSuccess = await _consulHttpClient.PutAsync(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/PaymentServiceProvider/Merchant/UpdateCredentials", updateMerchantCredentials);
                     if (!isSuccess) return BadRequest();
                 }
                 catch (HttpRequestException)

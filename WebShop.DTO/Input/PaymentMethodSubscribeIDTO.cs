@@ -6,22 +6,21 @@ namespace WebShop.DTO.Input
     {
         public string UserId { get; set; }
         public int PaymentMethodId { get; set; }
-        public string StrCode { get; set; }
-        public int Code { get; set; }
+        public string Code { get; set; }
         public string Secret { get; set; }
 
-        public PaymentMethodSubscribeIDTO(string userId, string secret)
+        public PaymentMethodSubscribeIDTO(string userId, string code, string secret)
         {
             UserId = userId;
             Secret = secret;
-            StrCode = Code.ToString();
+            Code = code;
         }
 
         public PaymentMethodSubscribeIDTO()
         {
             UserId = string.Empty;
             Secret = string.Empty;
-            StrCode = string.Empty;
+            Code = string.Empty;
         }
     }
 }

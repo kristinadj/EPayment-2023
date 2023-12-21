@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using PayPalPaymentService.WebApi.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using PayPalPaymentService.WebApi.Enums;
 
 namespace PayPalPaymentService.WebApi.Models
 {
@@ -9,8 +8,10 @@ namespace PayPalPaymentService.WebApi.Models
     public class Invoice
     {
         [Key]
-        public int InvocieId { get; set; }
+        public int InvoiceId { get; set; }
         public int ExternalInvoiceId { get; set; }
+        public string? PayPalOrderId { get; set; }
+        public string? PayerId { get; set; } 
         public int MerchantId { get; set; }
         public double Amount { get; set; }
         public int CurrencyId { get; set; }

@@ -18,6 +18,7 @@ namespace BankPaymentService.WebApi.Controllers
 
         private readonly CardPaymentMethod _cardPaymentMethod;
         private readonly IConsulHttpClient _consulHttpClient;
+
         public InvoiceCardController(
             IOptions<CardPaymentMethod> cardPaymentMethod,
             IInvoiceService invoiceService, 

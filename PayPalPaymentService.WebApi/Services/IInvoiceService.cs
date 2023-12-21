@@ -1,34 +1,43 @@
-﻿using BankPaymentService.WebApi.Enums;
-using BankPaymentService.WebApi.Models;
-using Base.DTO.Input;
+﻿using Base.DTO.Input;
 using Microsoft.EntityFrameworkCore;
+using PayPalPaymentService.WebApi.Enums;
+using PayPalPaymentService.WebApi.Models;
 
-namespace BankPaymentService.WebApi.Services
+namespace PayPalPaymentService.WebApi.Services
 {
     public interface IInvoiceService
     {
+        Task<Invoice?> GetInvoiceByPayPalOrderIdAsync(string payPalOrderId);
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
+        Task<Invoice?> UpdatePayPalOrderIdAsync(int invoiceId, string payPalOrderId);
+        Task<Invoice?> UpdatePayerIdAsync(int invoiceId, string payerId);
     }
 
     public class InvoiceService : IInvoiceService
     {
-        private readonly BankPaymentServiceContext _context;
+        private readonly PayPalServiceContext _context;
 
-        public InvoiceService(BankPaymentServiceContext context)
+        public InvoiceService(PayPalServiceContext context)
         {
             _context = context;
+        }
+
+        public async Task<Invoice?> GetInvoiceByPayPalOrderIdAsync(string payPalOrderId)
+        {
+            return await _context.Invoices
+                .Where(x => x.PayPalOrderId == payPalOrderId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO)
         {
             var merchant = await _context.Merchants
                 .Where(x => x.PaymentServiceMerchantId == paymentRequestDTO.MerchantId)
-                .Include(x => x.Bank)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (merchant == null || merchant.Bank == null) return null;
+            if (merchant == null) return null;
 
             var currency = await _context.Currencies
                 .Where(x => x.Code == paymentRequestDTO.CurrencyCode)
@@ -68,6 +77,36 @@ namespace BankPaymentService.WebApi.Services
 
             invoice.TransactionStatus = transactionStatus;
             invoice.InvoiceLogs!.Add(new InvoiceLog { TransactionStatus = transactionStatus, Timestamp = DateTime.Now });
+            await _context.SaveChangesAsync();
+
+            return invoice;
+        }
+
+        public async Task<Invoice?> UpdatePayPalOrderIdAsync(int invoiceId, string payPalOrderId)
+        {
+            var invoice = await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Include(x => x.InvoiceLogs)
+                .FirstOrDefaultAsync();
+
+            if (invoice == null) return null;
+
+            invoice.PayPalOrderId = payPalOrderId;
+            await _context.SaveChangesAsync();
+
+            return invoice;
+        }
+
+        public async Task<Invoice?> UpdatePayerIdAsync(int invoiceId, string payerId)
+        {
+            var invoice = await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Include(x => x.InvoiceLogs)
+                .FirstOrDefaultAsync();
+
+            if (invoice == null) return null;
+
+            invoice.PayerId = payerId;
             await _context.SaveChangesAsync();
 
             return invoice;
