@@ -36,9 +36,9 @@ namespace BankPaymentService.WebApi.Services
 
             if (merchant == null || merchant.Bank == null) return null;
 
-            var transaction = new TransactionIDTO(paymentRequestIDTO.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode)
+            var transaction = new TransactionIDTO(merchant.Secret, merchant.PreferredAccountNumber, paymentRequestIDTO.CurrencyCode)
             {
-                SenderId = paymentRequestIDTO.Code,
+                SenderId = merchant.BankMerchantId,
                 Amount = paymentRequestIDTO.Amount,
                 ExternalInvoiceId = invoice.InvocieId,
                 Timestamp = paymentRequestIDTO.Timestamp,

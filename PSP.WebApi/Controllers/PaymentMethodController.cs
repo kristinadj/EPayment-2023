@@ -1,4 +1,6 @@
-﻿using Base.DTO.Shared;
+﻿using Base.DTO.Input;
+using Base.DTO.Shared;
+using Base.Services.Clients;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PSP.WebApi.DTO.Input;
@@ -13,10 +15,14 @@ namespace PSP.WebApi.Controllers
     public class PaymentMethodController : ControllerBase
     {
         private readonly IPaymentMethodService _paymentMethodServices;
+        private readonly IMerchantService _merchantService;
+        private readonly IConsulHttpClient _consulHttpClient;
 
-        public PaymentMethodController(IPaymentMethodService paymentMethodServices)
+        public PaymentMethodController(IPaymentMethodService paymentMethodServices, IMerchantService merchantService, IConsulHttpClient consulHttpClient)
         {
             _paymentMethodServices = paymentMethodServices;
+            _merchantService = merchantService;
+            _consulHttpClient = consulHttpClient;
         }
 
         [HttpGet]
@@ -55,7 +61,29 @@ namespace PSP.WebApi.Controllers
         {
             try
             {
+                var paymentMethod = await _paymentMethodServices.GetPaymentMethodByIdAsync(paymentMethodSubscribe.PaymentMethodId);
+                if (paymentMethod == null) return NotFound();
+
+                var merchant = await _merchantService.GetMerchantByIdAsync(paymentMethodSubscribe.MerchantId);
+                if (merchant == null) return NotFound();    
+
                 var result = await _paymentMethodServices.SubscribeAsync(paymentMethodSubscribe);
+
+                var updateMerchantCredentials = new UpdateMerchantCredentialsIDTO(paymentMethodSubscribe.Code, paymentMethodSubscribe.Secret)
+                {
+                    PaymentServiceMerchantId = merchant.MerchantId
+                };
+
+                try
+                {
+                    var isSuccess = await _consulHttpClient.PutAsync(paymentMethod.ServiceName, "Merchant/UpdateCredentials", updateMerchantCredentials);
+                    if (!isSuccess) return BadRequest();
+                }
+                catch (HttpRequestException)
+                {
+                    return BadRequest();
+                }
+
                 return Ok(result);
             }
             catch (Exception ex)

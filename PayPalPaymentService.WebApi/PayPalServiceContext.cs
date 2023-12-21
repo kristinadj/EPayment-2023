@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PayPalPaymentService.WebApi.Models;
 
-namespace BankPaymentService.WebApi.Models
+namespace PayPalPaymentService.WebApi
 {
-    public class BankPaymentServiceContext : DbContext
+    public class PayPalServiceContext : DbContext
     {
-        public DbSet<Bank> Banks { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<InvoiceLog> InvoiceLogs { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
 
-        public BankPaymentServiceContext(DbContextOptions<BankPaymentServiceContext> options) : base(options) { }
+        public PayPalServiceContext(DbContextOptions<PayPalServiceContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,13 +49,6 @@ namespace BankPaymentService.WebApi.Models
                     .HasConversion<string>();
             });
 
-            builder.Entity<Merchant>(entity =>
-            {
-                entity.HasOne(x => x.Bank)
-                    .WithMany(x => x.Merchants)
-                    .HasForeignKey(x => x.BankId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
 
             #region Database Initialization
 
@@ -65,14 +58,9 @@ namespace BankPaymentService.WebApi.Models
                 new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
                 );
 
-            builder.Entity<Bank>().HasData(
-                new Bank("HSBC Bank", "https://localhost:7092/api") { BankId = 1, ExternalBankId = 1 },
-                new Bank("Capital Bank", "https://localhost:7130/api") { BankId = 2, ExternalBankId = 1 }
-                );
-
             // Merchant
             builder.Entity<Merchant>().HasData(
-                new Merchant("9876543210", "LPAPassword5!") { MerchantId = 1, PaymentServiceMerchantId = 1, BankMerchantId = 1, BankId = 1 });
+                new Merchant("sb-m1oed28379074@business.example.com", ",.Do6<TD") { MerchantId = 1, PaymentServiceMerchantId = 1 });
 
             #endregion
         }

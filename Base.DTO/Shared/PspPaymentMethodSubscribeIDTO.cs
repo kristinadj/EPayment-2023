@@ -4,11 +4,12 @@
     {
         public int MerchantId { get; set; }
         public int PaymentMethodId { get; set; }
-        public int Code { get; set; }
+        public string Code { get; set; }
         public string Secret { get; set; }
 
-        public PspPaymentMethodSubscribeIDTO(string secret)
+        public PspPaymentMethodSubscribeIDTO(string code, string secret)
         {
+            Code = code;
             Secret = secret;
         }
     }

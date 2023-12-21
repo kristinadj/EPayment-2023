@@ -15,6 +15,8 @@ builder.Services.Configure<BankPaymentServiceUrl>(builder.Configuration.GetSecti
 builder.Services.Configure<CardPaymentMethod>(builder.Configuration.GetSection("CardPaymentMethod"));
 builder.Services.Configure<QrCodePaymentMethod>(builder.Configuration.GetSection("QrCodePaymentMethod"));
 
+builder.Services.AddScoped<IMerchantService, MerchantService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BankPaymentService.WebApi.Migrations
 {
-    public partial class IntializingModel : Migration
+    public partial class InitializingModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,6 +54,7 @@ namespace BankPaymentService.WebApi.Migrations
                     PaymentServiceMerchantId = table.Column<int>(type: "int", nullable: false),
                     BankMerchantId = table.Column<int>(type: "int", nullable: false),
                     BankId = table.Column<int>(type: "int", nullable: false),
+                    Secret = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PreferredAccountNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -79,6 +80,9 @@ namespace BankPaymentService.WebApi.Migrations
                     MerchantId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     CurrencyId = table.Column<int>(type: "int", nullable: false),
+                    TransactionSuccessUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    TransactionFailureUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    TransactionErrorUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TransactionStatus = table.Column<string>(type: "nvarchar(24)", nullable: false)
                 },
@@ -128,7 +132,11 @@ namespace BankPaymentService.WebApi.Migrations
                 schema: "dbo",
                 table: "Banks",
                 columns: new[] { "BankId", "BankName", "ExternalBankId", "RedirectUrl" },
-                values: new object[] { 1, "HSBC Bank", 1, "https://localhost:7092/" });
+                values: new object[,]
+                {
+                    { 1, "HSBC Bank", 1, "https://localhost:7092/api" },
+                    { 2, "Capital Bank", 1, "https://localhost:7130/api" }
+                });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
@@ -144,15 +152,8 @@ namespace BankPaymentService.WebApi.Migrations
             migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "Merchants",
-                columns: new[] { "MerchantId", "BankId", "BankMerchantId", "PaymentServiceMerchantId", "PreferredAccountNumber" },
-                values: new object[] { 1, 1, 1, 1, "9876543210" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Banks_ExternalBankId",
-                schema: "dbo",
-                table: "Banks",
-                column: "ExternalBankId",
-                unique: true);
+                columns: new[] { "MerchantId", "BankId", "BankMerchantId", "PaymentServiceMerchantId", "PreferredAccountNumber", "Secret" },
+                values: new object[] { 1, 1, 1, 1, "9876543210", "LPAPassword5!" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Currencies_Code",

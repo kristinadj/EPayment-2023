@@ -31,5 +31,14 @@ namespace PayPalPaymentService.WebApi.Controllers
 
             return Ok(result);
         }
+
+        //[HttpPut("Merchant/UpdateCredentials")]
+        //public async Task<ActionResult<PaymentMethodDTO>> UpdateMerchantCredentials(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO)
+        //{
+        //    var isSuccess = await _merchantService.UpdateMerchantCredentialsAsync(updateMerchantCredentialsIDTO);
+        //    if (!isSuccess) return BadRequest();
+
+        //    return Ok();
+        //}
     }
 }

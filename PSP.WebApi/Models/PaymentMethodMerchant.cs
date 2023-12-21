@@ -12,15 +12,7 @@ namespace PSP.WebApi.Models
         public int MerchantId { get; set; }
         public bool IsActive { get; set; }
 
-        public int Code { get; set; }
-        public string Secret { get; set; }
-
         public PaymentMethod? PaymentMethod { get; set; }
         public Merchant? Merchant { get; set; }
-
-        public PaymentMethodMerchant(string secret)
-        {
-            Secret = secret;
-        }
     }
 }

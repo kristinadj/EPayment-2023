@@ -45,9 +45,6 @@ namespace BankPaymentService.WebApi.Migrations
 
                     b.HasKey("BankId");
 
-                    b.HasIndex("ExternalBankId")
-                        .IsUnique();
-
                     b.ToTable("Banks", "dbo");
 
                     b.HasData(
@@ -57,6 +54,13 @@ namespace BankPaymentService.WebApi.Migrations
                             BankName = "HSBC Bank",
                             ExternalBankId = 1,
                             RedirectUrl = "https://localhost:7092/api"
+                        },
+                        new
+                        {
+                            BankId = 2,
+                            BankName = "Capital Bank",
+                            ExternalBankId = 1,
+                            RedirectUrl = "https://localhost:7130/api"
                         });
                 });
 
@@ -212,6 +216,10 @@ namespace BankPaymentService.WebApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("MerchantId");
 
                     b.HasIndex("BankId");
@@ -225,7 +233,8 @@ namespace BankPaymentService.WebApi.Migrations
                             BankId = 1,
                             BankMerchantId = 1,
                             PaymentServiceMerchantId = 1,
-                            PreferredAccountNumber = "9876543210"
+                            PreferredAccountNumber = "9876543210",
+                            Secret = "LPAPassword5!"
                         });
                 });
 

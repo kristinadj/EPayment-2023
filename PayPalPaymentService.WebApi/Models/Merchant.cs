@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankPaymentService.WebApi.Models
+namespace PayPalPaymentService.WebApi.Models
 {
     [Table("Merchants", Schema = "dbo")]
     public class Merchant
@@ -9,20 +9,14 @@ namespace BankPaymentService.WebApi.Models
         [Key]
         public int MerchantId { get; set; }
         public int PaymentServiceMerchantId { get; set; }
-        public int BankMerchantId { get; set; }
-        public int BankId { get; set; }
+        public string Email { get; set; }
         public string Secret { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string PreferredAccountNumber { get; set; }
-
-        public Bank? Bank { get; set; }
         public ICollection<Invoice>? Invoices { get; set; }
 
-        public Merchant(string preferredAccountNumber, string secret)
+        public Merchant(string email, string secret)
         {
-            PreferredAccountNumber = preferredAccountNumber;
+            Email = email;
             Secret = secret;
         }
     }
