@@ -22,7 +22,7 @@ namespace BitcoinPaymentService.WebApi.Services
             {
                 OrderId = invoiceId.ToString(),
                 RedirectUrl = successUrl,
-                CloseURL = cancelUrl
+                CloseURL = cancelUrl,
                 Physical = false
             };
 

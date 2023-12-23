@@ -44,8 +44,8 @@ namespace BitcoinPaymentService.WebApi.Controllers
             var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
             if (invoice == null) return BadRequest();
 
-            var successUrl = _bitcoinSettings.RedirectUrl.Replace("@INVOICE_ID@", invoice.InvoiceId.ToString());
-            var closeUrl = _bitcoinSettings.RedirectUrl.Replace("@INVOICE_ID@", invoice.InvoiceId.ToString());
+            var successUrl = _bitcoinSettings.SuccessUrl.Replace("@INVOICE_ID@", invoice.InvoiceId.ToString());
+            var closeUrl = _bitcoinSettings.CancelUrl.Replace("@INVOICE_ID@", invoice.InvoiceId.ToString());
             var bitPayInvoice = await BitcoinClient.CreateInvoiceAsync(merchant.Token, invoice.InvoiceId, (decimal)invoice.Amount, invoice.Currency!.Code, successUrl, closeUrl);
 
             if (bitPayInvoice == null)
