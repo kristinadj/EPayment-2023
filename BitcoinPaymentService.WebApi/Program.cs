@@ -1,12 +1,21 @@
 using Base.Services.AppSettings;
+using BitcoinPaymentService.WebApi.AppSettings;
 using BitcoinPaymentService.WebApi.Configurations;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using BitcoinPaymentService.WebApi.Models;
+using BitcoinPaymentService.WebApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddDbContext<BitcoinServiceContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
+
 builder.Services.Configure<PaymentMethod>(builder.Configuration.GetSection("PaymentMethod"));
+builder.Services.Configure<BitcoinSettings>(builder.Configuration.GetSection("BitcoinSettings"));
+
+builder.Services.AddScoped<IMerchantService, MerchantService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -15,7 +24,6 @@ builder.Services.AddConsul();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
