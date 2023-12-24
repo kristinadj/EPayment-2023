@@ -30,6 +30,8 @@ namespace Bank2.WebApi.DTO.Input
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; }
 
+        public bool IsQrCodePayment { get; set; }
+
         public TransactionIDTO(string secret, string accountNumber, string currencyCode, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
             Secret = secret;

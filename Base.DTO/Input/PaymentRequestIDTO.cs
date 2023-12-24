@@ -9,7 +9,7 @@ namespace Base.DTO.Input
 
         [Required]
         [StringLength(3)]
-        public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; } = string.Empty;
         public int ExternalInvoiceId { get; set; }
         public DateTime Timestamp { get; set; }
 
@@ -24,10 +24,5 @@ namespace Base.DTO.Input
         [Required]
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; } = string.Empty;
-
-        public PaymentRequestIDTO(string currencyCode)
-        {
-            CurrencyCode = currencyCode;
-        }
     }
 }

@@ -86,7 +86,7 @@ namespace PSP.WebApi.Controllers
             }
 
             // 2. Initiate payment
-            var paymentRequest = new PaymentRequestIDTO(invoice.Currency!.Code)
+            var paymentRequest = new PaymentRequestIDTO
             {
                 MerchantId = paymentMethodCredentials.MerchantId,
                 Amount = invoice.TotalPrice,
@@ -94,7 +94,8 @@ namespace PSP.WebApi.Controllers
                 Timestamp = invoice.Transaction!.CreatedTimestamp,
                 TransactionSuccessUrl = invoice.Merchant!.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
                 TransactionFailureUrl = invoice.Merchant!.TransactionFailureUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
-                TransactionErrorUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString())
+                TransactionErrorUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                CurrencyCode = invoice.Currency!.Code
             };
 
             try

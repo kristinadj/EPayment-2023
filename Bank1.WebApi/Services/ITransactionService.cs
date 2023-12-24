@@ -74,6 +74,9 @@ namespace Bank1.WebApi.Services
         {
             return await _context.Transactions
                 .Where(x => x.TransactionId == transactionId)
+                .Include(x => x.Currency)
+                .Include(x => x.ReceiverAccount)
+                .ThenInclude(x => x!.Owner)
                 .Include(x => x.TransactionLogs)
                 .FirstOrDefaultAsync();
         }

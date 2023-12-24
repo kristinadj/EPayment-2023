@@ -9,6 +9,7 @@ namespace Bank1.Client.Services
     public interface IApiServices
     {
         Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO);
+        Task<string?> GenerateQrCodeAsync(int transactionId);
     }
 
     public class ApiServices : IApiServices
@@ -18,6 +19,25 @@ namespace Bank1.Client.Services
         public ApiServices(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public async Task<string?> GenerateQrCodeAsync(int transactionId)
+        {
+            string? qrCodeSvg = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/Transaction/QrCode/{transactionId}");
+                response.EnsureSuccessStatusCode();
+
+                qrCodeSvg = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return qrCodeSvg;
         }
 
         public async Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO)

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Bank1.WebApi.Migrations
 {
-    public partial class PccUpdates : Migration
+    public partial class AccountNumberChanged : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,6 +58,22 @@ namespace Bank1.WebApi.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.UpdateData(
+                schema: "dbo",
+                table: "Accounts",
+                keyColumn: "AccountId",
+                keyValue: 1,
+                column: "AccountNumber",
+                value: "105-0000000000000-29");
+
+            migrationBuilder.UpdateData(
+                schema: "dbo",
+                table: "Accounts",
+                keyColumn: "AccountId",
+                keyValue: 2,
+                column: "AccountNumber",
+                value: "106-0000000000000-30");
+
             migrationBuilder.CreateIndex(
                 name: "IX_IssuerTransactions_CurrencyId",
                 schema: "dbo",
@@ -86,6 +102,22 @@ namespace Bank1.WebApi.Migrations
                 name: "IssuerTransactionId",
                 schema: "dbo",
                 table: "Transactions");
+
+            migrationBuilder.UpdateData(
+                schema: "dbo",
+                table: "Accounts",
+                keyColumn: "AccountId",
+                keyValue: 1,
+                column: "AccountNumber",
+                value: "9876543210");
+
+            migrationBuilder.UpdateData(
+                schema: "dbo",
+                table: "Accounts",
+                keyColumn: "AccountId",
+                keyValue: 2,
+                column: "AccountNumber",
+                value: "1234567890");
         }
     }
 }

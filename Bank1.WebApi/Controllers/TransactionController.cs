@@ -1,5 +1,6 @@
 ﻿using Bank1.WebApi.AppSettings;
 using Bank1.WebApi.DTO.Input;
+using Bank1.WebApi.Helpers;
 using Bank1.WebApi.Services;
 using Base.DTO.Input;
 using Base.DTO.Output;
@@ -19,11 +20,18 @@ namespace Bank1.WebApi.Controllers
         private readonly IAccountService _accountService;
         private readonly BankSettings _appSettings;
 
-        public TransactionController(ITransactionService transactionService, IAccountService accountService, IOptions<BankSettings> appSettings)
+        private readonly INbsClient _nbsClient;
+
+        public TransactionController(
+            ITransactionService transactionService, 
+            IAccountService accountService,
+            INbsClient nbsClient,
+            IOptions<BankSettings> appSettings)
         {
             _transactionService = transactionService;
             _accountService = accountService;
             _appSettings = appSettings.Value;
+            _nbsClient = nbsClient;
         }
 
         [HttpPost]
@@ -34,7 +42,12 @@ namespace Bank1.WebApi.Controllers
                 var transaction = await _transactionService.CreateTransactionAsync(transactionIDTO);
                 if (transaction == null) return BadRequest();
 
-                var paymentInstructions = new PaymentInstructionsODTO(_appSettings.BankPaymentUrl.Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString()))
+                var paymentUrl = $"{_appSettings.BankPaymentUrl}".Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString());
+
+                if (transactionIDTO.IsQrCodePayment)
+                    paymentUrl = $"{_appSettings.BankPaymentUrl}/qrCode";
+
+                var paymentInstructions = new PaymentInstructionsODTO(paymentUrl)
                 {
                     PaymentId = transaction.TransactionId
                 };
@@ -111,6 +124,26 @@ namespace Bank1.WebApi.Controllers
             catch (Exception)
             {
                 return BadRequest();
+            }
+        }
+
+        [HttpGet("QrCode/{transactionId}")]
+        public async Task<ActionResult> GenerateQrCode([FromRoute] int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+
+                if (transaction == null) return NotFound();
+
+                // TODO: Exhange currency
+                var qrCodeGenIDTO = Converter.ConvertToQrCodeGenIDTO(transaction, transaction.Amount, "RSD");
+                var qrCode = await _nbsClient.GenerateQrCodeAsync(qrCodeGenIDTO);
+                return Ok(qrCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

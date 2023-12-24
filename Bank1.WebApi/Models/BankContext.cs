@@ -154,7 +154,7 @@ namespace Bank1.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("9876543210")
+               new Account("105-0000000000000-29")
                {
                    AccountId = 1,
                    Balance = 14500,
@@ -170,7 +170,7 @@ namespace Bank1.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("1234567890")
+               new Account("106-0000000000000-30")
                {
                    AccountId = 2,
                    Balance = 6530,

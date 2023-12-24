@@ -37,7 +37,7 @@ namespace BankPaymentService.WebApi.Controllers
             var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
             if (invoice == null) return BadRequest();
 
-            var paymentInstructions = await _bankService.SendInvoiceToBankAsync(invoice, paymentRequestDTO);
+            var paymentInstructions = await _bankService.SendInvoiceToBankAsync(invoice, paymentRequestDTO, false);
             if (paymentInstructions == null) return BadRequest();
 
             return Ok(paymentInstructions);

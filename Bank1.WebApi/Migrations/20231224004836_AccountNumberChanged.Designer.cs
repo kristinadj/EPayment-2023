@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20231120214203_PccUpdates")]
-    partial class PccUpdates
+    [Migration("20231224004836_AccountNumberChanged")]
+    partial class AccountNumberChanged
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,7 +61,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 1,
-                            AccountNumber = "9876543210",
+                            AccountNumber = "105-0000000000000-29",
                             Balance = 14500.0,
                             CurrencyId = 1,
                             OwnerId = 1
@@ -69,7 +69,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "1234567890",
+                            AccountNumber = "106-0000000000000-30",
                             Balance = 6530.0,
                             CurrencyId = 1,
                             OwnerId = 2
