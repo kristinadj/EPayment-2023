@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BankPaymentService.WebApi.Models
@@ -11,6 +12,8 @@ namespace BankPaymentService.WebApi.Models
         public int PaymentServiceMerchantId { get; set; }
         public int BankMerchantId { get; set; }
         public int BankId { get; set; }
+
+        [EncryptColumn]
         public string Secret { get; set; }
 
         [Required]

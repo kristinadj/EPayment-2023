@@ -1,21 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.EncryptColumn.Extension;
+using EntityFrameworkCore.EncryptColumn.Interfaces;
+using EntityFrameworkCore.EncryptColumn.Util;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankPaymentService.WebApi.Models
 {
     public class BankPaymentServiceContext : DbContext
     {
+        private readonly IEncryptionProvider _provider;
         public DbSet<Bank> Banks { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<InvoiceLog> InvoiceLogs { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
 
-        public BankPaymentServiceContext(DbContextOptions<BankPaymentServiceContext> options) : base(options) { }
+        public BankPaymentServiceContext(DbContextOptions<BankPaymentServiceContext> options) : base(options) 
+        {
+            var key = "QlT9h3wtpdaRU+k3R+QOkA==";
+            _provider = new GenerateEncryptionProvider(key);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.UseEncryption(_provider);
 
             builder.Entity<Currency>(entity =>
             {

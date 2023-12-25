@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bank1.WebApi.Models
@@ -22,6 +23,7 @@ namespace Bank1.WebApi.Models
         public string ExpiratoryDate { get; set; }
 
         [Range(0, 999)]
+        [EncryptColumn]
         public int CVV { get; set; }
 
         public Account? Account { get; set; }

@@ -1,20 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.EncryptColumn.Extension;
+using EntityFrameworkCore.EncryptColumn.Interfaces;
+using EntityFrameworkCore.EncryptColumn.Util;
+using Microsoft.EntityFrameworkCore;
 
 namespace PayPalPaymentService.WebApi.Models
 {
     public class PayPalServiceContext : DbContext
     {
+        private readonly IEncryptionProvider _provider;
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<InvoiceLog> InvoiceLogs { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
 
-        public PayPalServiceContext(DbContextOptions<PayPalServiceContext> options) : base(options) { }
+        public PayPalServiceContext(DbContextOptions<PayPalServiceContext> options) : base(options)
+        {
+            var key = "tQL9h3wtpfAtU+k3R+QOkA==";
+            _provider = new GenerateEncryptionProvider(key);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.UseEncryption(_provider);
 
             builder.Entity<Currency>(entity =>
             {

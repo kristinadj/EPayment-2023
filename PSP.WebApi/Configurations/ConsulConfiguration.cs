@@ -1,6 +1,7 @@
 ﻿using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Consul;
+using Microsoft.Extensions.Logging;
 
 namespace PSP.WebApi.Configurations
 {
@@ -35,8 +36,7 @@ namespace PSP.WebApi.Configurations
             if (!consulAppSettings!.Enabled)
                 return string.Empty;
 
-            Guid serviceId = Guid.NewGuid();
-            string consulServiceID = $"{consulAppSettings.Service}:{serviceId}";
+            string consulServiceID = $"{consulAppSettings.Service}";
 
             var client = scope.ServiceProvider.GetService<IConsulClient>();
 
@@ -48,7 +48,15 @@ namespace PSP.WebApi.Configurations
                 Port = consulAppSettings.Port
             };
 
+            client!.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
             client!.Agent.ServiceRegister(consulServiceRistration);
+
+            var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
+            lifetime!.ApplicationStopping.Register(() => {
+                Console.WriteLine("Unregistering from Consul");
+                client.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
+            });
+
 
             return consulServiceID;
         }
