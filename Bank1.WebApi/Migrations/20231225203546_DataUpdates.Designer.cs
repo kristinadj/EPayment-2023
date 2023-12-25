@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20231120214203_PccUpdates")]
-    partial class PccUpdates
+    [Migration("20231225203546_DataUpdates")]
+    partial class DataUpdates
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,7 +61,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 1,
-                            AccountNumber = "9876543210",
+                            AccountNumber = "105-0000000000000-29",
                             Balance = 14500.0,
                             CurrencyId = 1,
                             OwnerId = 1
@@ -69,7 +69,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "1234567890",
+                            AccountNumber = "106-0000000000000-30",
                             Balance = 6530.0,
                             CurrencyId = 1,
                             OwnerId = 2
@@ -248,16 +248,16 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             CustomerId = 1,
-                            Address = "123 Main Street",
+                            Address = "123 Glavna ulica",
                             Email = "webshopadmin@lawpublishingagency.com",
-                            FirstName = "Law Publishing Web Shop",
+                            FirstName = "Web prodavnica pravnog izdavaštva",
                             LastName = "",
                             PhoneNumber = "+1 555-123-4567"
                         },
                         new
                         {
                             CustomerId = 2,
-                            Address = "789 Elm Street,",
+                            Address = "789 Ulica jorgovana,",
                             Email = "johndoe@email.com",
                             FirstName = "John",
                             LastName = "Doe",

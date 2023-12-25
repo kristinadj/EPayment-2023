@@ -4,6 +4,7 @@ using Bank1.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    partial class BankContextModelSnapshot : ModelSnapshot
+    [Migration("20231224004836_AccountNumberChanged")]
+    partial class AccountNumberChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,16 +248,16 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             CustomerId = 1,
-                            Address = "123 Glavna ulica",
+                            Address = "123 Main Street",
                             Email = "webshopadmin@lawpublishingagency.com",
-                            FirstName = "Web prodavnica pravnog izdavaštva",
+                            FirstName = "Law Publishing Web Shop",
                             LastName = "",
                             PhoneNumber = "+1 555-123-4567"
                         },
                         new
                         {
                             CustomerId = 2,
-                            Address = "789 Ulica jorgovana,",
+                            Address = "789 Elm Street,",
                             Email = "johndoe@email.com",
                             FirstName = "John",
                             LastName = "Doe",

@@ -11,7 +11,7 @@ namespace BankPaymentService.WebApi.Services
 {
     public interface IBankService
     {
-        Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO);
+        Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment);
     }
 
     public class BankService : IBankService
@@ -26,7 +26,7 @@ namespace BankPaymentService.WebApi.Services
             _bankPaymentServiceUrl = bankPaymentServiceUrl.Value;
         }
 
-        public async Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO)
+        public async Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment)
         {
             var merchant = await _context.Merchants
                 .Where(x => x.MerchantId == invoice.MerchantId)
@@ -44,7 +44,8 @@ namespace BankPaymentService.WebApi.Services
                 Timestamp = paymentRequestIDTO.Timestamp,
                 TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Success",
                 TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Failure",
-                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Error"
+                TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/card/Invoice/{invoice.InvoiceId}/Error",
+                IsQrCodePayment = isQrCodePayment
             };
 
             try

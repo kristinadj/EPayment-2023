@@ -141,7 +141,7 @@ namespace Bank1.WebApi.Models
 
             // Merchant
             builder.Entity<Customer>().HasData(
-                new Customer("Law Publishing Web Shop", "", "123 Main Street", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com")
+                new Customer("Web prodavnica pravnog izdavaštva", "", "123 Glavna ulica", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com")
                 {
                     CustomerId = 1
                 });
@@ -154,7 +154,7 @@ namespace Bank1.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("9876543210")
+               new Account("105-0000000000000-29")
                {
                    AccountId = 1,
                    Balance = 14500,
@@ -164,13 +164,13 @@ namespace Bank1.WebApi.Models
 
             // Buyer
             builder.Entity<Customer>().HasData(
-                new Customer("John", "Doe", "789 Elm Street,", "+1 555-987-6543", "johndoe@email.com")
+                new Customer("John", "Doe", "789 Ulica jorgovana,", "+1 555-987-6543", "johndoe@email.com")
                 {
                     CustomerId = 2
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("1234567890")
+               new Account("106-0000000000000-30")
                {
                    AccountId = 2,
                    Balance = 6530,

@@ -1,0 +1,54 @@
+﻿@page "/payment/{TransactionId:int}/qrcode"
+
+<div class="d-flex align-content-center justify-center gap-3 mt-3">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-center">
+            <MudProgressCircular Indeterminate="true" />
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3" Style="max-width: 800px;">
+            <div class="d-flex justify-center">
+                <MudText Typo="Typo.h6">HSBC Bank</MudText>
+            </div>
+            <div class="d-flex justify-center">
+                @if (!string.IsNullOrEmpty(qrCodeUrl))
+                {
+                    <img src="@qrCodeUrl" />
+                }
+            </div>
+            <div class="d-flex f-elx-row justify-center gap-2">
+                <MudTextField T="string" Label="QR Code Content" Variant="Variant.Text" @bind-Value="@qrCodeInput" Lines="5" />
+            </div>
+            <div class="d-flex f-elx-row justify-center gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="OnClickValidateAsync" Disabled="isValidating">
+                    @if (isValidating)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Validate
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="true">
+                    Pay
+                </MudButton>
+            </div>
+            @if (showValidationResult)
+            {
+                <div class="d-flex f-elx-row justify-center gap-2">
+                    @if (isValid)
+                    {
+                        <MudAlert Severity="Severity.Success">@validationResult</MudAlert>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Error">@validationResult</MudAlert>
+                    }
+                </div>
+            }
+            
+        </div>
+    }
+   
+</div>
