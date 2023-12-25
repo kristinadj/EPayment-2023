@@ -9,9 +9,9 @@ using BankPaymentService.WebApi.Services;
 
 namespace BankPaymentService.WebApi.Controllers
 {
-    [Route("api/card/[controller]")]
+    [Route("api/card/PaymentServiceProvider")]
     [ApiController]
-    public class PaymentServiceProviderQrCodeController : ControllerBase
+    public class PaymentServiceProviderCardController : ControllerBase
     {
         private readonly CardPaymentMethod _cardPaymentMethod;
         private readonly ConsulAppSettings _consulAppSettings;
@@ -19,7 +19,7 @@ namespace BankPaymentService.WebApi.Controllers
 
         private readonly IMerchantService _merchantService;
 
-        public PaymentServiceProviderQrCodeController(
+        public PaymentServiceProviderCardController(
             IOptions<CardPaymentMethod> cardPaymentMethod,
             IOptions<ConsulAppSettings> consulAppSettings, 
             IConsulHttpClient consulHttpClient,

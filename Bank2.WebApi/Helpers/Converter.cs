@@ -1,7 +1,7 @@
-﻿using Bank1.WebApi.Models;
+﻿using Bank2.WebApi.Models;
 using Base.DTO.NBS;
 
-namespace Bank1.WebApi.Helpers
+namespace Bank2.WebApi.Helpers
 {
     public static class Converter
     {

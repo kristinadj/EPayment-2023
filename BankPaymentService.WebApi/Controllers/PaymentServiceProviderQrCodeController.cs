@@ -9,9 +9,9 @@ using Microsoft.Extensions.Options;
 
 namespace BankPaymentService.WebApi.Controllers
 {
-    [Route("api/qrcode/[controller]")]
+    [Route("api/qrcode/PaymentServiceProvider")]
     [ApiController]
-    public class PaymentServiceProviderCardController : ControllerBase
+    public class PaymentServiceProviderQrCodeController : ControllerBase
     {
         private readonly QrCodePaymentMethod _qrCodePaymentMethod;
         private readonly ConsulAppSettings _consulAppSettings;
@@ -19,7 +19,7 @@ namespace BankPaymentService.WebApi.Controllers
 
         private readonly IMerchantService _merchantService;
 
-        public PaymentServiceProviderCardController(
+        public PaymentServiceProviderQrCodeController(
             IOptions<QrCodePaymentMethod> qrCodePaymentMethod,
             IOptions<ConsulAppSettings> consulAppSettings,
             IConsulHttpClient consulHttpClient,

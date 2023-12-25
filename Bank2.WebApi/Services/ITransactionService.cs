@@ -19,6 +19,7 @@ namespace Bank2.WebApi.Services
         Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url);
         Task<PccTransactionODTO?> PccReceiveToPayTransactionAsync(PccTransactionIDTO transactionIDTO, string cardStartNumbers);
         Task UpdateTransactionStatusAsync(Transaction transaction, TransactionStatus transactionStatus);
+        Task<double?> ExchangeAsync(string fromCurrency, string toCuurency, double amount);
 
     }
 
@@ -237,6 +238,17 @@ namespace Bank2.WebApi.Services
             transaction.TransactionStatus = transactionStatus;
             transaction.TransactionLogs!.Add(new TransactionLog { TransactionStatus = transactionStatus, Timestamp = DateTime.Now });
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<double?> ExchangeAsync(string fromCurrency, string toCuurency, double amount)
+        {
+            var exchangeRate = await _context.ExchangeRates
+                .Where(x => x.FromCurrency!.Code == fromCurrency && x.ToCurrency!.Code == toCuurency)
+                .FirstOrDefaultAsync();
+
+            if (exchangeRate == null) return null;
+
+            return amount * exchangeRate.Rate;
         }
     }
 }

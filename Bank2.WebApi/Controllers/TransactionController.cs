@@ -1,7 +1,9 @@
 ﻿using Bank2.WebApi.AppSettings;
 using Bank2.WebApi.DTO.Input;
+using Bank2.WebApi.Helpers;
 using Bank2.WebApi.Services;
 using Base.DTO.Input;
+using Base.DTO.NBS;
 using Base.DTO.Output;
 using Base.DTO.Shared;
 using Microsoft.AspNetCore.Cors;
@@ -19,11 +21,18 @@ namespace Bank2.WebApi.Controllers
         private readonly IAccountService _accountService;
         private readonly BankSettings _appSettings;
 
-        public TransactionController(ITransactionService transactionService, IAccountService accountService, IOptions<BankSettings> appSettings)
+        private readonly INbsClient _nbsClient;
+
+        public TransactionController(
+            ITransactionService transactionService,
+            IAccountService accountService,
+            INbsClient nbsClient,
+            IOptions<BankSettings> appSettings)
         {
             _transactionService = transactionService;
             _accountService = accountService;
             _appSettings = appSettings.Value;
+            _nbsClient = nbsClient;
         }
 
         [HttpPost]
@@ -114,5 +123,89 @@ namespace Bank2.WebApi.Controllers
             }
         }
 
+        [HttpGet("QrCode/{transactionId}")]
+        public async Task<ActionResult> GenerateQrCode([FromRoute] int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+
+                if (transaction == null) return NotFound();
+
+                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
+                if (amount == null) return BadRequest();
+
+                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                var qrCode = await _nbsClient.GenerateQrCodeAsync(qrCodeGenIDTO);
+
+                if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest();
+
+                return Ok(qrCode.Base64QrCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("QrCode/Input/{transactionId}")]
+        public async Task<ActionResult<string>> GetQrCodeInput([FromRoute] int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+
+                if (transaction == null) return NotFound();
+
+                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
+                if (amount == null) return BadRequest();
+
+                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                return Ok(qrCodeGenIDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("QrCode/Validate/{transactionId}")]
+        public async Task<ActionResult> ValidateQrCode([FromRoute] int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+
+                if (transaction == null) return NotFound();
+
+                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
+                if (amount == null) return BadRequest();
+
+                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodeGenIDTO);
+
+                if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest();
+
+                return Ok(qrCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("QrCode/Validate")]
+        public async Task<ActionResult> ValidateQrCodeString([FromBody] BankvalidateQrCodeIDTO input)
+        {
+            try
+            {
+                var qrCode = await _nbsClient.ValdiateQrCodeAsync(input.Input);
+                return Ok(qrCode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

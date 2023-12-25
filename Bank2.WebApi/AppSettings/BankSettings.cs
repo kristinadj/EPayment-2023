@@ -6,11 +6,13 @@
         public string CardStartNumbers { get; set; }
         public int PccBankId { get; set; }
         public string PccUrl { get; set; }
+        public string NbsUrl { get; set; }
         public BankSettings()
         {
             BankPaymentUrl = string.Empty;
             CardStartNumbers = string.Empty;
             PccUrl = string.Empty;
+            NbsUrl = string.Empty;
         }
     }
 }

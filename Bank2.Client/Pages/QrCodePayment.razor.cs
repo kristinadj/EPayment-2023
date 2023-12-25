@@ -1,9 +1,9 @@
-﻿using Bank1.Client.Services;
+﻿using Bank2.Client.Services;
 using Base.DTO.NBS;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace Bank1.Client.Pages
+namespace Bank2.Client.Pages
 {
     public partial class QrCodePayment
     {

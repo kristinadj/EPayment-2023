@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Bank1.WebApi.DTO.NBS
+namespace Base.DTO.NBS
 {
-    public class ErrorODTO
+    public class QrCodeStatusODTO
     {
         [JsonPropertyName("code")]
-        public string Code { get; set; } = string.Empty;
+        public int Code { get; set; }
 
         [JsonPropertyName("desc")]
         public string Description { get; set; } = string.Empty;

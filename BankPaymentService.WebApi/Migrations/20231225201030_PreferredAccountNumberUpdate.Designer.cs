@@ -4,6 +4,7 @@ using BankPaymentService.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankPaymentService.WebApi.Migrations
 {
     [DbContext(typeof(BankPaymentServiceContext))]
-    partial class BankPaymentServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20231225201030_PreferredAccountNumberUpdate")]
+    partial class PreferredAccountNumberUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,7 +235,7 @@ namespace BankPaymentService.WebApi.Migrations
                             BankId = 1,
                             BankMerchantId = 1,
                             PaymentServiceMerchantId = 2,
-                            PreferredAccountNumber = "105-0000000000000-29",
+                            PreferredAccountNumber = "106-0000000000000-30",
                             Secret = "LPAPassword5!"
                         });
                 });

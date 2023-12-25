@@ -19,6 +19,7 @@ namespace Bank1.WebApi.Services
         Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url);
         Task<PccTransactionODTO?> PccReceiveToPayTransactionAsync(PccTransactionIDTO transactionIDTO, string cardStartNumbers);
         Task UpdateTransactionStatusAsync(Transaction transaction, TransactionStatus transactionStatus);
+        Task<double?> ExchangeAsync(string fromCurrency, string toCuurency, double amount);
     }
 
     public class TransactionService : ITransactionService
@@ -60,7 +61,7 @@ namespace Bank1.WebApi.Services
                 Timestamp = transactionIDTO.Timestamp,
                 TransactionLogs = new List<TransactionLog>
                 {
-                    new TransactionLog { TransactionStatus = Enums.TransactionStatus.CREATED, Timestamp = DateTime.Now }
+                    new() { TransactionStatus = Enums.TransactionStatus.CREATED, Timestamp = DateTime.Now }
                 }
             };
 
@@ -89,10 +90,10 @@ namespace Bank1.WebApi.Services
 
             if (sender.Balance < transaction.Amount)
             {
-                transaction.TransactionStatus = Enums.TransactionStatus.FAIL;
+                transaction.TransactionStatus = TransactionStatus.FAIL;
                 transaction.TransactionLogs!.Add(new TransactionLog
                 {
-                    TransactionStatus = Enums.TransactionStatus.FAIL,
+                    TransactionStatus = TransactionStatus.FAIL,
                     Timestamp = DateTime.Now
                 });
 
@@ -107,10 +108,10 @@ namespace Bank1.WebApi.Services
                 receiver!.Balance += transaction.Amount;
                 sender.Balance -= transaction.Amount;
 
-                transaction.TransactionStatus = Enums.TransactionStatus.COMPLETED;
+                transaction.TransactionStatus = TransactionStatus.COMPLETED;
                 transaction.TransactionLogs!.Add(new TransactionLog
                 {
-                    TransactionStatus = Enums.TransactionStatus.COMPLETED,
+                    TransactionStatus = TransactionStatus.COMPLETED,
                     Timestamp = DateTime.Now
                 });
 
@@ -225,12 +226,12 @@ namespace Bank1.WebApi.Services
 
             if (issuerAccount.Balance < transactionIDTO.Amount)
             {
-                transaction.TransactionStatus = Enums.TransactionStatus.FAIL;
+                transaction.TransactionStatus = TransactionStatus.FAIL;
             }
             else
             {
                 issuerAccount.Balance -= transaction.Amount;
-                transaction.TransactionStatus = Enums.TransactionStatus.COMPLETED;
+                transaction.TransactionStatus = TransactionStatus.COMPLETED;
             }
 
             await _context.IssuerTransactions.AddAsync(transaction);
@@ -243,10 +244,20 @@ namespace Bank1.WebApi.Services
                 IssuerTransactionId = transaction.TransactionId,
                 IssuerTimestamp = transaction.Timestamp,
                 Amount = transactionIDTO.Amount,
-                IsSuccess = transaction.TransactionStatus == Enums.TransactionStatus.COMPLETED
+                IsSuccess = transaction.TransactionStatus == TransactionStatus.COMPLETED
             };
             return transactionODTO;
         }
 
+        public async Task<double?> ExchangeAsync(string fromCurrency, string toCuurency, double amount)
+        {
+            var exchangeRate = await _context.ExchangeRates
+                .Where(x => x.FromCurrency!.Code == fromCurrency && x.ToCurrency!.Code == toCuurency)
+                .FirstOrDefaultAsync();
+
+            if (exchangeRate == null) return null;
+
+            return amount * exchangeRate.Rate;
+        }
     }
 }

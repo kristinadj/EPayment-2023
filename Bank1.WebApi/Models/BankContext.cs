@@ -141,7 +141,7 @@ namespace Bank1.WebApi.Models
 
             // Merchant
             builder.Entity<Customer>().HasData(
-                new Customer("Law Publishing Web Shop", "", "123 Main Street", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com")
+                new Customer("Web prodavnica pravnog izdavaštva", "", "123 Glavna ulica", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com")
                 {
                     CustomerId = 1
                 });
@@ -164,7 +164,7 @@ namespace Bank1.WebApi.Models
 
             // Buyer
             builder.Entity<Customer>().HasData(
-                new Customer("John", "Doe", "789 Elm Street,", "+1 555-987-6543", "johndoe@email.com")
+                new Customer("John", "Doe", "789 Ulica jorgovana,", "+1 555-987-6543", "johndoe@email.com")
                 {
                     CustomerId = 2
                 });

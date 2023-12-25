@@ -1,16 +1,19 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Bank1.WebApi.DTO.NBS
+namespace Base.DTO.NBS
 {
-    public class QrCodeValidateODTO
+    public class QrCodeODTO
     {
         [JsonPropertyName("s")]
-        public QrCodeODTO? Status { get; set; }
+        public QrCodeStatusODTO? Status { get; set; }
 
         [JsonPropertyName("t")]
         public string Text { get; set; } = string.Empty;
 
         [JsonPropertyName("n")]
         public QrCodeGenDTO? Data { get; set; }
+
+        [JsonPropertyName("i")]
+        public string Base64QrCode { get; set; } = string.Empty;
     }
 }

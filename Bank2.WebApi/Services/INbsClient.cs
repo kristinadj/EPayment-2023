@@ -1,9 +1,9 @@
-﻿using Bank1.WebApi.AppSettings;
+﻿using Bank2.WebApi.AppSettings;
 using Base.DTO.NBS;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace Bank1.WebApi.Services
+namespace Bank2.WebApi.Services
 {
     public interface INbsClient
     {
