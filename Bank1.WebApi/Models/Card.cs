@@ -16,14 +16,12 @@ namespace Bank1.WebApi.Models
         public string CardHolderName { get; set; }
 
         [Required]
-        [StringLength(19)]
         public string PanNumber { get; set; }
 
         [Required]
         public string ExpiratoryDate { get; set; }
 
         [Range(0, 999)]
-        [EncryptColumn]
         public int CVV { get; set; }
 
         public Account? Account { get; set; }

@@ -59,7 +59,7 @@ namespace Bank2.WebApi.Migrations
                         new
                         {
                             AccountId = 1,
-                            AccountNumber = "987612340",
+                            AccountNumber = "123-0000009876123-40",
                             Balance = 14500.0,
                             CurrencyId = 1,
                             OwnerId = 1
@@ -67,7 +67,7 @@ namespace Bank2.WebApi.Migrations
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "1234098765",
+                            AccountNumber = "123-0000000040987-65",
                             Balance = 12700.0,
                             CurrencyId = 1,
                             OwnerId = 2
@@ -131,8 +131,7 @@ namespace Bank2.WebApi.Migrations
 
                     b.Property<string>("PanNumber")
                         .IsRequired()
-                        .HasMaxLength(19)
-                        .HasColumnType("nvarchar(19)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CardId");
 
@@ -148,7 +147,7 @@ namespace Bank2.WebApi.Migrations
                             CVV = 955,
                             CardHolderName = "EMILY SMITH",
                             ExpiratoryDate = "06/24",
-                            PanNumber = "2023 5678 9012 3456"
+                            PanNumber = "abaaaf0d6042a0916087da6065f84e4c1614b23d513daec6f5effc8987887832"
                         });
                 });
 

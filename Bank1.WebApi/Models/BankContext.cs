@@ -1,4 +1,5 @@
-﻿using EntityFrameworkCore.EncryptColumn.Extension;
+﻿using Bank1.WebApi.Helpers;
+using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using Microsoft.EntityFrameworkCore;
@@ -190,7 +191,7 @@ namespace Bank1.WebApi.Models
                });
 
             builder.Entity<Card>().HasData(
-                new Card("JOHN DOE", "1234 5678 9012 3456", "12/25")
+                new Card("JOHN DOE", Converter.HashPanNumber("1234 5678 9012 3456"), "12/25")
                 {
                     CardId = 1,
                     AccountId = 2,
