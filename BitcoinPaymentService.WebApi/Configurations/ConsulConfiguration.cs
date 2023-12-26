@@ -35,8 +35,7 @@ namespace BitcoinPaymentService.WebApi.Configurations
             if (!consulAppSettings!.Enabled)
                 return string.Empty;
 
-            Guid serviceId = Guid.NewGuid();
-            string consulServiceID = $"{consulAppSettings.Service}:{serviceId}";
+            string consulServiceID = $"{consulAppSettings.Service}";
 
             var client = scope.ServiceProvider.GetService<IConsulClient>();
 
@@ -49,6 +48,7 @@ namespace BitcoinPaymentService.WebApi.Configurations
                 Tags = new[] { consulAppSettings.Type }
             };
 
+            client!.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
             client!.Agent.ServiceRegister(consulServiceRistration);
 
             return consulServiceID;

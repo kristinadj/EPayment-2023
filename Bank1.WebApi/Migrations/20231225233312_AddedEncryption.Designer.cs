@@ -4,6 +4,7 @@ using Bank1.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    partial class BankContextModelSnapshot : ModelSnapshot
+    [Migration("20231225233312_AddedEncryption")]
+    partial class AddedEncryption
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,7 +132,8 @@ namespace Bank1.WebApi.Migrations
 
                     b.Property<string>("PanNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(19)
+                        .HasColumnType("nvarchar(19)");
 
                     b.HasKey("CardId");
 
@@ -146,7 +149,7 @@ namespace Bank1.WebApi.Migrations
                             CVV = 123,
                             CardHolderName = "JOHN DOE",
                             ExpiratoryDate = "12/25",
-                            PanNumber = "db7d00d5266ec0ba6808f27a40f8a376ace7e718847d9eba813a2a40adf8ab1c"
+                            PanNumber = "1234 5678 9012 3456"
                         });
                 });
 

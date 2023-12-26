@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bank2.WebApi.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bank2.WebApi.Models
 {
@@ -154,7 +155,7 @@ namespace Bank2.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("987612340")
+               new Account("123-0000009876123-40")
                {
                    AccountId = 1,
                    Balance = 14500,
@@ -170,7 +171,7 @@ namespace Bank2.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("1234098765")
+               new Account("123-0000000040987-65")
                {
                    AccountId = 2,
                    Balance = 12700,
@@ -179,7 +180,7 @@ namespace Bank2.WebApi.Models
                });
 
             builder.Entity<Card>().HasData(
-                new Card("EMILY SMITH", "2023 5678 9012 3456", "06/24")
+                new Card("EMILY SMITH", Converter.HashPanNumber("2023 5678 9012 3456"), "06/24")
                 {
                     CardId = 1,
                     AccountId = 2,

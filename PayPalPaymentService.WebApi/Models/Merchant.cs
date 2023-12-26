@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PayPalPaymentService.WebApi.Models
@@ -10,6 +11,8 @@ namespace PayPalPaymentService.WebApi.Models
         public int MerchantId { get; set; }
         public int PaymentServiceMerchantId { get; set; }
         public string ClientId { get; set; }
+
+        [EncryptColumn]
         public string Secret { get; set; }
 
         public ICollection<Invoice>? Invoices { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bank1.WebApi.Models
@@ -11,7 +12,7 @@ namespace Bank1.WebApi.Models
         public int CustomerId { get; set; }
 
         [Required]
-        [StringLength(25)]
+        [EncryptColumn]
         public string Password { get; set; }
 
         public Customer? Customer { get; set; }

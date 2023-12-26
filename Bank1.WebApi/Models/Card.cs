@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bank1.WebApi.Models
@@ -15,7 +16,6 @@ namespace Bank1.WebApi.Models
         public string CardHolderName { get; set; }
 
         [Required]
-        [StringLength(19)]
         public string PanNumber { get; set; }
 
         [Required]

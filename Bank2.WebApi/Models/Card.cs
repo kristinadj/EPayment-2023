@@ -15,7 +15,6 @@ namespace Bank2.WebApi.Models
         public string CardHolderName { get; set; }
 
         [Required]
-        [StringLength(19)]
         public string PanNumber { get; set; }
 
         [Required]

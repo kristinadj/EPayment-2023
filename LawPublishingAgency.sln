@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentCardCenter.WebApi", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Client", "PSP.Client\PSP.Client.csproj", "{100FEE1F-072A-4351-BAF7-19E566EE235F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Gateway", "Api.Gateway\Api.Gateway.csproj", "{227898C3-923B-4DB9-AB89-E5DAD885B435}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{100FEE1F-072A-4351-BAF7-19E566EE235F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{227898C3-923B-4DB9-AB89-E5DAD885B435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{227898C3-923B-4DB9-AB89-E5DAD885B435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{227898C3-923B-4DB9-AB89-E5DAD885B435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{227898C3-923B-4DB9-AB89-E5DAD885B435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

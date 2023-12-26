@@ -1,5 +1,6 @@
 ﻿using Bank1.WebApi.DTO.Input;
 using Bank1.WebApi.Enums;
+using Bank1.WebApi.Helpers;
 using Bank1.WebApi.Models;
 using Base.DTO.Input;
 using Base.DTO.Output;
@@ -207,8 +208,9 @@ namespace Bank1.WebApi.Services
             var isLocalCard = transactionIDTO.PayTransaction!.PanNumber.StartsWith(cardStartNumbers);
             if (!isLocalCard) return null;
 
+            var hashedPanNumber = Converter.HashPanNumber(transactionIDTO.PayTransaction.PanNumber);
             var issuerAccount = await _context.Accounts
-                .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == transactionIDTO.PayTransaction.PanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
+                .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == hashedPanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
                 .FirstOrDefaultAsync();
 
             if (issuerAccount == null) return null;

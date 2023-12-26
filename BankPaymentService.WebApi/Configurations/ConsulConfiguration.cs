@@ -1,6 +1,7 @@
 ﻿using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Consul;
+using IApplicationLifetime = Microsoft.Extensions.Hosting.IApplicationLifetime;
 
 namespace BankPaymentService.WebApi.Configurations
 {
@@ -35,8 +36,7 @@ namespace BankPaymentService.WebApi.Configurations
             if (!consulAppSettings.Enabled)
                 return string.Empty;
 
-            Guid serviceId = Guid.NewGuid();
-            string consulServiceID = $"{consulAppSettings.Service}:{serviceId}";
+            string consulServiceID = $"{consulAppSettings.Service}";
 
             var client = scope.ServiceProvider.GetService<IConsulClient>();
 
@@ -49,7 +49,13 @@ namespace BankPaymentService.WebApi.Configurations
                 Tags = new[] { consulAppSettings.Type }
             };
 
+            client!.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
             client!.Agent.ServiceRegister(consulServiceRistration);
+
+            var lifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
+            lifetime!.ApplicationStopping.Register(() => {
+                client.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
+            });
 
             return consulServiceID;
         }

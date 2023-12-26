@@ -1,6 +1,8 @@
 ﻿using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Consul;
+using System;
+using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
 
 namespace WebShop.WebApi.Configurations
 {
@@ -25,7 +27,7 @@ namespace WebShop.WebApi.Configurations
             }));
         }
 
-        public static string UseConsul(this IApplicationBuilder app)
+        public static string UseConsul(this IApplicationBuilder app/*, IApplicationLifetime lifetime*/)
         {
             using var scope = app.ApplicationServices.CreateScope();
             var configuration = scope.ServiceProvider.GetService<IConfiguration>();
@@ -36,7 +38,7 @@ namespace WebShop.WebApi.Configurations
                 return string.Empty;
 
             Guid serviceId = Guid.NewGuid();
-            string consulServiceID = $"{consulAppSettings.Service}:{serviceId}";
+            string consulServiceID = $"{consulAppSettings.Service}";
 
             var client = scope.ServiceProvider.GetService<IConsulClient>();
 
@@ -46,9 +48,25 @@ namespace WebShop.WebApi.Configurations
                 ID = consulServiceID,
                 Address = consulAppSettings.Address,
                 Port = consulAppSettings.Port,
-                Tags = new[] { consulAppSettings.Type }
+                Tags = new[] { consulAppSettings.Type },
+                //Check = new()
+                //{
+                //    HTTP = $"http://{consulAppSettings.Address}:{consulAppSettings.Port}/api/Health",
+                //    Method = "GET" ,
+                //    Notes = "Checks /api/Health",
+                //    Timeout = TimeSpan.FromSeconds(3),
+                //    Interval = TimeSpan.FromSeconds(10)
+                //}
+                //Check = new()
+                //{
+                //    TCP = $"{consulAppSettings.Address}:{consulAppSettings.Port}",
+                //    Notes = "TCP Check",
+                //    Timeout = TimeSpan.FromSeconds(3),
+                //    Interval = TimeSpan.FromSeconds(10)
+                //}
             };
 
+            client!.Agent.ServiceDeregister(consulServiceRistration.ID).Wait();
             client!.Agent.ServiceRegister(consulServiceRistration);
 
             return consulServiceID;
