@@ -148,7 +148,7 @@ namespace Bank2.WebApi.Models
                 });
 
             builder.Entity<BusinessCustomer>().HasData(
-                new BusinessCustomer("LPAPassword123!") // TODO: Encrypt
+                new BusinessCustomer("LPAPassword123!") // TODO: Encrypt "LPAPassword123!"
                 {
                     BusinessCustomerId = 1,
                     CustomerId = 1

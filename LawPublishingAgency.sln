@@ -31,9 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bank2.Client", "Bank2.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentCardCenter.WebApi", "PaymentCardCenter.WebApi\PaymentCardCenter.WebApi.csproj", "{415BADB3-9852-4E1E-8AE2-E7D06D266095}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Client", "PSP.Client\PSP.Client.csproj", "{100FEE1F-072A-4351-BAF7-19E566EE235F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSP.Client", "PSP.Client\PSP.Client.csproj", "{100FEE1F-072A-4351-BAF7-19E566EE235F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Gateway", "Api.Gateway\Api.Gateway.csproj", "{227898C3-923B-4DB9-AB89-E5DAD885B435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Gateway", "Api.Gateway\Api.Gateway.csproj", "{227898C3-923B-4DB9-AB89-E5DAD885B435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

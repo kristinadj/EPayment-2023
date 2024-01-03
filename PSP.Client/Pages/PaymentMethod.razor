@@ -19,7 +19,7 @@
                 <MudRadioGroup @bind-Value="@selectedPaymentMethod">
                     @foreach (var paymentMethod in paymentMethods)
                     {
-                        <div class="d-flex justify-center"><MudRadio Value="@paymentMethod.PaymentMethodId" Color="Color.Primary">@paymentMethod.Name</MudRadio></div>
+                        <div class="d-flex justify-left"><MudRadio Value="@paymentMethod.PaymentMethodId" Color="Color.Primary">@paymentMethod.Name</MudRadio></div>
                     }
                 </MudRadioGroup>
                 <div class="d-flex justify-center">
