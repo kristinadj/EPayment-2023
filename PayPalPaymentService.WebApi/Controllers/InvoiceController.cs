@@ -115,14 +115,13 @@ namespace PayPalPaymentService.WebApi.Controllers
         }
 
         [HttpGet("Cancel")]
-        public async Task<ActionResult> PayPalCancel([FromQuery] string token, string payerId)
+        public async Task<ActionResult> PayPalCancel([FromQuery] string token)
         {
             var invoice = await _invoiceService.GetInvoiceByPayPalOrderIdAsync(token);
             if (invoice == null) return BadRequest();
 
             await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.FAIL);
-            await _invoiceService.UpdatePayerIdAsync(invoice.InvoiceId, payerId);
-
+            
             try
             {
                 await _consulHttpClient.PutAsync(_paymentMethod.PspServiceName, $"{invoice!.ExternalInvoiceId}/Failure");

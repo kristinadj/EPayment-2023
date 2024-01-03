@@ -40,6 +40,7 @@ namespace Bank1.WebApi.Services
                 .FirstOrDefaultAsync();
             if (currency == null) return null;
 
+            var businsessCustomers = await _context.BusinessCustomer.ToListAsync();
             var customer = await _context.BusinessCustomer
                 .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.Password == transactionIDTO.Secret)
                 .Include(x => x.Customer!.Accounts)
