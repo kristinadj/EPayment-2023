@@ -55,6 +55,9 @@ namespace PayPalPaymentService.WebApi.Models
 
                 entity.Property(d => d.TransactionStatus)
                     .HasConversion<string>();
+
+                entity.Property(d => d.InvoiceType)
+                    .HasConversion<string>();
             });
 
 

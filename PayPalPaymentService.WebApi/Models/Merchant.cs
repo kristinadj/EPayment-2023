@@ -15,6 +15,10 @@ namespace PayPalPaymentService.WebApi.Models
         [EncryptColumn]
         public string Secret { get; set; }
 
+        public string? PayPalBillingPlanProductId { get; set; }
+
+        public string? PayPalBillingPlanId { get; set; }
+
         public ICollection<Invoice>? Invoices { get; set; }
 
         public Merchant(string clientId, string secret)

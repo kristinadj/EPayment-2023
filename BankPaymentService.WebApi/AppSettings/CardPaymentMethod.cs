@@ -6,6 +6,7 @@
         public string PspRegisterApiEndpoint { get; set; }
         public string Name { get; set; }
         public string ServiceApiSufix { get; set; }
+        public bool SupportsAutomaticPayments { get; set; }
 
         public CardPaymentMethod()
         {

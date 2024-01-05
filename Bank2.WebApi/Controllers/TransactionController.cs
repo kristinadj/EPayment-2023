@@ -43,10 +43,7 @@ namespace Bank2.WebApi.Controllers
                 var transaction = await _transactionService.CreateTransactionAsync(transactionIDTO);
                 if (transaction == null) return BadRequest();
 
-                var paymentInstructions = new PaymentInstructionsODTO(_appSettings.BankPaymentUrl.Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString()))
-                {
-                    PaymentId = transaction.TransactionId
-                };
+                var paymentInstructions = new PaymentInstructionsODTO(transaction.TransactionId.ToString(), _appSettings.BankPaymentUrl.Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString()));
                 return Ok(paymentInstructions);
 
             }

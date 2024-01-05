@@ -1,6 +1,7 @@
 ﻿using Base.DTO.Input;
 using Microsoft.EntityFrameworkCore;
 using PayPalPaymentService.WebApi.Models;
+using System.Runtime.CompilerServices;
 
 namespace PayPalPaymentService.WebApi.Services
 {
@@ -8,6 +9,8 @@ namespace PayPalPaymentService.WebApi.Services
     {
         Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId);
         Task<bool> UpdateMerchantCredentialsAsync(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO);
+        Task<Merchant> UpdateProductIdAsync(Merchant merchant, string productId);
+        Task<Merchant> UpdateBillingPlanIdAsync(Merchant merchant, string billngPlanId);
     }
 
     public class MerchantService : IMerchantService
@@ -39,6 +42,26 @@ namespace PayPalPaymentService.WebApi.Services
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Merchant> UpdateProductIdAsync(Merchant merchant, string productId)
+        {
+            merchant.PayPalBillingPlanProductId = productId;
+
+            _context.Entry(merchant).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return merchant;
+        }
+
+        public async Task<Merchant> UpdateBillingPlanIdAsync(Merchant merchant, string billngPlanId)
+        {
+            merchant.PayPalBillingPlanId = billngPlanId;
+
+            _context.Entry(merchant).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return merchant;
         }
     }
 }

@@ -8,9 +8,11 @@ namespace PayPalPaymentService.WebApi.Services
     public interface IInvoiceService
     {
         Task<Invoice?> GetInvoiceByPayPalOrderIdAsync(string payPalOrderId);
-        Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
+        Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType);
+        Task<Invoice?> GetInvoiceByPayPalSubscriptionIdAsync(string payPalSubscriptionId);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
         Task<Invoice?> UpdatePayPalOrderIdAsync(int invoiceId, string payPalOrderId);
+        Task<Invoice?> UpdatePayPalSubscriptionIdAsync(int invoiceId, string payPalSubscriptionId);
         Task<Invoice?> UpdatePayerIdAsync(int invoiceId, string payerId);
     }
 
@@ -30,7 +32,14 @@ namespace PayPalPaymentService.WebApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO)
+        public async Task<Invoice?> GetInvoiceByPayPalSubscriptionIdAsync(string payPalSubscriptionId)
+        {
+            return await _context.Invoices
+                .Where(x => x.PayPalSubscriptionId == payPalSubscriptionId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType)
         {
             var merchant = await _context.Merchants
                 .Where(x => x.PaymentServiceMerchantId == paymentRequestDTO.MerchantId)
@@ -54,6 +63,7 @@ namespace PayPalPaymentService.WebApi.Services
                 CurrencyId = currency.CurrencyId,
                 Timestamp = paymentRequestDTO.Timestamp,
                 TransactionStatus = TransactionStatus.CREATED,
+                InvoiceType = invoiceType, 
                 InvoiceLogs = new List<InvoiceLog>
                 {
                      new InvoiceLog { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }
@@ -92,6 +102,21 @@ namespace PayPalPaymentService.WebApi.Services
             if (invoice == null) return null;
 
             invoice.PayPalOrderId = payPalOrderId;
+            await _context.SaveChangesAsync();
+
+            return invoice;
+        }
+
+        public async Task<Invoice?> UpdatePayPalSubscriptionIdAsync(int invoiceId, string payPalSubscriptionId)
+        {
+            var invoice = await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Include(x => x.InvoiceLogs)
+                .FirstOrDefaultAsync();
+
+            if (invoice == null) return null;
+
+            invoice.PayPalSubscriptionId = payPalSubscriptionId;
             await _context.SaveChangesAsync();
 
             return invoice;

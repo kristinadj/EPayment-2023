@@ -48,10 +48,7 @@ namespace Bank1.WebApi.Controllers
                 if (transactionIDTO.IsQrCodePayment)
                     paymentUrl = $"{paymentUrl}/qrCode";
 
-                var paymentInstructions = new PaymentInstructionsODTO(paymentUrl)
-                {
-                    PaymentId = transaction.TransactionId
-                };
+                var paymentInstructions = new PaymentInstructionsODTO(transaction.TransactionId.ToString(), paymentUrl);
                 return Ok(paymentInstructions);
 
             }

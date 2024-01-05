@@ -3,9 +3,11 @@ using Base.DTO.Output;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
 using PayPalPaymentService.WebApi.DTO.PayPal.Input;
+using PayPalPaymentService.WebApi.Enums;
 using PayPalPaymentService.WebApi.Helpers;
 using PayPalPaymentService.WebApi.Services;
 
@@ -13,7 +15,7 @@ namespace PayPalPaymentService.WebApi.Controllers
 {
     [Route("api/paypal/[controller]")]
     [ApiController]
-    public class InvoiceController : ControllerBase
+    public class SubscriptionPaymentController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
         private readonly IMerchantService _merchantService;
@@ -24,7 +26,7 @@ namespace PayPalPaymentService.WebApi.Controllers
         private readonly PaymentMethod _paymentMethod;
         private readonly IConsulHttpClient _consulHttpClient;
 
-        public InvoiceController(
+        public SubscriptionPaymentController(
             IInvoiceService invoiceService,
             IMerchantService merchantService,
             IPayPalClientService paytPalClientService,
@@ -41,7 +43,7 @@ namespace PayPalPaymentService.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentInstructionsODTO>> CreateInvoice([FromBody] PaymentRequestIDTO paymentRequestDTO)
+        public async Task<ActionResult<PaymentInstructionsODTO>> CreateAutomaticPayment([FromBody] AutomaticPaymentRequestIDTO paymentRequestDTO)
         {
             var merchant = await _merchantService.GetMerchantByPaymentServiceMerchantId(paymentRequestDTO.MerchantId);
             if (merchant == null) return BadRequest();
@@ -49,34 +51,57 @@ namespace PayPalPaymentService.WebApi.Controllers
             var accessToken = await _paytPalClientService.GenerateAccessTokenAsync(merchant.ClientId, merchant.Secret);
             if (accessToken == null) return BadRequest();
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, Enums.InvoiceType.ORDER);
+            var createNewBillingPlan = false;
+
+            if (merchant.PayPalBillingPlanProductId == null)
+            {
+                var productIDTO = Mapper.ToPayPalProductIDTO(paymentRequestDTO.Product!);
+                var productODTO = await _paytPalClientService.CreateProductAsync(accessToken, productIDTO);
+
+                if (productODTO == null) return BadRequest();
+
+                merchant = await _merchantService.UpdateProductIdAsync(merchant, productODTO.Id!);
+                createNewBillingPlan = true;
+            }
+
+            if (merchant.PayPalBillingPlanId == null || createNewBillingPlan )
+            {
+                var createPlanIDTO = Mapper.ToCreatePlanIDTO(merchant.PayPalBillingPlanProductId!, paymentRequestDTO.ExternalInvoiceId.ToString(), paymentRequestDTO.Amount, paymentRequestDTO.CurrencyCode);
+                var billingPlanODTO = await _paytPalClientService.CreatePlanAsync(accessToken, createPlanIDTO);
+
+                if (billingPlanODTO == null) return BadRequest();
+
+                merchant = await _merchantService.UpdateBillingPlanIdAsync(merchant, billingPlanODTO.Id!);
+            }
+
+            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, InvoiceType.SUBSCRIPTION);
             if (invoice == null) return BadRequest();
 
-            var orderIDTO = Mapper.ToOrderIDTO(paymentRequestDTO, invoice, _payPalSettings);
+            var subscriptionIDTO = Mapper.ToCreateSubscriptionIDTO(merchant.PayPalBillingPlanId!, paymentRequestDTO.BrandName!, paymentRequestDTO.Subscriber!, _payPalSettings);
 
-            var orderResponse = await _paytPalClientService.CreateOrderAsync(accessToken, orderIDTO);
-            if (orderResponse == null || orderResponse.Status != "PAYER_ACTION_REQUIRED")
+            var subscriptionResponse = await _paytPalClientService.CreateSubscriptionAsync(accessToken, subscriptionIDTO);
+            if (subscriptionResponse == null)
             {
                 await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.ERROR);
                 return BadRequest();
             }
 
-            await _invoiceService.UpdatePayPalOrderIdAsync(invoice.InvoiceId, orderResponse!.Id);
-            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.IN_PROGRESS);
+            await _invoiceService.UpdatePayPalSubscriptionIdAsync(invoice.InvoiceId, subscriptionResponse.Id!);
+            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
 
-            var redirectUrl = orderResponse.Links.Where(x => x.Rel == "payer-action").FirstOrDefault();
-            var paymentInstructions = new PaymentInstructionsODTO(orderResponse.Id, redirectUrl!.Href);
+            var redirectUrl = subscriptionResponse.Links.Where(x => x.Rel == "approve").FirstOrDefault();
+            var paymentInstructions = new PaymentInstructionsODTO(subscriptionResponse.Id!, redirectUrl!.Href);
             return Ok(paymentInstructions);
         }
 
         [HttpGet("Success")]
-        public async Task<ActionResult> PayPalSuccess([FromQuery] string token, [FromQuery] string payerId)
+        public async Task<ActionResult> PayPalSubscriptionSuccess([FromQuery] string subscription_id)
         {
-            var invoice = await _invoiceService.GetInvoiceByPayPalOrderIdAsync(token);
+            var invoice = await _invoiceService.GetInvoiceByPayPalSubscriptionIdAsync(subscription_id);
             if (invoice == null) return BadRequest();
 
-            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.COMPLETED);
-            await _invoiceService.UpdatePayerIdAsync(invoice.InvoiceId, payerId);
+            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, TransactionStatus.COMPLETED);
+            //await _invoiceService.UpdatePayerIdAsync(invoice.InvoiceId, payerId);
 
             try
             {
@@ -90,9 +115,9 @@ namespace PayPalPaymentService.WebApi.Controllers
         }
 
         [HttpGet("Cancel")]
-        public async Task<ActionResult> PayPalCancel([FromQuery] string token)
+        public async Task<ActionResult> PayPalSubscriptionCancel([FromQuery] string subscription_id)
         {
-            var invoice = await _invoiceService.GetInvoiceByPayPalOrderIdAsync(token);
+            var invoice = await _invoiceService.GetInvoiceByPayPalSubscriptionIdAsync(subscription_id);
             if (invoice == null) return BadRequest();
 
             await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.FAIL);
