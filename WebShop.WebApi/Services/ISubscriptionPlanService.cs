@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
@@ -13,6 +12,7 @@ namespace WebShop.WebApi.Services
     {
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
         Task<bool> IsSubscriptionPlanValidAsync(string userId);
+        Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId);
         Task<UserSubscriptionPlan?> AddUserSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
     }
 
@@ -63,6 +63,27 @@ namespace WebShop.WebApi.Services
             return await _context.UserSubscriptionPlans
                 .Where(x => x.UserId == userId && DateTime.Now >= x.StartTimestamp && DateTime.Now < x.EndTimestamp && x.Invoice != null && x.Invoice.Transaction!.TransactionStatus == TransactionStatus.COMPLETED)
                 .AnyAsync();
+        }
+
+        public async Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId)
+        {
+            var subscriptionPlan = await _context.UserSubscriptionPlans
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.StartTimestamp)
+                .Include(x => x.Invoice)
+                .ThenInclude(x => x!.Transaction)
+                .Include(x => x.SubscriptionPlan)
+                .FirstOrDefaultAsync();
+
+            if (subscriptionPlan == null) return null;
+
+            var result = new SubscriptionPlanDetailsODTO
+            {
+                IsValid = subscriptionPlan.Invoice!.Transaction!.TransactionStatus == TransactionStatus.COMPLETED,
+                ActiveUntil = subscriptionPlan.EndTimestamp,
+                AutomaticRenewel = subscriptionPlan.SubscriptionPlan!.AutomaticRenewel
+            };
+            return result;
         }
     }
 }

@@ -102,11 +102,11 @@ namespace WebShop.Client.Pages
                     }
                     else
                     {
-                        NavigationManager.NavigateTo("/subscription");
+                        NavigationManager.NavigateTo("/plan");
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Snackbar.Add("Unexpected Exception", Severity.Error);
             }

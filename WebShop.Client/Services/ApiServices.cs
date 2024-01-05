@@ -402,6 +402,26 @@ namespace WebShop.Client.Services
             return false;
         }
 
+        public async Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId)
+        {
+            SubscriptionPlanDetailsODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/SubscriptionPlans/Details/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<SubscriptionPlanDetailsODTO>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
         public async Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
         {
             RedirectUrlDTO? data = null;

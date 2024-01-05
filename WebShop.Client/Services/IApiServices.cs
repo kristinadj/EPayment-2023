@@ -27,6 +27,7 @@ namespace WebShop.Client.Services
         Task<bool> RegisterMerchantOnPspAsync(string userId);
         Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId);
         Task<bool> IsSubscriptionPlanValidAsync(string userId);
+        Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId);
         Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
     }
 }

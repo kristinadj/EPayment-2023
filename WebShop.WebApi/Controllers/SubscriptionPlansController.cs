@@ -55,6 +55,13 @@ namespace WebShop.WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Details/{userId}")]
+        public async Task<ActionResult<SubscriptionPlanDetailsODTO>> SubscriptionPlanDetails([FromRoute] string userId)
+        {
+            var result = await _subscriptionPlanService.GetSubscriptionPlanDetailsAsync(userId);
+            return Ok(result);
+        }
+
         [HttpPost("Choose")]
         public async Task<ActionResult> ChooseSubscriptionPlanAsync([FromBody] UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
         {

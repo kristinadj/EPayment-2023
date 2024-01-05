@@ -33,7 +33,7 @@ namespace WebShop.Client.Shared
                 }
             };
 
-            GlobalSettings.OnChange += RefreshShoppingCartItem;
+            GlobalSettings.OnChange += RefreshAppBar;
         }
 
         private void OnClickHome(MouseEventArgs e)
@@ -51,14 +51,14 @@ namespace WebShop.Client.Shared
             Navigation!.NavigateTo("/logout");
         }
 
-        private void RefreshShoppingCartItem()
+        private void RefreshAppBar()
         {
             StateHasChanged();
         }
 
         public void Dispose()
         {
-            GlobalSettings.OnChange -= RefreshShoppingCartItem;
+            GlobalSettings.OnChange -= RefreshAppBar;
             GC.SuppressFinalize(this);
         }
     }
