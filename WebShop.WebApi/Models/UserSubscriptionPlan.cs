@@ -13,6 +13,7 @@ namespace WebShop.WebApi.Models
         public DateTime StartTimestamp { get; set; }
         public DateTime EndTimestamp { get; set; }
         public int? InvoiceId { get; set; }
+        public string? CancellationId { get; set; }
 
         public User? User { get; set; }
         public SubscriptionPlan? SubscriptionPlan { get; set; }

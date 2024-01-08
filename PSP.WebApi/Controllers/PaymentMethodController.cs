@@ -49,10 +49,10 @@ namespace PSP.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Active/ByMerchantId/{merchantId}")]
-        public async Task<ActionResult<List<PaymentMethodODTO>>> GetActivePaymentMethodsByMerchantId([FromRoute] int merchantId)
+        [HttpGet("Active/ByMerchantId/{merchantId};{recurringPayment}")]
+        public async Task<ActionResult<List<PaymentMethodODTO>>> GetActivePaymentMethodsByMerchantId([FromRoute] int merchantId, [FromRoute] bool recurringPayment)
         {
-            var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId);
+            var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId, recurringPayment);
             return Ok(result);
         }
 

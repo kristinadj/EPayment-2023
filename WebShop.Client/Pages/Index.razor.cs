@@ -71,11 +71,13 @@ namespace WebShop.Client.Pages
                     {
                         Navigation!.NavigateTo("/plan");
                     }
-
-                    GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
-                    GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
-                    GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
-                    GlobalSettings.InvokeChange();
+                    else
+                    {
+                        GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
+                        GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
+                        GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
+                        GlobalSettings.InvokeChange();
+                    }
                 }
             }
             else

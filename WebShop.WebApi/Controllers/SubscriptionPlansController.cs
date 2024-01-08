@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Base.DTO.Shared;
 using Base.Services.Clients;
+using Base.DTO.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -73,15 +74,39 @@ namespace WebShop.WebApi.Controllers
 
             await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
 
-            var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
-            var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
-
-            if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
+            if (!userSubscriptionPlan.SubscriptionPlan!.AutomaticRenewel)
             {
-                return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
-            }
+                var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
+                pspPayment.InvoiceType = InvoiceType.SUBSCRIPTION;
+                var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
 
-            return Ok(new RedirectUrlDTO(result!.RedirectUrl));
+                if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
+                {
+                    return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
+                }
+
+                return Ok(new RedirectUrlDTO(result!.RedirectUrl));
+            }
+            else
+            {
+                var pspPayment = _mapper.Map<PspSubscriptionPaymentDTO>(invoice);
+                pspPayment.Subscriber = new Base.DTO.Input.SubscriberIDTO
+                {
+                    Name = invoice.User!.Name,
+                    Email = invoice.User!.Email
+                };
+                pspPayment.BrandName = invoice.Merchant!.User!.Name;
+                pspPayment.Product = new Base.DTO.Input.ProductIDTO("Yearly subscription", "SERVICE", string.Empty, "LEGAL");
+
+                var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/SubscriptionPayment", pspPayment);
+
+                if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
+                {
+                    return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
+                }
+
+                return Ok(new RedirectUrlDTO(result!.RedirectUrl));
+            }
         }
     }
 }

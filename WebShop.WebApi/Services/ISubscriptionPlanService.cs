@@ -41,7 +41,7 @@ namespace WebShop.WebApi.Services
 
             var userSubscriptionPlan = new UserSubscriptionPlan(userSubscriptionPlanIDTO.UserId)
             {
-                SubscriptionPlanId = userSubscriptionPlanIDTO.SubscriptionPlanId,
+                SubscriptionPlan = subscriptionPlan,
                 StartTimestamp = DateTime.Now,
                 EndTimestamp = DateTime.Today.AddDays(subscriptionPlan.DurationInDays)
             };

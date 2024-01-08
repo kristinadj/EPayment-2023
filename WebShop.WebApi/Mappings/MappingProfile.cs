@@ -63,6 +63,16 @@ namespace WebShop.WebApi.Mappings
                 .ForMember(x => x.ExternalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
                 .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Merchant!.PspMerchantId))
                 .ConstructUsing(x => new PspInvoiceIDTO(x!.UserId, x.Currency!.Code));
+
+            CreateMap<Invoice, PspInvoiceIDTO>()
+                .ForMember(x => x.ExternalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
+                .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Merchant!.PspMerchantId))
+                .ConstructUsing(x => new PspInvoiceIDTO(x!.UserId, x.Currency!.Code));
+
+            CreateMap<Invoice, PspSubscriptionPaymentDTO>()
+                .ForMember(x => x.ExternalInvoiceId, x => x.MapFrom(x => x.InvoiceId))
+                .ForMember(x => x.MerchantId, x => x.MapFrom(x => x.Merchant!.PspMerchantId))
+                .ConstructUsing(x => new PspSubscriptionPaymentDTO(x!.UserId, x.Currency!.Code));
         }
     }
 }

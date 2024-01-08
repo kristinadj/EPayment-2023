@@ -2,10 +2,10 @@
 using Base.DTO.Output;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
+using Base.DTO.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
-using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.Helpers;
 using PayPalPaymentService.WebApi.Services;
 
@@ -49,7 +49,7 @@ namespace PayPalPaymentService.WebApi.Controllers
             var accessToken = await _paytPalClientService.GenerateAccessTokenAsync(merchant.ClientId, merchant.Secret);
             if (accessToken == null) return BadRequest();
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, Enums.InvoiceType.ORDER);
+            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, paymentRequestDTO.InvoiceType, false);
             if (invoice == null) return BadRequest();
 
             var orderIDTO = Mapper.ToOrderIDTO(paymentRequestDTO, invoice, _payPalSettings);

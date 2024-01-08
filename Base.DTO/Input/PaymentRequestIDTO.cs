@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Base.DTO.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Base.DTO.Input
 {
@@ -24,5 +25,7 @@ namespace Base.DTO.Input
         [Required]
         [StringLength(70)]
         public string TransactionErrorUrl { get; set; } = string.Empty;
+
+        public InvoiceType InvoiceType { get; set; }
     }
 }

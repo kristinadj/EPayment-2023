@@ -24,17 +24,25 @@
                 <AuthorizeView Roles="BUYER" Context="buyerContext">
                     @if (GlobalSettings.IsSubscriptionPlanValid != null && (bool)GlobalSettings.IsSubscriptionPlanValid)
                     {
-                        <div class="d-flex flex-column">
+                        <div class="d-flex flex-column gap-1">
                             @if (GlobalSettings.SubscriptionAutomaticRenewel)
                             {
-                                <div class="d-flex align-left">Subscription will be renewed on</div>
+                                <div class="d-flex align-left">Membership will be renewed on</div>
                             }
                             else
                             {
-                                <div class="d-flex align-left">Subscription active until</div>
+                                <div class="d-flex align-left">Membership active until</div>
                             }
                             <div class="d-flex align-left">@GlobalSettings.SubscriptionActiveUntil.ToShortDateString()</div>
                         </div>
+                        
+                        @if (GlobalSettings.SubscriptionAutomaticRenewel)
+                        {
+                            <MudTooltip Text="Cancel Subscription">
+                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" />
+                            </MudTooltip>
+                            <hr style="border-left: 3px solid white; height:100%; color: white;">
+                        }
                     }
                     <MudTooltip Text="Orders Archive">
                         <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Color="Color.Inherit" />

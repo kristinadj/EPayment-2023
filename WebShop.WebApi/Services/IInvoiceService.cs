@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Base.DTO.Enums;
 using Microsoft.EntityFrameworkCore;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
@@ -11,7 +12,7 @@ namespace WebShop.WebApi.Services
     {
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
         Task<InvoiceODTO?> CreateInvoiceAsync(int orderId);
-        Task<InvoiceODTO?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan);
+        Task<Invoice?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan);
         Task UpdateInvoiceTransactionStatusasync(int invoiceId, TransactionStatus transactionStatus);
         Task<bool> UpdatePaymentMethodAsync(int invoiceId, int pspPaymentMethodId);
     }
@@ -66,7 +67,7 @@ namespace WebShop.WebApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<InvoiceODTO?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan)
+        public async Task<Invoice?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan)
         {
             var subscriptionPlan = await _context.SubscriptionPlans
                 .Where(x => x.SubscriptionPlanId == userSubscripptionPlan.SubscriptionPlanId)
@@ -80,7 +81,7 @@ namespace WebShop.WebApi.Services
 
             var invoice = new Invoice(userSubscripptionPlan.UserId)
             {
-                InvoiceType = InvoiceType.SUBSCRIPTION_PLAN,
+                InvoiceType = InvoiceType.SUBSCRIPTION,
                 MerchantId = merchant!.MerchantId,
                 TotalPrice = subscriptionPlan.Price,
                 CurrencyId = subscriptionPlan.CurrencyId,
@@ -105,9 +106,10 @@ namespace WebShop.WebApi.Services
             return await _context.Invoices
                 .Where(x => x.InvoiceId == invoice.InvoiceId)
                 .Include(x => x.Merchant)
+                .ThenInclude(x => x!.User)
                 .Include(x => x.Currency)
                 .Include(x => x.Transaction)
-                .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
+                .Include(x => x.User)
                 .FirstOrDefaultAsync();
         }
 

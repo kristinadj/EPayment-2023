@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Base.DTO.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebShop.DTO.Enums;
 
@@ -14,6 +15,8 @@ namespace WebShop.WebApi.Models
         public double TotalPrice { get; set; }
         public int CurrencyId { get; set; }
         public int TransactionId { get; set; }
+
+        [Column(TypeName = "nvarchar(24)")]
         public InvoiceType InvoiceType { get; set; }
 
         public Merchant? Merchant { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace PayPalPaymentService.WebApi.Enums
+﻿namespace Base.DTO.Enums
 {
     public enum InvoiceType
     {

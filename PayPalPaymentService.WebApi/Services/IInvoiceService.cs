@@ -1,4 +1,5 @@
 ﻿using Base.DTO.Input;
+using Base.DTO.Enums;
 using Microsoft.EntityFrameworkCore;
 using PayPalPaymentService.WebApi.Enums;
 using PayPalPaymentService.WebApi.Models;
@@ -8,7 +9,7 @@ namespace PayPalPaymentService.WebApi.Services
     public interface IInvoiceService
     {
         Task<Invoice?> GetInvoiceByPayPalOrderIdAsync(string payPalOrderId);
-        Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType);
+        Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType, bool recurringPayment);
         Task<Invoice?> GetInvoiceByPayPalSubscriptionIdAsync(string payPalSubscriptionId);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
         Task<Invoice?> UpdatePayPalOrderIdAsync(int invoiceId, string payPalOrderId);
@@ -39,7 +40,7 @@ namespace PayPalPaymentService.WebApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType)
+        public async Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType, bool recurringPayment)
         {
             var merchant = await _context.Merchants
                 .Where(x => x.PaymentServiceMerchantId == paymentRequestDTO.MerchantId)
@@ -64,6 +65,7 @@ namespace PayPalPaymentService.WebApi.Services
                 Timestamp = paymentRequestDTO.Timestamp,
                 TransactionStatus = TransactionStatus.CREATED,
                 InvoiceType = invoiceType, 
+                RecurringPayment = recurringPayment,
                 InvoiceLogs = new List<InvoiceLog>
                 {
                      new InvoiceLog { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }

@@ -1,4 +1,6 @@
-﻿namespace Base.DTO.Shared
+﻿using Base.DTO.Enums;
+
+namespace Base.DTO.Shared
 {
     public class PspInvoiceIDTO
     {
@@ -8,6 +10,7 @@
         public double TotalPrice { get; set; }
         public string CurrencyCode { get; set; }
         public DateTime Timestamp { get; set; }
+        public InvoiceType InvoiceType { get; set; }
         public string? RedirectUrl { get; set; } = string.Empty;
 
         public PspInvoiceIDTO(string issuedToUser, string currencyCode)

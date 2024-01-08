@@ -1,4 +1,4 @@
-﻿using WebShop.DTO.Enums;
+﻿using Base.DTO.Enums;
 
 namespace WebShop.DTO.Output
 {

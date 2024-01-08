@@ -19,6 +19,9 @@ namespace PSP.Client.Pages
         [Parameter]
         public int InvoiceId { get; set; }
 
+        [Parameter]
+        public bool RecurringPayment { get; set; }
+
         private InvoiceODTO? invoice { get; set; }
         private List<PaymentMethodODTO> paymentMethods = new();
 
@@ -34,7 +37,7 @@ namespace PSP.Client.Pages
 
             if (invoice != null)
             {
-                paymentMethods = await ApiServices.GetPaymentMethodsAsync(invoice.MerchantId);
+                paymentMethods = await ApiServices.GetPaymentMethodsAsync(invoice.MerchantId, RecurringPayment);
                 if (paymentMethods.Any())
                 {
                     selectedPaymentMethod = paymentMethods.First().PaymentMethodId;

@@ -2,20 +2,19 @@
 using Base.DTO.Output;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
+using Base.DTO.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
-using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.Enums;
 using PayPalPaymentService.WebApi.Helpers;
 using PayPalPaymentService.WebApi.Services;
 
 namespace PayPalPaymentService.WebApi.Controllers
 {
-    [Route("api/paypal/[controller]")]
+    [Route("api/paypal/SubscriptionPayment")]
     [ApiController]
-    public class SubscriptionPaymentController : ControllerBase
+    public class PayPalSubscriptionPaymentController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
         private readonly IMerchantService _merchantService;
@@ -26,7 +25,7 @@ namespace PayPalPaymentService.WebApi.Controllers
         private readonly PaymentMethod _paymentMethod;
         private readonly IConsulHttpClient _consulHttpClient;
 
-        public SubscriptionPaymentController(
+        public PayPalSubscriptionPaymentController(
             IInvoiceService invoiceService,
             IMerchantService merchantService,
             IPayPalClientService paytPalClientService,
@@ -43,7 +42,7 @@ namespace PayPalPaymentService.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentInstructionsODTO>> CreateAutomaticPayment([FromBody] AutomaticPaymentRequestIDTO paymentRequestDTO)
+        public async Task<ActionResult<PaymentInstructionsODTO>> CreateRecurringPayment([FromBody] RecurringPaymentRequestIDTO paymentRequestDTO)
         {
             var merchant = await _merchantService.GetMerchantByPaymentServiceMerchantId(paymentRequestDTO.MerchantId);
             if (merchant == null) return BadRequest();
@@ -64,7 +63,7 @@ namespace PayPalPaymentService.WebApi.Controllers
                 createNewBillingPlan = true;
             }
 
-            if (merchant.PayPalBillingPlanId == null || createNewBillingPlan )
+            if (merchant.PayPalBillingPlanId == null || createNewBillingPlan)
             {
                 var createPlanIDTO = Mapper.ToCreatePlanIDTO(merchant.PayPalBillingPlanProductId!, paymentRequestDTO.ExternalInvoiceId.ToString(), paymentRequestDTO.Amount, paymentRequestDTO.CurrencyCode);
                 var billingPlanODTO = await _paytPalClientService.CreatePlanAsync(accessToken, createPlanIDTO);
@@ -74,7 +73,7 @@ namespace PayPalPaymentService.WebApi.Controllers
                 merchant = await _merchantService.UpdateBillingPlanIdAsync(merchant, billingPlanODTO.Id!);
             }
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, InvoiceType.SUBSCRIPTION);
+            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, InvoiceType.SUBSCRIPTION, true);
             if (invoice == null) return BadRequest();
 
             var subscriptionIDTO = Mapper.ToCreateSubscriptionIDTO(merchant.PayPalBillingPlanId!, paymentRequestDTO.BrandName!, paymentRequestDTO.Subscriber!, _payPalSettings);
