@@ -1,8 +1,8 @@
-﻿using Base.DTO.Input;
+﻿using Base.DTO.Enums;
+using Base.DTO.Input;
 using Base.DTO.Output;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
-using Base.DTO.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
@@ -105,7 +105,7 @@ namespace PayPalPaymentService.WebApi.Controllers
             try
             {
                 await _consulHttpClient.PutAsync(_paymentMethod.PspServiceName, $"{invoice!.ExternalInvoiceId}/Success");
-                return Redirect(invoice.TransactionSuccessUrl);
+                return Redirect($"{invoice.TransactionSuccessUrl}/{subscription_id}");
             }
             catch (Exception ex)
             {
@@ -119,7 +119,7 @@ namespace PayPalPaymentService.WebApi.Controllers
             var invoice = await _invoiceService.GetInvoiceByPayPalSubscriptionIdAsync(subscription_id);
             if (invoice == null) return BadRequest();
 
-            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.FAIL);
+            await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, TransactionStatus.FAIL);
 
             try
             {
@@ -131,6 +131,32 @@ namespace PayPalPaymentService.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost("Renewed")]
+        public async Task<ActionResult> PayPalSubscriptionRenewed()
+        {
+            using StreamReader reader = new(Request.Body);
+            var requestBody = await reader.ReadToEndAsync();
+            return Ok(requestBody);
+        }
+
+        [HttpPut("CancelSubscription/{subscriptionId}")]
+        public async Task<ActionResult> CancelSubscription([FromRoute] string subscriptionId)
+        {
+            var invoice = await _invoiceService.GetInvoiceByPayPalSubscriptionIdAsync(subscriptionId);
+            if (invoice == null) return BadRequest();
+
+            var merchant = await _merchantService.GetMerchantById(invoice.MerchantId);
+            if (merchant == null) return BadRequest();
+
+            var accessToken = await _paytPalClientService.GenerateAccessTokenAsync(merchant.ClientId, merchant.Secret);
+            if (accessToken == null) return BadRequest();
+
+            var isSuccess = await _paytPalClientService.CancelSubscriptionAsync(accessToken, subscriptionId);
+            if (!isSuccess) return BadRequest();
+
+            return Ok();
         }
     }
 }

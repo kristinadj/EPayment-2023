@@ -1,12 +1,12 @@
 ﻿using Base.DTO.Input;
 using Microsoft.EntityFrameworkCore;
 using PayPalPaymentService.WebApi.Models;
-using System.Runtime.CompilerServices;
 
 namespace PayPalPaymentService.WebApi.Services
 {
     public interface IMerchantService
     {
+        Task<Merchant?> GetMerchantById(int merchantId);
         Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId);
         Task<bool> UpdateMerchantCredentialsAsync(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO);
         Task<Merchant> UpdateProductIdAsync(Merchant merchant, string productId);
@@ -20,6 +20,13 @@ namespace PayPalPaymentService.WebApi.Services
         public MerchantService(PayPalServiceContext context)
         {
             _context = context;
+        }
+
+        public async Task<Merchant?> GetMerchantById(int merchantId)
+        {
+            return await _context.Merchants
+                .Where(x => x.MerchantId == merchantId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId)

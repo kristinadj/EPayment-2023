@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Base.DTO.Enums;
 using Base.DTO.Input;
 using Base.DTO.Shared;
 using Base.Services.Clients;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PSP.WebApi.AppSettings;
 using PSP.WebApi.DTO.Output;
-using PSP.WebApi.Enums;
 using PSP.WebApi.Services;
 
 namespace PSP.WebApi.Controllers
@@ -55,7 +53,7 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<string>> CreateInvoice([FromBody] PspInvoiceIDTO invoiceIDTO)
         {
             var merchant = await _merchantService.GetMerchantByIdAsync(invoiceIDTO.MerchantId);
-            if (merchant == null)  return NotFound();
+            if (merchant == null) return NotFound();
 
             var invoice = await _invoiceService.CreateInvoiceAsync(merchant, invoiceIDTO, invoiceIDTO.InvoiceType);
             if (invoice == null) return BadRequest();

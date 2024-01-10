@@ -76,6 +76,7 @@ namespace WebShop.Client.Pages
                         GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
                         GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
                         GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
+                        GlobalSettings.IsCanceled = subscriptionPlanDetails.IsCanceled;
                         GlobalSettings.InvokeChange();
                     }
                 }

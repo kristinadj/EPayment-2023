@@ -17,6 +17,9 @@ namespace WebShop.Client.Pages
         [Parameter]
         public int InvoiceId { get; set; }
 
+        [Parameter]
+        public string? ExternalSubscriptionId { get; set; }
+
         private bool isLoading = false;
         private bool unexpectedError = false;
 
@@ -40,6 +43,11 @@ namespace WebShop.Client.Pages
 
             var isSuccess = await ApiServices.UpdateTransactionStatusAsync(invoice!.Transaction!.TransactionId, DTO.Enums.TransactionStatus.COMPLETED);
             if (!isSuccess) unexpectedError = true;
+
+            if (!string.IsNullOrEmpty(ExternalSubscriptionId))
+            {
+                await ApiServices.UpdateExternalSubscriptionIdAsync(InvoiceId, ExternalSubscriptionId);
+            }
 
             isLoading = false;
         }

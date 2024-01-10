@@ -1,11 +1,18 @@
 ﻿@page "/logout"
+@using WebShop.Client.Code
+
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
+@inject GlobalUserSettings GlobalUserSettings
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         await AuthService.Logout();
+
+        GlobalUserSettings.Role = null;
+        GlobalUserSettings.InvokeChange();
+
         NavigationManager.NavigateTo("/");
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using MudBlazor.Utilities;
 using WebShop.Client.Code;
+using WebShop.Client.Services;
 
 namespace WebShop.Client.Shared
 {
@@ -13,6 +14,12 @@ namespace WebShop.Client.Shared
 
         [Inject]
         protected GlobalUserSettings GlobalSettings { get; set; }
+
+        [Inject]
+        private IApiServices ApiServices { get; set; }
+
+        [Inject]
+        private ISnackbar Snackbar { get; set; }
 
         private MudTheme? _currentTheme;
 
@@ -49,6 +56,21 @@ namespace WebShop.Client.Shared
         private void OnClickLogout(MouseEventArgs e)
         {
             Navigation!.NavigateTo("/logout");
+        }
+
+        private async Task OnClickCancelSubscriptionAsync()
+        {
+            var isSuccess = await ApiServices.CancelSubscriptionAsync(GlobalSettings.UserId!);
+
+            if (isSuccess)
+            {
+                GlobalSettings.IsCanceled = true;
+                GlobalSettings.InvokeChange();
+            }
+            else
+            {
+                Snackbar.Add("Unexpected exception occurred during unsubscribing", Severity.Error);
+            }
         }
 
         private void RefreshAppBar()

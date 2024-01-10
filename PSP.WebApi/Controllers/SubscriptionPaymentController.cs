@@ -52,5 +52,16 @@ namespace PSP.WebApi.Controllers
             result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}/true";
             return Ok(result);
         }
+
+        [HttpPut("CancelSubscription/{paymentMethodId}/{subscriptionId}")]
+        public async Task<ActionResult> CancelSubscription([FromRoute] int paymentMethodId, [FromRoute] string subscriptionId)
+        {
+            var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
+            var isSuccess = await _consulHttpClient.PutAsync(paymentMethod!.ServiceName, $"{paymentMethod!.ServiceApiSufix}/SubscriptionPayment/CancelSubscription/{subscriptionId}");
+
+            if (!isSuccess) return BadRequest();
+
+            return Ok();
+        }
     }
 }

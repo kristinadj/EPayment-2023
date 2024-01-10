@@ -15,6 +15,7 @@ namespace WebShop.WebApi.Services
         Task<Invoice?> CreateInvoiceForSubscriptionPlanAsync(UserSubscriptionPlan userSubscripptionPlan);
         Task UpdateInvoiceTransactionStatusasync(int invoiceId, TransactionStatus transactionStatus);
         Task<bool> UpdatePaymentMethodAsync(int invoiceId, int pspPaymentMethodId);
+        Task<PaymentMethod?> GetPaymentMethodByInvoiceIdAsync(int invoiceId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -118,6 +119,14 @@ namespace WebShop.WebApi.Services
             return await _context.Invoices
                 .Where(x => x.InvoiceId == invoiceId)
                 .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<PaymentMethod?> GetPaymentMethodByInvoiceIdAsync(int invoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Select(x => x.Transaction!.PaymentMethod)
                 .FirstOrDefaultAsync();
         }
 

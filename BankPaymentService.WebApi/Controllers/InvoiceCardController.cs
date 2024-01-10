@@ -43,58 +43,6 @@ namespace BankPaymentService.WebApi.Controllers
             return Ok(paymentInstructions);
         }
 
-        [HttpPut("{invoiceId}/Success")]
-        public async Task<ActionResult<RedirectUrlDTO>> SuccessPayment([FromRoute] int invoiceId)
-        {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
-            if (invoice == null) return BadRequest();
-
-            try
-            {
-                await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Success");
-                var redirectUrl = new RedirectUrlDTO(invoice.TransactionSuccessUrl);
-                return Ok(redirectUrl);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{invoiceId}/Failure")]
-        public async Task<ActionResult<RedirectUrlDTO>> FailurePayment([FromRoute] int invoiceId)
-        {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.FAIL);
-            if (invoice == null) return BadRequest();
-
-            try
-            {
-                await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Failure");
-                var redirectUrl = new RedirectUrlDTO(invoice.TransactionFailureUrl);
-                return Ok(redirectUrl);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{invoiceId}/Error")]
-        public async Task<ActionResult<RedirectUrlDTO>> ErrorPayment([FromRoute] int invoiceId)
-        {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.ERROR);
-            if (invoice == null) return BadRequest();
-
-            try
-            {
-                await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Error");
-                var redirectUrl = new RedirectUrlDTO(invoice.TransactionErrorUrl);
-                return Ok(redirectUrl);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
     }
 }

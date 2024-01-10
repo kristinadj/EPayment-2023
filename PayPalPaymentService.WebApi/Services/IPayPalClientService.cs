@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using PayPalPaymentService.WebApi.AppSettings;
 using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.DTO.PayPal.Output;
+using PayPalPaymentService.WebApi.Migrations;
 using System.Collections;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,6 +20,7 @@ namespace PayPalPaymentService.WebApi.Services
         Task<PayPalProductODTO?> CreateProductAsync(string token, PayPalProductIDTO product);
         Task<CreatePlanODTO?> CreatePlanAsync(string token, CreatePlanIDTO plan);
         Task<CreateSubscriptionODTO?> CreateSubscriptionAsync(string token, CreateSubscriptionIDTO subscription);
+        Task<bool> CancelSubscriptionAsync(string token, string subscriptionId);
     }
 
     public class PayPalClientService : IPayPalClientService
@@ -113,6 +116,17 @@ namespace PayPalPaymentService.WebApi.Services
             if (subscriptionResponse == null) return null;
 
             return subscriptionResponse;
+        }
+
+        public async Task<bool> CancelSubscriptionAsync(string token, string subscriptionId)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var cancelSubscriptionIDTO = new CancelSubscriptionIDTO();
+            var response = await _httpClient.PostAsJsonAsync($"/v1/billing/subscriptions/{subscriptionId}/cancel", cancelSubscriptionIDTO);
+            if (!response.IsSuccessStatusCode) return false;
+
+            return true;
         }
     }
 }

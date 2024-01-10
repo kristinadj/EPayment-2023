@@ -11,6 +11,7 @@ namespace WebShop.Client.Code
         public bool? IsSubscriptionPlanValid { get; set; }
         public DateTime SubscriptionActiveUntil { get; set; }
         public bool SubscriptionAutomaticRenewel {  get; set; }
+        public bool IsCanceled { get; set; }
 
         public event Action? OnChange;
 

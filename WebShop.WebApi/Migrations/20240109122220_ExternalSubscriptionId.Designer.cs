@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.WebApi.Models;
 
@@ -11,9 +12,10 @@ using WebShop.WebApi.Models;
 namespace WebShop.WebApi.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20240109122220_ExternalSubscriptionId")]
+    partial class ExternalSubscriptionId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -815,17 +817,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "61d66c5a-7ba1-413d-b430-9927d277277e",
+                            ConcurrencyStamp = "a4ceee2a-5010-48cf-84eb-35adaab1f11c",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFOsGTYtRwaXUcqC0AGmgxolFAHlU0MGeWhnsV8NniMwXCWvLGfK7IJ1CIOKGoQTbQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKA5FXBFS2FFIRjGe/6ZylfmP3vQ0zb85XHClVKsDHAmVGYTOWHnKZl5sxwWm5956A==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "fba7c3eb-6e45-41ee-a2a9-0531ea84ae31",
+                            SecurityStamp = "d9e03975-6277-45b8-8405-6e897394a842",
                             TwoFactorEnabled = false
                         },
                         new
@@ -833,17 +835,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "f7544ad6-8486-40aa-bed2-90e00d5add1b",
+                            ConcurrencyStamp = "d0d445dd-5924-4853-9acd-163cc18c8bae",
                             Email = "agencyadmin@legaldocsagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJhTGRpS3lPvgv6RsWlxxY/exmMnr5AGCIqL2FI61/yikHdJtTad7YBNsFE4x+d4qw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEF/Kiu6JTGX6cVsqNP/SJwcs4NCKbUhhTCQxlndQiosXyn5PzGNzaF4fWnm1LbNy0Q==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "0b23d78c-b3d9-412a-8ccf-81b1986c99bf",
+                            SecurityStamp = "e0aa3349-10b2-4030-953c-be8ba7300159",
                             TwoFactorEnabled = false
                         });
                 });
@@ -864,9 +866,6 @@ namespace WebShop.WebApi.Migrations
 
                     b.Property<int?>("InvoiceId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartTimestamp")
                         .HasColumnType("datetime2");

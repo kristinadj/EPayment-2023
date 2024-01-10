@@ -11,6 +11,7 @@ using WebShop.DTO.Input;
 using WebShop.DTO.Output;
 using WebShop.WebApi.AppSettings;
 using WebShop.WebApi.Services;
+using System.Web;
 
 namespace WebShop.WebApi.Controllers
 {
@@ -57,7 +58,7 @@ namespace WebShop.WebApi.Controllers
         }
 
         [HttpGet("Details/{userId}")]
-        public async Task<ActionResult<SubscriptionPlanDetailsODTO>> SubscriptionPlanDetails([FromRoute] string userId)
+        public async Task<ActionResult<UserSubscriptionPlanDetailsODTO>> SubscriptionPlanDetails([FromRoute] string userId)
         {
             var result = await _subscriptionPlanService.GetSubscriptionPlanDetailsAsync(userId);
             return Ok(result);
@@ -107,6 +108,39 @@ namespace WebShop.WebApi.Controllers
 
                 return Ok(new RedirectUrlDTO(result!.RedirectUrl));
             }
+        }
+
+        [HttpPut("ExternalSubscriptionId")]
+        public async Task<ActionResult> UpdateExternalSubscriptionId([FromQuery] int invoiceId, [FromQuery] string externalSubscriptionId)
+        {
+            try
+            {
+                var isSuccess = await _subscriptionPlanService.UpdateExternalSubscriptionIdAsync(invoiceId, externalSubscriptionId);
+                if (!isSuccess) return NotFound();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("CancelSubscription/{userId}")]
+        public async Task<ActionResult> CancelSubscriptionAsync([FromRoute] string userId)
+        {
+            var userSubsriptionPlan = await _subscriptionPlanService.GetUserSubscriptionPlanByUserIdAsync(userId);
+            if (userSubsriptionPlan == null) return NotFound();
+
+            if (string.IsNullOrEmpty(userSubsriptionPlan.ExternalSubscriptionId)) return BadRequest();
+
+            var paymentMethod = await _invoiceService.GetPaymentMethodByInvoiceIdAsync((int)userSubsriptionPlan.InvoiceId!);
+            if (paymentMethod == null) return NotFound();
+
+            var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/SubscriptionPayment/CancelSubscription/{paymentMethod.PspPaymentMethodId}/{userSubsriptionPlan.ExternalSubscriptionId}");
+            if (!isSuccess) return BadRequest();
+
+            await _subscriptionPlanService.CancelUserSubscriptionPlanAsync(userSubsriptionPlan);
+            return Ok();
         }
     }
 }

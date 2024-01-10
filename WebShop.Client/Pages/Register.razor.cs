@@ -2,6 +2,7 @@
 using MudBlazor;
 using System.Text.RegularExpressions;
 using WebShop.Client.Authentication;
+using WebShop.Client.Code;
 using WebShop.DTO.Input;
 
 namespace WebShop.Client.Pages

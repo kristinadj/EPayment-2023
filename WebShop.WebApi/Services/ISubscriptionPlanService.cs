@@ -12,8 +12,11 @@ namespace WebShop.WebApi.Services
     {
         Task<List<SubscriptionPlanODTO>> GetSubscriptionPlansAsync();
         Task<bool> IsSubscriptionPlanValidAsync(string userId);
-        Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId);
+        Task<UserSubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId);
+        Task<UserSubscriptionPlan?> GetUserSubscriptionPlanByUserIdAsync(string userId);
         Task<UserSubscriptionPlan?> AddUserSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
+        Task<bool> UpdateExternalSubscriptionIdAsync(int invoiceId, string externalSubscriptionId);
+        Task CancelUserSubscriptionPlanAsync(UserSubscriptionPlan userSubscriptionPlan);
     }
 
     public class SubscripionPlanService : ISubscriptionPlanService
@@ -43,7 +46,8 @@ namespace WebShop.WebApi.Services
             {
                 SubscriptionPlan = subscriptionPlan,
                 StartTimestamp = DateTime.Now,
-                EndTimestamp = DateTime.Today.AddDays(subscriptionPlan.DurationInDays)
+                EndTimestamp = DateTime.Today.AddDays(subscriptionPlan.DurationInDays),
+                IsCanceled = false
             };
 
             await _context.UserSubscriptionPlans.AddAsync(userSubscriptionPlan);
@@ -65,7 +69,7 @@ namespace WebShop.WebApi.Services
                 .AnyAsync();
         }
 
-        public async Task<SubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId)
+        public async Task<UserSubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId)
         {
             var subscriptionPlan = await _context.UserSubscriptionPlans
                 .Where(x => x.UserId == userId)
@@ -77,13 +81,45 @@ namespace WebShop.WebApi.Services
 
             if (subscriptionPlan == null) return null;
 
-            var result = new SubscriptionPlanDetailsODTO
+            var result = new UserSubscriptionPlanDetailsODTO
             {
                 IsValid = subscriptionPlan.Invoice!.Transaction!.TransactionStatus == TransactionStatus.COMPLETED,
                 ActiveUntil = subscriptionPlan.EndTimestamp,
-                AutomaticRenewel = subscriptionPlan.SubscriptionPlan!.AutomaticRenewel
+                AutomaticRenewel = subscriptionPlan.SubscriptionPlan!.AutomaticRenewel,
+                IsCanceled = subscriptionPlan.IsCanceled
             };
             return result;
+        }
+
+        public async Task<UserSubscriptionPlan?> GetUserSubscriptionPlanByUserIdAsync(string userId)
+        {
+            return await _context.UserSubscriptionPlans
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.StartTimestamp)
+                .Include(x => x.Invoice)
+                .ThenInclude(x => x!.Transaction)
+                .Include(x => x.SubscriptionPlan)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> UpdateExternalSubscriptionIdAsync(int invoiceId, string externalSubscriptionId)
+        {
+            var userSubscriptionPlan = await _context.UserSubscriptionPlans
+                .Where(x => x.InvoiceId == invoiceId && x.SubscriptionPlan!.AutomaticRenewel)
+                .FirstOrDefaultAsync();
+
+            if (userSubscriptionPlan == null) return false;
+
+            userSubscriptionPlan.ExternalSubscriptionId = externalSubscriptionId;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task CancelUserSubscriptionPlanAsync(UserSubscriptionPlan userSubscriptionPlan)
+        {
+            userSubscriptionPlan.IsCanceled = true;
+            _context.Entry(userSubscriptionPlan).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
