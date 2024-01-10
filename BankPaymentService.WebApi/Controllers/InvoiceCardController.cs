@@ -2,7 +2,6 @@
 using BankPaymentService.WebApi.Services;
 using Base.DTO.Input;
 using Base.DTO.Output;
-using Base.DTO.Shared;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,8 +20,8 @@ namespace BankPaymentService.WebApi.Controllers
 
         public InvoiceCardController(
             IOptions<CardPaymentMethod> cardPaymentMethod,
-            IInvoiceService invoiceService, 
-            IBankService bankService, 
+            IInvoiceService invoiceService,
+            IBankService bankService,
             IConsulHttpClient consulHttpClient)
         {
             _cardPaymentMethod = cardPaymentMethod.Value;
@@ -42,7 +41,5 @@ namespace BankPaymentService.WebApi.Controllers
 
             return Ok(paymentInstructions);
         }
-
-        
     }
 }

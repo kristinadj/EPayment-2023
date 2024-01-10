@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using PayPalPaymentService.WebApi.AppSettings;
 using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.DTO.PayPal.Output;
-using PayPalPaymentService.WebApi.Migrations;
-using System.Collections;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Numerics;
 using System.Text;
 using System.Text.Json;
 

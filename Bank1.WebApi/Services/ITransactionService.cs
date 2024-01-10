@@ -14,6 +14,7 @@ namespace Bank1.WebApi.Services
     public interface ITransactionService
     {
         Task<Transaction?> CreateTransactionAsync(TransactionIDTO transactionIDTO);
+        Task<Transaction?> CreateRecurringTransactionAsync(TransactionIDTO transactionIDTO);
         Task<Transaction?> GetTransactionByIdAsync(int transactionId);
         Task<bool> PayTransctionAsync(Transaction transaction, Account account);
         Task<bool> PccSendToPayTransctionAsync(Transaction transaction, PayTransactionIDTO payTransactionIDTO, int bankId, string pccUrl);
@@ -21,6 +22,9 @@ namespace Bank1.WebApi.Services
         Task<PccTransactionODTO?> PccReceiveToPayTransactionAsync(PccTransactionIDTO transactionIDTO, string cardStartNumbers);
         Task UpdateTransactionStatusAsync(Transaction transaction, TransactionStatus transactionStatus);
         Task<double?> ExchangeAsync(string fromCurrency, string toCuurency, double amount);
+        Task<RecurringTransactionDefinition?> GetReccurringTransactionDefinitionByTransactionIdAsync(int transactionId);
+        Task<bool> CancelRecurringTransactionAsync(int recurringTransactionDefinitionId);
+        Task UpdatePaymentDataAsync(RecurringTransactionDefinition recurringTransactionDefinition, PayTransactionIDTO payTransactionIDTO);
     }
 
     public class TransactionService : ITransactionService
@@ -71,6 +75,63 @@ namespace Bank1.WebApi.Services
             await _context.SaveChangesAsync();
 
             return transaction;
+        }
+
+        public async Task<Transaction?> CreateRecurringTransactionAsync(TransactionIDTO transactionIDTO)
+        {
+            var currency = await _context.Currencies
+                .Where(x => x.Code == transactionIDTO.CurrencyCode)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (currency == null) return null;
+
+            var businsessCustomers = await _context.BusinessCustomer.ToListAsync();
+            var customer = await _context.BusinessCustomer
+                .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.Password == transactionIDTO.Secret)
+                .Include(x => x.Customer!.Accounts)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            if (customer == null) return null;
+
+            var account = customer.Customer!.Accounts!
+                .Where(x => x.AccountNumber == transactionIDTO.AccountNumber)
+                .FirstOrDefault();
+            if (account == null) return null;
+
+            // TODO: Currency conversion
+            var recurringTransaction = new RecurringTransactionDefinition  
+            {
+                Amount = transactionIDTO.Amount,
+                CurrencyId = currency.CurrencyId,
+                ReceiverAccountId = account.AccountId,
+                IsCanceled = false,
+                RecurringCycleDays = 365,
+                StartTimestamp = DateTime.Today,
+                NextPaymentTimestamp = DateTime.Today.AddDays(365),
+                RecurringTransactions = new List<RecurringTransaction>()
+                {
+                    new()
+                    {
+                        Transaction =  new Transaction(transactionIDTO.ExternalInvoiceId.ToString(), transactionIDTO.TransactionSuccessUrl, transactionIDTO.TransactionFailureUrl, transactionIDTO.TransactionErrorUrl)
+                        {
+                            Amount = transactionIDTO.Amount,
+                            CurrencyId = currency.CurrencyId,
+                            ReceiverAccountId = account.AccountId,
+                            TransactionStatus = TransactionStatus.CREATED,
+                            Timestamp = transactionIDTO.Timestamp,
+                            TransactionLogs = new List<TransactionLog>
+                            {
+                                new() { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await _context.RecurringTransactionDefinitions.AddAsync(recurringTransaction);
+            await _context.SaveChangesAsync();
+
+            return recurringTransaction.RecurringTransactions.Select(x => x.Transaction).FirstOrDefault();
         }
 
         public async Task<Transaction?> GetTransactionByIdAsync(int transactionId)
@@ -261,6 +322,39 @@ namespace Bank1.WebApi.Services
             if (exchangeRate == null) return null;
 
             return amount * exchangeRate.Rate;
+        }
+
+        public async Task<RecurringTransactionDefinition?> GetReccurringTransactionDefinitionByTransactionIdAsync(int transactionId)
+        {
+            return await _context.RecurringTransactions
+                .Where(x => x.TransactionId == transactionId)
+                .Select(x => x.RecurringTransactionDefinition)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CancelRecurringTransactionAsync(int recurringTransactionDefinitionId)
+        {
+            var recurringTransactionDefinition = await _context.RecurringTransactionDefinitions
+                .Where(x => x.RecurringTransactionDefinitionId == recurringTransactionDefinitionId)
+                .FirstOrDefaultAsync();
+
+            if (recurringTransactionDefinition == null) return false;
+
+            recurringTransactionDefinition.IsCanceled = true;
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task UpdatePaymentDataAsync(RecurringTransactionDefinition recurringTransactionDefinition, PayTransactionIDTO payTransactionIDTO)
+        {
+            recurringTransactionDefinition.CardHolderName = payTransactionIDTO.CardHolderName;
+            recurringTransactionDefinition.PanNumber = payTransactionIDTO.PanNumber;
+            recurringTransactionDefinition.ExpiratoryDate = payTransactionIDTO.ExpiratoryDate;
+            recurringTransactionDefinition.CVV = payTransactionIDTO.CVV;
+
+            _context.Entry(recurringTransactionDefinition).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

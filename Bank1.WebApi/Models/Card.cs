@@ -16,6 +16,7 @@ namespace Bank1.WebApi.Models
         public string CardHolderName { get; set; }
 
         [Required]
+        [EncryptColumn]
         public string PanNumber { get; set; }
 
         [Required]

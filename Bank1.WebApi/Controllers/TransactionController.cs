@@ -67,6 +67,14 @@ namespace Bank1.WebApi.Controllers
             if (transaction.TransactionLogs!.Any(x => x.TransactionStatus == Enums.TransactionStatus.COMPLETED))
                 return BadRequest("Transaction already paid");
 
+            var recurringTransactionDefinition = await _transactionService.GetReccurringTransactionDefinitionByTransactionIdAsync(payTransactionIDTO.TransactionId);
+            var successUrl = transaction.TransactionSuccessUrl;
+            if (recurringTransactionDefinition != null)
+            {
+                successUrl = $"{transaction.TransactionSuccessUrl}/{recurringTransactionDefinition.RecurringTransactionDefinitionId}";
+                await _transactionService.UpdatePaymentDataAsync(recurringTransactionDefinition, payTransactionIDTO);
+            }
+                
             RedirectUrlDTO? redirectUrl = null;
             try
             {
@@ -78,7 +86,7 @@ namespace Bank1.WebApi.Controllers
                     var isSuccess = await _transactionService.PccSendToPayTransctionAsync(transaction, payTransactionIDTO, _appSettings.PccBankId, _appSettings.PccUrl);
                     if (isSuccess)
                     {
-                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
                     }
                     else
                     {
@@ -92,7 +100,7 @@ namespace Bank1.WebApi.Controllers
                     var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
                     if (isSuccess)
                     {
-                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
                     }
                     else
                     {

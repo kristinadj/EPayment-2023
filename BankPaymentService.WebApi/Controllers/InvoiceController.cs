@@ -1,11 +1,10 @@
 ﻿using BankPaymentService.WebApi.AppSettings;
 using BankPaymentService.WebApi.Services;
-using Base.DTO.Input;
-using Base.DTO.Output;
 using Base.DTO.Shared;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+
 namespace BankPaymentService.WebApi.Controllers
 {
     [Route("api/Invoice")]
@@ -37,6 +36,26 @@ namespace BankPaymentService.WebApi.Controllers
             {
                 await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Success");
                 var redirectUrl = new RedirectUrlDTO(invoice.TransactionSuccessUrl);
+                return Ok(redirectUrl);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{invoiceId}/Success/{recurringTransactionId}")]
+        public async Task<ActionResult<RedirectUrlDTO>> SuccessPaymentSubscription([FromRoute] int invoiceId, [FromRoute] int recurringTransactionId)
+        {
+            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
+            if (invoice == null) return BadRequest();
+
+            await _invoiceService.UpdateBankRecurringTransactionId(invoice.InvoiceId, recurringTransactionId);
+
+            try
+            {
+                await _consulHttpClient.PutAsync(_cardPaymentMethod.PspServiceName, $"{invoice.ExternalInvoiceId}/Success");
+                var redirectUrl = new RedirectUrlDTO($"{invoice.TransactionSuccessUrl}/{recurringTransactionId}");
                 return Ok(redirectUrl);
             }
             catch (Exception ex)

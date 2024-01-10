@@ -46,5 +46,20 @@ namespace BankPaymentService.WebApi.Controllers
 
             return Ok(paymentInstructions);
         }
+
+        [HttpPut("CancelSubscription/{subscriptionId}")]
+        public async Task<ActionResult> CancelSubscription([FromRoute] string subscriptionId)
+        {
+            var isSuccess = int.TryParse(subscriptionId, out int recurringTransactionDefinitionId);
+            if (!isSuccess) return NotFound();
+
+            var merchant = await _merchantService.GetMerchantByBankRecurringTransactionId(recurringTransactionDefinitionId);
+            if (merchant == null) return BadRequest();
+
+            isSuccess = await _bankService.CancelSubscriptionAsync(recurringTransactionDefinitionId, merchant);
+            if (!isSuccess) return BadRequest();
+
+            return Ok();
+        }
     }
 }

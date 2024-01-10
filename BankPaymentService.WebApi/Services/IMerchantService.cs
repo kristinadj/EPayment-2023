@@ -6,6 +6,7 @@ namespace BankPaymentService.WebApi.Services
 {
     public interface IMerchantService
     {
+        Task<Merchant?> GetMerchantByBankRecurringTransactionId(int bankRecurringTransactionId);
         Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId);
         Task<bool> UpdateMerchantCredentialsAsync(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO);
     }
@@ -17,6 +18,16 @@ namespace BankPaymentService.WebApi.Services
         public MerchantService(BankPaymentServiceContext context)
         {
             _context = context;
+        }
+
+        public async Task<Merchant?> GetMerchantByBankRecurringTransactionId(int bankRecurringTransactionId)
+        {
+            return await _context.Invoices
+                .Where(x => x.BankRecurringTransactionId == bankRecurringTransactionId)
+                .Include(x => x.Merchant)
+                .ThenInclude(x => x!.Bank)
+                .Select(x => x.Merchant)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId)

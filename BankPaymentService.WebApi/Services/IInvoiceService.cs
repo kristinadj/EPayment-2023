@@ -7,8 +7,10 @@ namespace BankPaymentService.WebApi.Services
 {
     public interface IInvoiceService
     {
+        Task<Invoice?> GetInvoiceByExternalInvoiceIdAsync(int extrenalInvoiceId);
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
+        Task<Invoice?> UpdateBankRecurringTransactionId(int invoiceId, int recurringTransactionId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -52,6 +54,28 @@ namespace BankPaymentService.WebApi.Services
             };
 
             await _context.Invoices.AddAsync(invoice);
+            await _context.SaveChangesAsync();
+
+            return invoice;
+        }
+
+        public async Task<Invoice?> GetInvoiceByExternalInvoiceIdAsync(int extrenalInvoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.ExternalInvoiceId == extrenalInvoiceId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Invoice?> UpdateBankRecurringTransactionId(int invoiceId, int recurringTransactionId)
+        {
+            var invoice = await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Include(x => x.InvoiceLogs)
+                .FirstOrDefaultAsync();
+
+            if (invoice == null) return null;
+
+            invoice.BankRecurringTransactionId = recurringTransactionId;
             await _context.SaveChangesAsync();
 
             return invoice;

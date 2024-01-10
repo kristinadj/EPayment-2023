@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20231119230851_PanNumberUpdated")]
-    partial class PanNumberUpdated
+    [Migration("20240110132144_IntializingModel")]
+    partial class IntializingModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,7 +61,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 1,
-                            AccountNumber = "9876543210",
+                            AccountNumber = "105-0000000000000-29",
                             Balance = 14500.0,
                             CurrencyId = 1,
                             OwnerId = 1
@@ -69,7 +69,7 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "1234567890",
+                            AccountNumber = "106-0000000000000-30",
                             Balance = 6530.0,
                             CurrencyId = 1,
                             OwnerId = 2
@@ -89,8 +89,7 @@ namespace Bank1.WebApi.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BusinessCustomerId");
 
@@ -104,7 +103,7 @@ namespace Bank1.WebApi.Migrations
                         {
                             BusinessCustomerId = 1,
                             CustomerId = 1,
-                            Password = "LPAPassword5!"
+                            Password = "0hqo5asTUiTJe/2ZcF3vuA=="
                         });
                 });
 
@@ -133,8 +132,7 @@ namespace Bank1.WebApi.Migrations
 
                     b.Property<string>("PanNumber")
                         .IsRequired()
-                        .HasMaxLength(19)
-                        .HasColumnType("nvarchar(19)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CardId");
 
@@ -150,7 +148,7 @@ namespace Bank1.WebApi.Migrations
                             CVV = 123,
                             CardHolderName = "JOHN DOE",
                             ExpiratoryDate = "12/25",
-                            PanNumber = "1234 5678 9012 3456"
+                            PanNumber = "lCeUSOrMw0PwocsTtLCWKvE0C+tQi0H/fHA/8R4tGBE="
                         });
                 });
 
@@ -248,16 +246,16 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             CustomerId = 1,
-                            Address = "123 Main Street",
+                            Address = "123 Glavna ulica",
                             Email = "webshopadmin@lawpublishingagency.com",
-                            FirstName = "Law Publishing Web Shop",
+                            FirstName = "Web prodavnica pravnog izdavaštva",
                             LastName = "",
                             PhoneNumber = "+1 555-123-4567"
                         },
                         new
                         {
                             CustomerId = 2,
-                            Address = "789 Elm Street,",
+                            Address = "789 Ulica jorgovana,",
                             Email = "johndoe@email.com",
                             FirstName = "John",
                             LastName = "Doe",
@@ -336,6 +334,126 @@ namespace Bank1.WebApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
+                {
+                    b.Property<int>("TransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"), 1L, 1);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("AquirerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AquirerTransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IssuerAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
+
+                    b.HasKey("TransactionId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("IssuerAccountId");
+
+                    b.ToTable("IssuerTransactions", "dbo");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
+                {
+                    b.Property<int>("RecurringTransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringTransactionId"), 1L, 1);
+
+                    b.Property<int>("RecurringTransactionDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecurringTransactionId");
+
+                    b.HasIndex("RecurringTransactionDefinitionId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("RecurringTransactions", "dbo");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.Property<int>("RecurringTransactionDefinitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringTransactionDefinitionId"), 1L, 1);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("CVV")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CardHolderName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExpiratoryDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("NextPaymentTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PanNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecurringCycleDays")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RecurringTransactionDefinitionId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("ReceiverAccountId");
+
+                    b.ToTable("RecurringTransactionDefinitions", "dbo");
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
                     b.Property<int>("TransactionId")
@@ -353,6 +471,12 @@ namespace Bank1.WebApi.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("IssuerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IssuerTransactionId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ReceiverAccountId")
                         .HasColumnType("int");
@@ -478,6 +602,63 @@ namespace Bank1.WebApi.Migrations
                     b.Navigation("ToCurrency");
                 });
 
+            modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank1.WebApi.Models.Account", "IsuerAccount")
+                        .WithMany("TransactionsAsIssuer")
+                        .HasForeignKey("IssuerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("IsuerAccount");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.RecurringTransactionDefinition", "RecurringTransactionDefinition")
+                        .WithMany("RecurringTransactions")
+                        .HasForeignKey("RecurringTransactionDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RecurringTransactionDefinition");
+
+                    b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
+                        .WithMany()
+                        .HasForeignKey("ReceiverAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("ReceiverAccount");
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
@@ -519,6 +700,8 @@ namespace Bank1.WebApi.Migrations
                 {
                     b.Navigation("Cards");
 
+                    b.Navigation("TransactionsAsIssuer");
+
                     b.Navigation("TransactionsAsReceiver");
 
                     b.Navigation("TransactionsAsSender");
@@ -527,6 +710,11 @@ namespace Bank1.WebApi.Migrations
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.Navigation("RecurringTransactions");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>

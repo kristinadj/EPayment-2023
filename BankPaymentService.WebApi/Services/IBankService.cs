@@ -13,6 +13,7 @@ namespace BankPaymentService.WebApi.Services
     {
         Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment);
         Task<PaymentInstructionsODTO?> SendRecurringPaymentToBankAsync(Invoice invoice, RecurringPaymentRequestIDTO paymentRequestIDTO);
+        Task<bool> CancelSubscriptionAsync(int subscriptionId, Merchant merchant);
     }
 
     public class BankService : IBankService
@@ -25,6 +26,23 @@ namespace BankPaymentService.WebApi.Services
         {
             _context = context;
             _bankPaymentServiceUrl = bankPaymentServiceUrl.Value;
+        }
+
+        public async Task<bool> CancelSubscriptionAsync(int subscriptionId, Merchant merchant)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                var response = await client.PutAsync($"{merchant.Bank!.RedirectUrl}/RecurringTransaction/Cancel/{subscriptionId}", null);
+
+                if (!response.IsSuccessStatusCode) return false;
+
+                return true;
+            }
+            catch (HttpRequestException)
+            {
+                return false;
+            }
         }
 
         public async Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment)
@@ -91,7 +109,7 @@ namespace BankPaymentService.WebApi.Services
             try
             {
                 using var client = new HttpClient();
-                var response = await client.PostAsJsonAsync($"{merchant.Bank.RedirectUrl}/RecurringPayment", transaction);
+                var response = await client.PostAsJsonAsync($"{merchant.Bank.RedirectUrl}/RecurringTransaction", transaction);
 
                 if (!response.IsSuccessStatusCode) return null;
 

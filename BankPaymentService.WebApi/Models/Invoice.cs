@@ -10,6 +10,7 @@ namespace BankPaymentService.WebApi.Models
         [Key]
         public int InvoiceId { get; set; }
         public int ExternalInvoiceId { get; set; }
+        public int? BankRecurringTransactionId { get; set; }
         public int MerchantId { get; set; }
         public double Amount { get; set; }
         public int CurrencyId { get; set; }

@@ -2,7 +2,6 @@
 using Base.DTO.Output;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
-using Base.DTO.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
