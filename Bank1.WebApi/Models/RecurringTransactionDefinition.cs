@@ -30,6 +30,8 @@ namespace Bank1.WebApi.Models
         public DateTime StartTimestamp { get; set; }
         public DateTime NextPaymentTimestamp { get; set; }
         public bool IsCanceled { get; set; }
+        public string? RecurringTransactionSuccessUrl { get; set; }
+        public string? RecurringTransactionFailureUrl { get; set; }
 
         public Currency? Currency { get; set; }
         public Account? ReceiverAccount { get; set; }

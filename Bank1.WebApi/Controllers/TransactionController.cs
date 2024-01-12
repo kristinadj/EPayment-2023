@@ -96,7 +96,7 @@ namespace Bank1.WebApi.Controllers
                 }
                 else
                 {
-                    var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO);
+                    var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO.CardHolderName, payTransactionIDTO.PanNumber, payTransactionIDTO.ExpiratoryDate, payTransactionIDTO.CVV);
                     var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
                     if (isSuccess)
                     {

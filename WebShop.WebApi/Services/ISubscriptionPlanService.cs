@@ -17,6 +17,7 @@ namespace WebShop.WebApi.Services
         Task<UserSubscriptionPlan?> AddUserSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
         Task<bool> UpdateExternalSubscriptionIdAsync(int invoiceId, string externalSubscriptionId);
         Task CancelUserSubscriptionPlanAsync(UserSubscriptionPlan userSubscriptionPlan);
+        Task<bool> UserSubscriptionPlanRenewalAsync(int userSubscriptionPlanId, TransactionStatus transactionStatus);
     }
 
     public class SubscripionPlanService : ISubscriptionPlanService
@@ -120,6 +121,47 @@ namespace WebShop.WebApi.Services
             userSubscriptionPlan.IsCanceled = true;
             _context.Entry(userSubscriptionPlan).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UserSubscriptionPlanRenewalAsync(int userSubscriptionPlanId, TransactionStatus transactionStatus)
+        {
+            var userSubscriptionPlan = await _context.UserSubscriptionPlans
+                .Where(x => x.UserSubscriptionPlanId == userSubscriptionPlanId && x.SubscriptionPlan!.AutomaticRenewel)
+                .Include(x => x.Invoice)
+                .ThenInclude(x => x!.Transaction)
+                .Include(x => x.SubscriptionPlan)
+                .FirstOrDefaultAsync();
+
+            if (userSubscriptionPlan == null) return false;
+
+            var renewedUserSubscriptionPlan = new UserSubscriptionPlan(userSubscriptionPlan.UserId)
+            {
+                SubscriptionPlanId = userSubscriptionPlan.SubscriptionPlanId,
+                StartTimestamp = DateTime.Today,
+                EndTimestamp = DateTime.Today.AddDays(userSubscriptionPlan.SubscriptionPlan!.DurationInDays),
+                ExternalSubscriptionId = userSubscriptionPlan.ExternalSubscriptionId,
+                Invoice = new Invoice(userSubscriptionPlan.UserId)
+                {
+                    MerchantId = userSubscriptionPlan.Invoice!.MerchantId,
+                    TotalPrice = userSubscriptionPlan.Invoice!.TotalPrice,
+                    CurrencyId = userSubscriptionPlan.Invoice!.CurrencyId,
+                    InvoiceType = userSubscriptionPlan.Invoice!.InvoiceType,
+                    Transaction = new Transaction
+                    {
+                        CreatedTimestamp = DateTime.Now,
+                        TransactionStatus = transactionStatus,
+                        PaymentMethodId = userSubscriptionPlan.Invoice!.Transaction!.PaymentMethodId,
+                        TransactionLogs = new List<TransactionLog>()
+                        {
+                            new() { TransactionStatus = transactionStatus, Timestamp = DateTime.Now }
+                        }
+                    }
+                }
+            };
+
+            await _context.UserSubscriptionPlans.AddAsync(renewedUserSubscriptionPlan);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

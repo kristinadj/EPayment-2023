@@ -104,6 +104,8 @@ namespace BankPaymentService.WebApi.Services
                 TransactionSuccessUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/Invoice/{invoice.InvoiceId}/Success",
                 TransactionFailureUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/Invoice/{invoice.InvoiceId}/Failure",
                 TransactionErrorUrl = $"{_bankPaymentServiceUrl.BaseUrl}/api/Invoice/{invoice.InvoiceId}/Error",
+                RecurringTransactionSuccessUrl = paymentRequestIDTO.RecurringTransactionSuccessUrl,
+                RecurringTransactionFailureUrl = paymentRequestIDTO.RecurringTransactionFailureUrl
             };
 
             try

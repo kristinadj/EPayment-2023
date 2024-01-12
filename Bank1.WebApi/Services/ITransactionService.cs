@@ -15,6 +15,7 @@ namespace Bank1.WebApi.Services
     {
         Task<Transaction?> CreateTransactionAsync(TransactionIDTO transactionIDTO);
         Task<Transaction?> CreateRecurringTransactionAsync(TransactionIDTO transactionIDTO);
+        Task<RecurringTransaction?> CreateRecurringTransactionAsync(RecurringTransactionDefinition recurringTransactionDefinition, Transaction initialTransaction);
         Task<Transaction?> GetTransactionByIdAsync(int transactionId);
         Task<bool> PayTransctionAsync(Transaction transaction, Account account);
         Task<bool> PccSendToPayTransctionAsync(Transaction transaction, PayTransactionIDTO payTransactionIDTO, int bankId, string pccUrl);
@@ -25,6 +26,8 @@ namespace Bank1.WebApi.Services
         Task<RecurringTransactionDefinition?> GetReccurringTransactionDefinitionByTransactionIdAsync(int transactionId);
         Task<bool> CancelRecurringTransactionAsync(int recurringTransactionDefinitionId);
         Task UpdatePaymentDataAsync(RecurringTransactionDefinition recurringTransactionDefinition, PayTransactionIDTO payTransactionIDTO);
+        Task<List<RecurringTransactionDefinition>> GetExpiringRecurringTransactionsDefinitionsAsync();
+        Task UpdateRecurringTransactionDefinitionNextPaymentDateAsync(RecurringTransactionDefinition recurringTransactionDefinition);
     }
 
     public class TransactionService : ITransactionService
@@ -108,6 +111,8 @@ namespace Bank1.WebApi.Services
                 RecurringCycleDays = 365,
                 StartTimestamp = DateTime.Today,
                 NextPaymentTimestamp = DateTime.Today.AddDays(365),
+                RecurringTransactionSuccessUrl = transactionIDTO.RecurringTransactionSuccessUrl,
+                RecurringTransactionFailureUrl = transactionIDTO.RecurringTransactionFailureUrl,
                 RecurringTransactions = new List<RecurringTransaction>()
                 {
                     new()
@@ -355,6 +360,48 @@ namespace Bank1.WebApi.Services
 
             _context.Entry(recurringTransactionDefinition).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<RecurringTransactionDefinition>> GetExpiringRecurringTransactionsDefinitionsAsync()
+        {
+            return await _context.RecurringTransactionDefinitions
+                .Where(x => x.NextPaymentTimestamp == DateTime.Today && !x.IsCanceled)
+                .Include(x => x.RecurringTransactions!)
+                .ThenInclude(x => x.Transaction)
+                .ToListAsync();
+        }
+
+        public async Task UpdateRecurringTransactionDefinitionNextPaymentDateAsync(RecurringTransactionDefinition recurringTransactionDefinition)
+        {
+            recurringTransactionDefinition.NextPaymentTimestamp = DateTime.Today.AddDays(recurringTransactionDefinition.RecurringCycleDays);
+            _context.Entry(recurringTransactionDefinition).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<RecurringTransaction?> CreateRecurringTransactionAsync(RecurringTransactionDefinition recurringTransactionDefinition, Transaction initialTransaction)
+        {
+            // TODO: Currency conversion
+            var recurringTransaction = new RecurringTransaction
+            {
+                Transaction = new Transaction(string.Empty, string.Empty, string.Empty, string.Empty)
+                {
+                    Amount = recurringTransactionDefinition.Amount,
+                    CurrencyId = recurringTransactionDefinition.CurrencyId,
+                    ReceiverAccountId = initialTransaction.ReceiverAccountId,
+                    TransactionStatus = TransactionStatus.CREATED,
+                    Timestamp = DateTime.Now,
+                    TransactionLogs = new List<TransactionLog>
+                    {
+                        new() { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }
+                    }
+                },
+                RecurringTransactionDefinitionId = recurringTransactionDefinition.RecurringTransactionDefinitionId
+            };
+
+            await _context.RecurringTransactions.AddAsync(recurringTransaction);
+            await _context.SaveChangesAsync();
+
+            return recurringTransaction;
         }
     }
 }

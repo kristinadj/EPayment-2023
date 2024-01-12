@@ -1,10 +1,7 @@
-﻿using BankPaymentService.WebApi.AppSettings;
-using BankPaymentService.WebApi.Services;
+﻿using BankPaymentService.WebApi.Services;
 using Base.DTO.Input;
 using Base.DTO.Output;
-using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace BankPaymentService.WebApi.Controllers
 {
@@ -15,19 +12,10 @@ namespace BankPaymentService.WebApi.Controllers
         private readonly IInvoiceService _invoiceService;
         private readonly IBankService _bankService;
 
-        private readonly CardPaymentMethod _cardPaymentMethod;
-        private readonly IConsulHttpClient _consulHttpClient;
-
-        public InvoiceCardController(
-            IOptions<CardPaymentMethod> cardPaymentMethod,
-            IInvoiceService invoiceService,
-            IBankService bankService,
-            IConsulHttpClient consulHttpClient)
+        public InvoiceCardController(IInvoiceService invoiceService, IBankService bankService)
         {
-            _cardPaymentMethod = cardPaymentMethod.Value;
             _invoiceService = invoiceService;
             _bankService = bankService;
-            _consulHttpClient = consulHttpClient;
         }
 
         [HttpPost]

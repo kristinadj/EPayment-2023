@@ -15,21 +15,14 @@ namespace BankPaymentService.WebApi.Controllers
         private readonly IMerchantService _merchantService;
         private readonly IBankService _bankService;
 
-        private readonly PaymentMethod _paymentMethod;
-        private readonly IConsulHttpClient _consulHttpClient;
-
         public SubscriptionPaymentController(
             IInvoiceService invoiceService,
             IMerchantService merchantService,
-            IBankService bankService,
-            IOptions<PaymentMethod> paymetnMethod,
-            IConsulHttpClient consulHttpClient)
+            IBankService bankService)
         {
             _invoiceService = invoiceService;
             _merchantService = merchantService;
             _bankService = bankService;
-            _paymentMethod = paymetnMethod.Value;
-            _consulHttpClient = consulHttpClient;
         }
 
         [HttpPost]

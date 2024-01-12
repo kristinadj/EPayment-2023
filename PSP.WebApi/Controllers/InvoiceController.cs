@@ -144,7 +144,9 @@ namespace PSP.WebApi.Controllers
                     {
                         Email = subscriptionDetails.SubscriberEmail,
                         Name = subscriptionDetails.SubscriberName
-                    }
+                    },
+                    RecurringTransactionSuccessUrl = subscriptionDetails.RecurringTransactionSuccessUrl,
+                    RecurringTransactionFailureUrl = subscriptionDetails.RecurringTransactionFailureUrl
                 };
 
                 try

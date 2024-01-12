@@ -149,7 +149,9 @@ namespace PSP.WebApi.Services
                 ProductCategory = subscriptionPaymentIDTO.Product.Category,
                 ProductType = subscriptionPaymentIDTO.Product.Type,
                 ProductDescription = subscriptionPaymentIDTO.Product.Description,
-                Invoice = invoice
+                Invoice = invoice,
+                RecurringTransactionSuccessUrl = subscriptionPaymentIDTO.RecurringTransactionSuccessUrl,
+                RecurringTransactionFailureUrl = subscriptionPaymentIDTO.RecurringTransactionFailureUrl
             };
 
             await _context.SubscriptionDetails.AddAsync(subscriptionDetails);

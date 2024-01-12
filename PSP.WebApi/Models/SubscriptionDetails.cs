@@ -16,6 +16,8 @@ namespace PSP.WebApi.Models
         public string? ProductType { get; set; }
         public string? ProductDescription { get; set; }
         public string? ProductCategory { get; set; }
+        public string? RecurringTransactionSuccessUrl { get; set; }
+        public string? RecurringTransactionFailureUrl { get; set; }
 
         public Invoice? Invoice { get; set; }
     }

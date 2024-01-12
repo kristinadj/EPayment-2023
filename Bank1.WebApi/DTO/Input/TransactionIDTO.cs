@@ -32,6 +32,12 @@ namespace Bank1.WebApi.DTO.Input
 
         public bool IsQrCodePayment { get; set; }
 
+        [StringLength(70)]
+        public string? RecurringTransactionSuccessUrl { get; set; }
+
+        [StringLength(70)]
+        public string? RecurringTransactionFailureUrl { get; set; }
+
         public TransactionIDTO(string secret, string accountNumber, string currencyCode, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)
         {
             Secret = secret;

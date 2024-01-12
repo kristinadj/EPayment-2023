@@ -25,6 +25,7 @@ namespace WebShop.WebApi.Controllers
         private readonly IInvoiceService _invoiceService;
 
         private readonly PspAppSettings _pspAppSettings;
+        private readonly WebShopAppSettings _webShopAppSettings;
         private readonly IConsulHttpClient _consulHttpClient;
 
         private readonly IMapper _mapper;
@@ -33,12 +34,14 @@ namespace WebShop.WebApi.Controllers
             ISubscriptionPlanService subscriptionPlanService, 
             IInvoiceService invoiceService,
             IOptions<PspAppSettings> pspAppSettings,
+             IOptions<WebShopAppSettings> webShopAppSettings,
             IConsulHttpClient consulHttpClient,
             IMapper mapper)
         {
             _subscriptionPlanService = subscriptionPlanService;
             _invoiceService = invoiceService;
             _pspAppSettings = pspAppSettings.Value;
+            _webShopAppSettings = webShopAppSettings.Value;
             _consulHttpClient = consulHttpClient;
             _mapper = mapper;
         }
@@ -98,6 +101,8 @@ namespace WebShop.WebApi.Controllers
                 };
                 pspPayment.BrandName = invoice.Merchant!.User!.Name;
                 pspPayment.Product = new Base.DTO.Input.ProductIDTO("Yearly subscription", "SERVICE", string.Empty, "LEGAL");
+                pspPayment.RecurringTransactionSuccessUrl = $"{_webShopAppSettings.WebApiUrl}/SubscriptionPlans/Renewed/{userSubscriptionPlan.UserSubscriptionPlanId}/Success";
+                pspPayment.RecurringTransactionFailureUrl = $"{_webShopAppSettings.WebApiUrl}/SubscriptionPlans/Renewed/{userSubscriptionPlan.UserSubscriptionPlanId}/Failure";
 
                 var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/SubscriptionPayment", pspPayment);
 
@@ -126,6 +131,7 @@ namespace WebShop.WebApi.Controllers
         }
 
         [HttpPut("CancelSubscription/{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult> CancelSubscriptionAsync([FromRoute] string userId)
         {
             var userSubsriptionPlan = await _subscriptionPlanService.GetUserSubscriptionPlanByUserIdAsync(userId);
@@ -141,6 +147,37 @@ namespace WebShop.WebApi.Controllers
 
             await _subscriptionPlanService.CancelUserSubscriptionPlanAsync(userSubsriptionPlan);
             return Ok();
+        }
+
+        [HttpPost("Renewed/{userSubscriptionPlanId}/Success")]
+        [AllowAnonymous]
+        public async Task<ActionResult> UserSubscriptionPlanRenewedSuccessfully([FromRoute] int userSubscriptionPlanId)
+        {
+            try
+            {
+                var isSuccess = await _subscriptionPlanService.UserSubscriptionPlanRenewalAsync(userSubscriptionPlanId, TransactionStatus.COMPLETED);
+                if (!isSuccess) return BadRequest();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Renewed/{userSubscriptionPlanId}/Failure")]
+        public async Task<ActionResult> UserSubscriptionPlanRenewalFailed([FromRoute] int userSubscriptionPlanId)
+        {
+            try
+            {
+                var isSuccess = await _subscriptionPlanService.UserSubscriptionPlanRenewalAsync(userSubscriptionPlanId, TransactionStatus.FAIL);
+                if (!isSuccess) return BadRequest();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
