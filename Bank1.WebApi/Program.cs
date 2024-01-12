@@ -1,4 +1,5 @@
 using Bank1.WebApi.AppSettings;
+using Bank1.WebApi.HostedServices;
 using Bank1.WebApi.Models;
 using Bank1.WebApi.Services;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -30,6 +31,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<INbsClient, NbsClient>();
+builder.Services.AddHostedService<RecurringTransactionsHostedService>();
 
 #endregion
 

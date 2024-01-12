@@ -90,12 +90,19 @@ namespace PSP.WebApi.Migrations
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("InvoiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
+
                     b.Property<string>("IssuedToUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("RecurringPayment")
+                        .HasColumnType("bit");
 
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
@@ -199,6 +206,9 @@ namespace PSP.WebApi.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<bool>("SupportsAutomaticPayments")
+                        .HasColumnType("bit");
+
                     b.HasKey("PaymentMethodId");
 
                     b.HasIndex("ServiceName", "ServiceApiSufix")
@@ -231,6 +241,51 @@ namespace PSP.WebApi.Migrations
                     b.HasIndex("PaymentMethodId");
 
                     b.ToTable("PaymentMethodMerchants", "dbo");
+                });
+
+            modelBuilder.Entity("PSP.WebApi.Models.SubscriptionDetails", b =>
+                {
+                    b.Property<int>("SubscriptionDetailsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubscriptionDetailsId"), 1L, 1);
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecurringTransactionFailureUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecurringTransactionSuccessUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubscriberEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubscriberName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubscriptionDetailsId");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("SubscriptionDetails", "dbo");
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>
@@ -327,6 +382,17 @@ namespace PSP.WebApi.Migrations
                     b.Navigation("Merchant");
 
                     b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("PSP.WebApi.Models.SubscriptionDetails", b =>
+                {
+                    b.HasOne("PSP.WebApi.Models.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("PSP.WebApi.Models.Transaction", b =>

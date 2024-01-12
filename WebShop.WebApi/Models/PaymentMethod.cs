@@ -19,6 +19,8 @@ namespace WebShop.WebApi.Models
         [StringLength(50)]
         public string Name { get; set; }
 
+        public bool SupportsAutomaticPayments { get; set; }
+
         public ICollection<Transaction>? Transactions { get; set; }
 
         public PaymentMethod(string code, string name)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Base.DTO.Enums;
+using Microsoft.AspNetCore.Components;
 using WebShop.Client.Services;
 using WebShop.DTO.Output;
 
@@ -30,7 +31,7 @@ namespace WebShop.Client.Pages
             {
                 unexpectedError = true;
             }
-            else if (invoice.InvoiceType == DTO.Enums.InvoiceType.ORDER)
+            else if (invoice.InvoiceType == InvoiceType.ORDER)
             {
                 order = await ApiServices.GeOrderByInvoiceIdAsync(InvoiceId);
                 if (order == null) unexpectedError = true;

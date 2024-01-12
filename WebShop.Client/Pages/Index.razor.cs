@@ -60,15 +60,24 @@ namespace WebShop.Client.Pages
                 if (role != null)
                 {
                     GlobalSettings.Role = role.Value.ToString() == Role.BUYER.ToString() ? Role.BUYER : Role.MERCHANT;
+                    GlobalSettings.InvokeChange();
                 }
 
                 if (GlobalSettings.Role == Role.BUYER)
                 {
-                    var isSubscriptionPlanValid = await ApiServices.IsSubscriptionPlanValidAsync(GlobalSettings.UserId!);
-                    GlobalSettings.IsSubscriptionPlanValid = isSubscriptionPlanValid;
-                    if (!isSubscriptionPlanValid)
+                    var subscriptionPlanDetails = await ApiServices.GetSubscriptionPlanDetailsAsync(GlobalSettings.UserId!);
+                    
+                    if (subscriptionPlanDetails == null || !subscriptionPlanDetails.IsValid)
                     {
                         Navigation!.NavigateTo("/plan");
+                    }
+                    else
+                    {
+                        GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
+                        GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
+                        GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
+                        GlobalSettings.IsCanceled = subscriptionPlanDetails.IsCanceled;
+                        GlobalSettings.InvokeChange();
                     }
                 }
             }

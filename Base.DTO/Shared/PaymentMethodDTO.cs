@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string ServiceName { get; set; }
         public string ServiceApiSufix { get; set; }
+        public bool SupportsAutomaticPayments { get; set; }
 
         public PaymentMethodDTO(string name, string serviceName, string serviceApiSufix)
         {

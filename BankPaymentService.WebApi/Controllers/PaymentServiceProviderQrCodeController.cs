@@ -35,7 +35,10 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<PaymentMethodDTO>> RegisterQrCode()
         {
-            var paymentMethod = new PaymentMethodDTO(_qrCodePaymentMethod.Name, _consulAppSettings.Service, _qrCodePaymentMethod.ServiceApiSufix);
+            var paymentMethod = new PaymentMethodDTO(_qrCodePaymentMethod.Name, _consulAppSettings.Service, _qrCodePaymentMethod.ServiceApiSufix)
+            {
+                SupportsAutomaticPayments = _qrCodePaymentMethod.SupportsAutomaticPayments
+            };
             var result = await _consulHttpClient.PostAsync(_qrCodePaymentMethod.PspServiceName, _qrCodePaymentMethod.PspRegisterApiEndpoint, paymentMethod);
 
             if (result == null) return BadRequest();

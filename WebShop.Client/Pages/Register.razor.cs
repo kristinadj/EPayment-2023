@@ -2,6 +2,7 @@
 using MudBlazor;
 using System.Text.RegularExpressions;
 using WebShop.Client.Authentication;
+using WebShop.Client.Code;
 using WebShop.DTO.Input;
 
 namespace WebShop.Client.Pages
@@ -102,11 +103,11 @@ namespace WebShop.Client.Pages
                     }
                     else
                     {
-                        NavigationManager.NavigateTo("/subscription");
+                        NavigationManager.NavigateTo("/plan");
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Snackbar.Add("Unexpected Exception", Severity.Error);
             }

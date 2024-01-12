@@ -5,6 +5,7 @@ using WebShop.DTO.Input;
 using WebShop.DTO.Output;
 using Base.DTO.Shared;
 using WebShop.DTO.Enums;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace WebShop.Client.Services
 {
@@ -402,6 +403,26 @@ namespace WebShop.Client.Services
             return false;
         }
 
+        public async Task<UserSubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId)
+        {
+            UserSubscriptionPlanDetailsODTO? data = null;
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/SubscriptionPlans/Details/{userId}");
+                response.EnsureSuccessStatusCode();
+
+                var tempData = await response.Content.ReadFromJsonAsync<UserSubscriptionPlanDetailsODTO>();
+                if (tempData != null) { data = tempData; }
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return data;
+        }
+
         public async Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
         {
             RedirectUrlDTO? data = null;
@@ -421,6 +442,43 @@ namespace WebShop.Client.Services
             }
 
             return data;
+        }
+
+        public async Task UpdateExternalSubscriptionIdAsync(int invoiceId, string externalSubscriptionId)
+        {
+            var queryString = new Dictionary<string, string?>
+            {
+                ["invoiceId"] = invoiceId.ToString(),
+                ["externalSubscriptionId"] = externalSubscriptionId
+            };
+
+            try
+            {
+                var requestUri = QueryHelpers.AddQueryString($"api/SubscriptionPlans/ExternalSubscriptionId", queryString);
+                var response = await _httpClient.PutAsync(requestUri, null);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+        }
+
+        public async Task<bool> CancelSubscriptionAsync(string userId)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsync($"api/SubscriptionPlans/CancelSubscription/{userId}", null);
+                if (!response.IsSuccessStatusCode) return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO:
+            }
+
+            return false;
         }
     }
 }

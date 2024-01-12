@@ -53,13 +53,13 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<string>> CreateInvoice([FromBody] PspInvoiceIDTO invoiceIDTO)
         {
             var merchant = await _merchantService.GetMerchantByIdAsync(invoiceIDTO.MerchantId);
-            if (merchant == null)  return NotFound();
+            if (merchant == null) return NotFound();
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(merchant, invoiceIDTO);
+            var invoice = await _invoiceService.CreateInvoiceAsync(merchant, invoiceIDTO, invoiceIDTO.InvoiceType);
             if (invoice == null) return BadRequest();
 
             var result = _mapper.Map<InvoiceODTO>(invoiceIDTO);
-            result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}";
+            result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}/false";
             return Ok(result);
         }
 
@@ -85,38 +85,90 @@ namespace PSP.WebApi.Controllers
                 result.RedirectUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString());
             }
 
-            // 2. Initiate payment
-            var paymentRequest = new PaymentRequestIDTO
+            if (!invoice.RecurringPayment)
             {
-                MerchantId = paymentMethodCredentials.MerchantId,
-                Amount = invoice.TotalPrice,
-                ExternalInvoiceId = invoice.InvoiceId,
-                Timestamp = invoice.Transaction!.CreatedTimestamp,
-                TransactionSuccessUrl = invoice.Merchant!.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
-                TransactionFailureUrl = invoice.Merchant!.TransactionFailureUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
-                TransactionErrorUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
-                CurrencyCode = invoice.Currency!.Code
-            };
-
-            try
-            {
-                var paymentInstructions = await _consulHttpClient.PostAsync(invoice.Transaction.PaymentMethod!.ServiceName, $"{invoice.Transaction.PaymentMethod!.ServiceApiSufix}/Invoice", paymentRequest);
-                if (paymentInstructions != null)
+                // 2. Initiate payment
+                var paymentRequest = new PaymentRequestIDTO
                 {
-                    result.RedirectUrl = paymentInstructions!.PaymentUrl;
-                }
-                else
-                {
-                    //TODO: Update transaction status fail
-                    result.RedirectUrl = paymentRequest.TransactionFailureUrl;
-                }
-            }
-            catch (HttpRequestException)
-            {
-                result.RedirectUrl = paymentRequest.TransactionErrorUrl;
-            }
+                    MerchantId = paymentMethodCredentials.MerchantId,
+                    Amount = invoice.TotalPrice,
+                    ExternalInvoiceId = invoice.InvoiceId,
+                    Timestamp = invoice.Transaction!.CreatedTimestamp,
+                    TransactionSuccessUrl = invoice.Merchant!.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    TransactionFailureUrl = invoice.Merchant!.TransactionFailureUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    TransactionErrorUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    CurrencyCode = invoice.Currency!.Code,
+                    InvoiceType = invoice.InvoiceType
+                };
 
-            return Ok(result);
+                try
+                {
+                    var paymentInstructions = await _consulHttpClient.PostAsync(invoice.Transaction.PaymentMethod!.ServiceName, $"{invoice.Transaction.PaymentMethod!.ServiceApiSufix}/Invoice", paymentRequest);
+                    if (paymentInstructions != null)
+                    {
+                        result.RedirectUrl = paymentInstructions!.PaymentUrl;
+                    }
+                    else
+                    {
+                        //TODO: Update transaction status fail
+                        result.RedirectUrl = paymentRequest.TransactionFailureUrl;
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    result.RedirectUrl = paymentRequest.TransactionErrorUrl;
+                }
+
+                return Ok(result);
+            }
+            else
+            {
+                var subscriptionDetails = await _invoiceService.GetSubscriptioNdetailsByInvoiceIdAsync(invoice.InvoiceId);
+                if (subscriptionDetails == null) return BadRequest();
+
+                // 2. Initiate payment
+                var paymentRequest = new RecurringPaymentRequestIDTO
+                {
+                    MerchantId = paymentMethodCredentials.MerchantId,
+                    Amount = invoice.TotalPrice,
+                    ExternalInvoiceId = invoice.InvoiceId,
+                    Timestamp = invoice.Transaction!.CreatedTimestamp,
+                    TransactionSuccessUrl = invoice.Merchant!.TransactionSuccessUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    TransactionFailureUrl = invoice.Merchant!.TransactionFailureUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    TransactionErrorUrl = invoice.Merchant!.TransactionErrorUrl.Replace("@INVOICE_ID@", invoice.ExternalInvoiceId.ToString()),
+                    CurrencyCode = invoice.Currency!.Code,
+                    InvoiceType = invoice.InvoiceType,
+                    BrandName = subscriptionDetails.BrandName,
+                    Product = new ProductIDTO(subscriptionDetails.ProductName!, subscriptionDetails.ProductType!, subscriptionDetails.ProductDescription!, subscriptionDetails.ProductCategory!),
+                    Subscriber = new SubscriberIDTO
+                    {
+                        Email = subscriptionDetails.SubscriberEmail,
+                        Name = subscriptionDetails.SubscriberName
+                    },
+                    RecurringTransactionSuccessUrl = subscriptionDetails.RecurringTransactionSuccessUrl,
+                    RecurringTransactionFailureUrl = subscriptionDetails.RecurringTransactionFailureUrl
+                };
+
+                try
+                {
+                    var paymentInstructions = await _consulHttpClient.PostAsync(invoice.Transaction.PaymentMethod!.ServiceName, $"{invoice.Transaction.PaymentMethod!.ServiceApiSufix}/SubscriptionPayment", paymentRequest);
+                    if (paymentInstructions != null)
+                    {
+                        result.RedirectUrl = paymentInstructions.PaymentUrl!;
+                    }
+                    else
+                    {
+                        //TODO: Update transaction status fail
+                        result.RedirectUrl = paymentRequest.TransactionFailureUrl;
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    result.RedirectUrl = paymentRequest.TransactionErrorUrl;
+                }
+
+                return Ok(result);
+            }
         }
 
         [HttpPut("{invoiceId}/Success")]

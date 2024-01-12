@@ -53,10 +53,12 @@ namespace WebShop.Client.Pages
                     var result = await AuthService.Login(authenticateDTO);
                     if (result != null)
                     {
+                        isLoading = false;
                         NavigationManager.NavigateTo("/");
                     }
                     else
                     {
+                        
                         Snackbar.Add("Bad Credentials", Severity.Error);
                     }
                 }
@@ -67,7 +69,6 @@ namespace WebShop.Client.Pages
             }
 
             isLoading = false;
-            StateHasChanged();
         }
     }
 }

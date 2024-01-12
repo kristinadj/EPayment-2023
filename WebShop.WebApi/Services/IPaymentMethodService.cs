@@ -55,6 +55,7 @@ namespace WebShop.WebApi.Services
                 {
                     existingPaymentMethod.Code = paymentMethod.Code;
                     existingPaymentMethod.Name = paymentMethod.Name;
+                    existingPaymentMethod.SupportsAutomaticPayments = paymentMethod.SupportsAutomaticPayments;
                 }
             }
 

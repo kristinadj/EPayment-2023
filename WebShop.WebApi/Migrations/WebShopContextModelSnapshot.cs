@@ -155,7 +155,7 @@ namespace WebShop.WebApi.Migrations
 
                     b.Property<string>("InvoiceType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(24)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
@@ -560,6 +560,9 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("PspPaymentMethodId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SupportsAutomaticPayments")
+                        .HasColumnType("bit");
+
                     b.HasKey("PaymentMethodId");
 
                     b.HasIndex("Code")
@@ -812,17 +815,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "f055c66c-be5f-44e0-a3af-eae72813e08f",
+                            ConcurrencyStamp = "61d66c5a-7ba1-413d-b430-9927d277277e",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBzAR0WNyCfWIVKg3bjWL4XytfYHOKCkFj3Dh9arOCbABzTQDHVIg6FKEZ5TCyvfvw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFOsGTYtRwaXUcqC0AGmgxolFAHlU0MGeWhnsV8NniMwXCWvLGfK7IJ1CIOKGoQTbQ==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "af72a6d3-1198-4bf0-90b7-188e824af1e5",
+                            SecurityStamp = "fba7c3eb-6e45-41ee-a2a9-0531ea84ae31",
                             TwoFactorEnabled = false
                         },
                         new
@@ -830,17 +833,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "6954c8c9-27f5-47b0-abad-6677f5792eb5",
+                            ConcurrencyStamp = "f7544ad6-8486-40aa-bed2-90e00d5add1b",
                             Email = "agencyadmin@legaldocsagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPREph/Kj5UYvmdiZ49LbHNeRiKxwC8GtGzXOcpOsIyhrFmVo/zkG/nYyfkYfa7LQQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJhTGRpS3lPvgv6RsWlxxY/exmMnr5AGCIqL2FI61/yikHdJtTad7YBNsFE4x+d4qw==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "d2fbdf1b-b89d-45e0-816a-4dd84c5d5f64",
+                            SecurityStamp = "0b23d78c-b3d9-412a-8ccf-81b1986c99bf",
                             TwoFactorEnabled = false
                         });
                 });
@@ -856,8 +859,14 @@ namespace WebShop.WebApi.Migrations
                     b.Property<DateTime>("EndTimestamp")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ExternalSubscriptionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("InvoiceId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartTimestamp")
                         .HasColumnType("datetime2");

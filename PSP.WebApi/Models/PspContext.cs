@@ -11,6 +11,7 @@ namespace PSP.WebApi.Models
         public DbSet<PaymentMethodMerchant> PaymentMethodMerchants { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
+        public DbSet<SubscriptionDetails> SubscriptionDetails { get; set; }
 
         public PspContext(DbContextOptions<PspContext> options) : base(options) { }
 
@@ -41,6 +42,9 @@ namespace PSP.WebApi.Models
                     .WithOne(x => x.Invoice)
                     .HasForeignKey<Invoice>(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(d => d.InvoiceType)
+                   .HasConversion<string>();
             });
 
             builder.Entity<Merchant>(entity =>
@@ -91,6 +95,14 @@ namespace PSP.WebApi.Models
 
                 entity.Property(d => d.TransactionStatus)
                     .HasConversion<string>();
+            });
+
+            builder.Entity<SubscriptionDetails>(entity =>
+            {
+                entity.HasOne(x => x.Invoice)
+                    .WithMany()
+                    .HasForeignKey(x => x.InvoiceId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
 

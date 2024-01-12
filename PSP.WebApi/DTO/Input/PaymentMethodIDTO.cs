@@ -16,6 +16,7 @@ namespace PSP.WebApi.DTO.Input
         [Required]
         [StringLength(30)]
         public string ServiceApiSufix { get; set; }
+        public bool SupportsAutomaticPayments { get; set; }
 
         public PaymentMethodIDTO(string name, string serviceName, string serviceApiSufix)
         {

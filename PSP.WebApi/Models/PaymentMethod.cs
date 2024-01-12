@@ -19,6 +19,7 @@ namespace PSP.WebApi.Models
         [Required]
         [StringLength(30)]
         public string ServiceApiSufix { get; set; }
+        public bool SupportsAutomaticPayments { get; set; }
 
         public PaymentMethod(string name, string serviceName, string serviceApiSufix) 
         {

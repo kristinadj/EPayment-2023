@@ -7,6 +7,7 @@
         public int PspPaymentMethodId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public bool SupportsAutomaticPayments { get; set; }
 
         public PaymentMethodODTO(string code, string name)
         {

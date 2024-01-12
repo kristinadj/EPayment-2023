@@ -18,6 +18,8 @@ namespace Bank1.WebApi.Models
         public DbSet<IssuerTransaction> IssuerTransactions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
+        public DbSet<RecurringTransactionDefinition> RecurringTransactionDefinitions { get; set; }
+        public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
         public BankContext(DbContextOptions<BankContext> options) : base(options)
         {
@@ -134,6 +136,32 @@ namespace Bank1.WebApi.Models
                     .HasConversion<string>();
             });
 
+            builder.Entity<RecurringTransactionDefinition>(entity =>
+            {
+                entity.HasOne(x => x.Currency)
+                    .WithMany()
+                    .HasForeignKey(x => x.CurrencyId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.ReceiverAccount)
+                    .WithMany()
+                    .HasForeignKey(x => x.ReceiverAccountId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<RecurringTransaction>(entity =>
+            {
+                entity.HasOne(x => x.Transaction)
+                    .WithMany()
+                    .HasForeignKey(x => x.TransactionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.RecurringTransactionDefinition)
+                    .WithMany(x => x.RecurringTransactions)
+                    .HasForeignKey(x => x.RecurringTransactionDefinitionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
             #region Database Initialization
 
             builder.Entity<Currency>().HasData(
@@ -159,7 +187,7 @@ namespace Bank1.WebApi.Models
                 });
 
             builder.Entity<BusinessCustomer>().HasData(
-                new BusinessCustomer("LPAPassword5!") // TODO: Encrypt
+                new BusinessCustomer("LPAPassword5!")
                 {
                     BusinessCustomerId = 1,
                     CustomerId = 1
@@ -191,7 +219,7 @@ namespace Bank1.WebApi.Models
                });
 
             builder.Entity<Card>().HasData(
-                new Card("JOHN DOE", Converter.HashPanNumber("1234 5678 9012 3456"), "12/25")
+                new Card("JOHN DOE", "1234 5678 9012 3456", "12/25")
                 {
                     CardId = 1,
                     AccountId = 2,

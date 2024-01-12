@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Base.DTO.Enums;
 using Base.DTO.Shared;
 using Microsoft.EntityFrameworkCore;
 using PSP.WebApi.DTO.Output;
 using PSP.WebApi.Enums;
 using PSP.WebApi.Models;
-using System.Threading.Tasks;
 
 namespace PSP.WebApi.Services
 {
     public interface IInvoiceService
     {
-        Task<InvoiceODTO? > GetInvoiceByIdAsyync(int invoiceId);
-        Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PaymentMethod paymentMethod, PspInvoiceIDTO invoiceIDTO);
-        Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspInvoiceIDTO invoiceIDTO);
+        Task<InvoiceODTO?> GetInvoiceByIdAsyync(int invoiceId);
+        Task<SubscriptionDetails?> GetSubscriptioNdetailsByInvoiceIdAsync(int invoiceId);
+        Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspInvoiceIDTO invoiceIDTO, InvoiceType invoiceType);
+        Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspSubscriptionPaymentDTO subscriptionPaymentIDTO);
         Task<bool> UpdateTransactionStatusAsync(int invoiceId, TransactionStatus transactionStatus);
         Task<Invoice?> UpdatePaymentMethodAsync(int invoiceId, int paymentMethodId);
     }
@@ -37,7 +38,7 @@ namespace PSP.WebApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PaymentMethod paymentMethod, PspInvoiceIDTO invoiceIDTO)
+        public async Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspInvoiceIDTO invoiceIDTO, InvoiceType invoiceType)
         {
             var currency = await _context.Currencies
                 .Where(x => x.Code == invoiceIDTO.CurrencyCode)
@@ -51,41 +52,12 @@ namespace PSP.WebApi.Services
                 MerchantId = merchant.MerchantId,
                 TotalPrice = invoiceIDTO.TotalPrice,
                 Currency = currency,
-                Transaction = new Transaction
-                {
-                    PaymentMethodId = paymentMethod.PaymentMethodId,
-                    CreatedTimestamp = DateTime.Now,
-                    TransactionStatus = Enums.TransactionStatus.CREATED,
-                    TransactionLogs = new List<TransactionLog>()
-                    {
-                        new TransactionLog { TransactionStatus = Enums.TransactionStatus.CREATED, Timestamp = DateTime.Now }
-                    }
-                }
-            };
-
-            await _context.Invoices.AddAsync(invoice);
-            await _context.SaveChangesAsync();
-            return invoice;
-        }
-
-        public async Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspInvoiceIDTO invoiceIDTO)
-        {
-            var currency = await _context.Currencies
-                .Where(x => x.Code == invoiceIDTO.CurrencyCode)
-                .FirstOrDefaultAsync();
-
-            if (currency == null) return null;
-
-            var invoice = new Invoice(invoiceIDTO.IssuedToUserId)
-            {
-                ExternalInvoiceId = invoiceIDTO.ExternalInvoiceId,
-                MerchantId = merchant.MerchantId,
-                TotalPrice = invoiceIDTO.TotalPrice,
-                Currency = currency,
+                InvoiceType = invoiceType,
+                RecurringPayment = false,
                 Transaction = new Transaction
                 {
                     CreatedTimestamp = DateTime.Now,
-                    TransactionStatus = Enums.TransactionStatus.CREATED,
+                    TransactionStatus = TransactionStatus.CREATED,
                     TransactionLogs = new List<TransactionLog>()
                     {
                         new TransactionLog { TransactionStatus = Enums.TransactionStatus.CREATED, Timestamp = DateTime.Now }
@@ -139,6 +111,59 @@ namespace PSP.WebApi.Services
             await _context.SaveChangesAsync();
 
             return invoice;
+        }
+
+        public async Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspSubscriptionPaymentDTO subscriptionPaymentIDTO)
+        {
+            var currency = await _context.Currencies
+                .Where(x => x.Code == subscriptionPaymentIDTO.CurrencyCode)
+                .FirstOrDefaultAsync();
+
+            if (currency == null) return null;
+
+            var invoice = new Invoice(subscriptionPaymentIDTO.IssuedToUserId)
+            {
+                ExternalInvoiceId = subscriptionPaymentIDTO.ExternalInvoiceId,
+                MerchantId = merchant.MerchantId,
+                TotalPrice = subscriptionPaymentIDTO.TotalPrice,
+                Currency = currency,
+                InvoiceType = InvoiceType.SUBSCRIPTION,
+                RecurringPayment = true,
+                Transaction = new Transaction
+                {
+                    CreatedTimestamp = DateTime.Now,
+                    TransactionStatus = TransactionStatus.CREATED,
+                    TransactionLogs = new List<TransactionLog>()
+                    {
+                        new TransactionLog { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }
+                    }
+                }
+            };
+
+            var subscriptionDetails = new SubscriptionDetails
+            {
+                SubscriberName = subscriptionPaymentIDTO.Subscriber!.Name,
+                SubscriberEmail = subscriptionPaymentIDTO.Subscriber.Email,
+                BrandName = subscriptionPaymentIDTO.BrandName,
+                ProductName = subscriptionPaymentIDTO.Product!.Name,
+                ProductCategory = subscriptionPaymentIDTO.Product.Category,
+                ProductType = subscriptionPaymentIDTO.Product.Type,
+                ProductDescription = subscriptionPaymentIDTO.Product.Description,
+                Invoice = invoice,
+                RecurringTransactionSuccessUrl = subscriptionPaymentIDTO.RecurringTransactionSuccessUrl,
+                RecurringTransactionFailureUrl = subscriptionPaymentIDTO.RecurringTransactionFailureUrl
+            };
+
+            await _context.SubscriptionDetails.AddAsync(subscriptionDetails);
+            await _context.SaveChangesAsync();
+            return invoice;
+        }
+
+        public async Task<SubscriptionDetails?> GetSubscriptioNdetailsByInvoiceIdAsync(int invoiceId)
+        {
+            return await _context.SubscriptionDetails
+                .Where(x => x.InvoiceId == invoiceId)
+                .FirstOrDefaultAsync();
         }
     }
 }

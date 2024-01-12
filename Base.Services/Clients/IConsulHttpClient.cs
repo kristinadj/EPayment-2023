@@ -14,6 +14,7 @@ namespace Base.Services.Clients
         Task<bool> PutAsync<T>(string serviceName, string requestUri, T requestBody);
         Task<T?> PostAsync<T>(string serviceName, string requestUri, T requestBody);
         Task<PaymentInstructionsODTO?> PostAsync(string serviceName, string requestUri, PaymentRequestIDTO requestBody);
+        Task<bool> PostAsync(string serviceName, string requestUri);
     }
 
     public class ConsulHttpClient : IConsulHttpClient 
@@ -84,6 +85,15 @@ namespace Base.Services.Clients
             if (content == null) return default;
 
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+        }
+
+        public async Task<bool> PostAsync(string serviceName, string requestUri)
+        {
+            var uri = await GetRequestUriAsync(serviceName, requestUri);
+            var response = await _client.PostAsync(uri, null);
+
+            if (!response.IsSuccessStatusCode) return false;
+            return true;
         }
 
         public async Task<PaymentInstructionsODTO?> PostAsync(string serviceName, string requestUri, PaymentRequestIDTO requestBody)

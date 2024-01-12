@@ -1,13 +1,11 @@
-﻿using Bank1.WebApi.Helpers;
-using Bank1.WebApi.Models;
-using Base.DTO.Input;
+﻿using Bank1.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bank1.WebApi.Services
 {
     public interface IAccountService
     {
-        Task<Account?> GetAccountByCreditCardAsync(PayTransactionIDTO payTransactionIDTO);
+        Task<Account?> GetAccountByCreditCardAsync(string cardHolderName, string panNumber, string expiratoryDate, int cvv);
     }
 
     public class AccountService : IAccountService
@@ -19,11 +17,10 @@ namespace Bank1.WebApi.Services
             _context = context;
         }
 
-        public async Task<Account?> GetAccountByCreditCardAsync(PayTransactionIDTO payTransactionIDTO)
+        public async Task<Account?> GetAccountByCreditCardAsync(string cardHolderName, string panNumber, string expiratoryDate, int cvv)
         {
-            var hashedPanNUmber = Converter.HashPanNumber(payTransactionIDTO.PanNumber);
             return await _context.Accounts
-                .Where(x => x.Cards!.Any(x => x.CardHolderName == payTransactionIDTO.CardHolderName && x.PanNumber == hashedPanNUmber && x.ExpiratoryDate == payTransactionIDTO.ExpiratoryDate && x.CVV == payTransactionIDTO.CVV))
+                .Where(x => x.Cards!.Any(x => x.CardHolderName == cardHolderName && x.PanNumber == panNumber && x.ExpiratoryDate == expiratoryDate && x.CVV == cvv))
                 .FirstOrDefaultAsync();
         }
     }

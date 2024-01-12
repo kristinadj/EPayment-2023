@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Base.DTO.Shared;
 using Base.Services.Clients;
+using Base.DTO.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,7 @@ namespace WebShop.WebApi.Controllers
             await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
 
             var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
+            pspPayment.InvoiceType = InvoiceType.ORDER;
             var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
 
             if (result == null || string.IsNullOrEmpty(result.RedirectUrl))

@@ -6,8 +6,11 @@ namespace PayPalPaymentService.WebApi.Services
 {
     public interface IMerchantService
     {
+        Task<Merchant?> GetMerchantById(int merchantId);
         Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId);
         Task<bool> UpdateMerchantCredentialsAsync(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO);
+        Task<Merchant> UpdateProductIdAsync(Merchant merchant, string productId);
+        Task<Merchant> UpdateBillingPlanIdAsync(Merchant merchant, string billngPlanId);
     }
 
     public class MerchantService : IMerchantService
@@ -17,6 +20,13 @@ namespace PayPalPaymentService.WebApi.Services
         public MerchantService(PayPalServiceContext context)
         {
             _context = context;
+        }
+
+        public async Task<Merchant?> GetMerchantById(int merchantId)
+        {
+            return await _context.Merchants
+                .Where(x => x.MerchantId == merchantId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Merchant?> GetMerchantByPaymentServiceMerchantId(int paymentserviceMerchantId)
@@ -39,6 +49,26 @@ namespace PayPalPaymentService.WebApi.Services
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Merchant> UpdateProductIdAsync(Merchant merchant, string productId)
+        {
+            merchant.PayPalBillingPlanProductId = productId;
+
+            _context.Entry(merchant).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return merchant;
+        }
+
+        public async Task<Merchant> UpdateBillingPlanIdAsync(Merchant merchant, string billngPlanId)
+        {
+            merchant.PayPalBillingPlanId = billngPlanId;
+
+            _context.Entry(merchant).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return merchant;
         }
     }
 }

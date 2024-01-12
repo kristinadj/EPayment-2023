@@ -2,8 +2,6 @@
 using PayPalPaymentService.WebApi.AppSettings;
 using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.DTO.PayPal.Output;
-using System.Collections;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +12,10 @@ namespace PayPalPaymentService.WebApi.Services
     {
         Task<string?> GenerateAccessTokenAsync(string clientId, string clientSecret);
         Task<OrderODTO?> CreateOrderAsync(string token, OrderIDTO order);
+        Task<PayPalProductODTO?> CreateProductAsync(string token, PayPalProductIDTO product);
+        Task<CreatePlanODTO?> CreatePlanAsync(string token, CreatePlanIDTO plan);
+        Task<CreateSubscriptionODTO?> CreateSubscriptionAsync(string token, CreateSubscriptionIDTO subscription);
+        Task<bool> CancelSubscriptionAsync(string token, string subscriptionId);
     }
 
     public class PayPalClientService : IPayPalClientService
@@ -64,6 +66,62 @@ namespace PayPalPaymentService.WebApi.Services
             if (orderResponse == null) return null;
 
             return orderResponse;
+        }
+
+        public async Task<PayPalProductODTO?> CreateProductAsync(string token, PayPalProductIDTO product)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsJsonAsync("/v1/catalogs/products", product);
+            response.EnsureSuccessStatusCode();
+
+            var stringContent = await response.Content.ReadAsStringAsync();
+            var productResponse = JsonSerializer.Deserialize<PayPalProductODTO>(stringContent);
+
+            if (productResponse == null) return null;
+
+            return productResponse;
+        }
+
+        public async Task<CreatePlanODTO?> CreatePlanAsync(string token, CreatePlanIDTO plan)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsJsonAsync("/v1/billing/plans", plan);
+            response.EnsureSuccessStatusCode();
+
+            var stringContent = await response.Content.ReadAsStringAsync();
+            var planResponse = JsonSerializer.Deserialize<CreatePlanODTO>(stringContent);
+
+            if (planResponse == null) return null;
+
+            return planResponse;
+        }
+
+        public async Task<CreateSubscriptionODTO?> CreateSubscriptionAsync(string token, CreateSubscriptionIDTO subscription)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsJsonAsync("/v1/billing/subscriptions", subscription);
+            response.EnsureSuccessStatusCode();
+
+            var stringContent = await response.Content.ReadAsStringAsync();
+            var subscriptionResponse = JsonSerializer.Deserialize<CreateSubscriptionODTO>(stringContent);
+
+            if (subscriptionResponse == null) return null;
+
+            return subscriptionResponse;
+        }
+
+        public async Task<bool> CancelSubscriptionAsync(string token, string subscriptionId)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var cancelSubscriptionIDTO = new CancelSubscriptionIDTO();
+            var response = await _httpClient.PostAsJsonAsync($"/v1/billing/subscriptions/{subscriptionId}/cancel", cancelSubscriptionIDTO);
+            if (!response.IsSuccessStatusCode) return false;
+
+            return true;
         }
     }
 }

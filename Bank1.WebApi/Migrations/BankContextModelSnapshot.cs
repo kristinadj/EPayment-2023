@@ -146,7 +146,7 @@ namespace Bank1.WebApi.Migrations
                             CVV = 123,
                             CardHolderName = "JOHN DOE",
                             ExpiratoryDate = "12/25",
-                            PanNumber = "db7d00d5266ec0ba6808f27a40f8a376ace7e718847d9eba813a2a40adf8ab1c"
+                            PanNumber = "lCeUSOrMw0PwocsTtLCWKvE0C+tQi0H/fHA/8R4tGBE="
                         });
                 });
 
@@ -375,6 +375,89 @@ namespace Bank1.WebApi.Migrations
                     b.ToTable("IssuerTransactions", "dbo");
                 });
 
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
+                {
+                    b.Property<int>("RecurringTransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringTransactionId"), 1L, 1);
+
+                    b.Property<int>("RecurringTransactionDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecurringTransactionId");
+
+                    b.HasIndex("RecurringTransactionDefinitionId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("RecurringTransactions", "dbo");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.Property<int>("RecurringTransactionDefinitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringTransactionDefinitionId"), 1L, 1);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("CVV")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CardHolderName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExpiratoryDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("NextPaymentTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PanNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecurringCycleDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecurringTransactionFailureUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecurringTransactionSuccessUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("RecurringTransactionDefinitionId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("ReceiverAccountId");
+
+                    b.ToTable("RecurringTransactionDefinitions", "dbo");
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
                     b.Property<int>("TransactionId")
@@ -542,6 +625,44 @@ namespace Bank1.WebApi.Migrations
                     b.Navigation("IsuerAccount");
                 });
 
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.RecurringTransactionDefinition", "RecurringTransactionDefinition")
+                        .WithMany("RecurringTransactions")
+                        .HasForeignKey("RecurringTransactionDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RecurringTransactionDefinition");
+
+                    b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
+                        .WithMany()
+                        .HasForeignKey("ReceiverAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("ReceiverAccount");
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
@@ -593,6 +714,11 @@ namespace Bank1.WebApi.Migrations
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
+                {
+                    b.Navigation("RecurringTransactions");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>

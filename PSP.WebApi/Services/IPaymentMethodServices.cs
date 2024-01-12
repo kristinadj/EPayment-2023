@@ -16,7 +16,7 @@ namespace PSP.WebApi.Services
         Task<bool> UnsubscribeAsync(int paymentMethodId, int merchantId);
         Task<bool> SubscribeAsync(PspPaymentMethodSubscribeIDTO paymentMethodSubscribe);
         Task<List<PaymentMethodMerchantODTO>> GetPaymentMethodsByMerchantIdAsync(int merchantId);
-        Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId);
+        Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId, bool recurringPayment);
     }
 
 
@@ -116,12 +116,22 @@ namespace PSP.WebApi.Services
             return paymentMethods;
         }
 
-        public async Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId)
+        public async Task<List<PaymentMethodODTO>> GetActivePaymentMethodsByMerchantIdAsync(int merchantId, bool recurringPayment)
         {
-            return await _context.PaymentMethodMerchants
-                .Where(x => x.MerchantId == merchantId && x.IsActive)
-                .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            if (!recurringPayment)
+            {
+                return await _context.PaymentMethodMerchants
+                    .Where(x => x.MerchantId == merchantId && x.IsActive)
+                    .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _context.PaymentMethodMerchants
+                   .Where(x => x.MerchantId == merchantId && x.IsActive && x.PaymentMethod!.SupportsAutomaticPayments)
+                   .ProjectTo<PaymentMethodODTO>(_mapper.ConfigurationProvider)
+                   .ToListAsync();
+            }
         }
     }
 }

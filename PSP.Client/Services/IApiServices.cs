@@ -5,7 +5,7 @@ namespace PSP.Client.Services
 {
     public interface IApiServices
     {
-        Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync(int merchantId);
+        Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync(int merchantId, bool recurringPayment);
         Task<InvoiceODTO?> GetInvoiceByIdAsync(int invoiceId);
         Task<RedirectUrlDTO?> UpdatePaymentMethodAsync(int invoiceId, int paymentMethodId);
     }
@@ -19,13 +19,13 @@ namespace PSP.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync(int merchantId)
+        public async Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync(int merchantId, bool recurringPayment)
         {
             var data = new List<PaymentMethodODTO>();
 
             try
             {
-                var response = await _httpClient.GetAsync($"api/PaymentMethod/Active/ByMerchantId/{merchantId}");
+                var response = await _httpClient.GetAsync($"api/PaymentMethod/Active/ByMerchantId/{merchantId};{recurringPayment}");
                 response.EnsureSuccessStatusCode();
 
                 var str = await response.Content.ReadAsStringAsync();

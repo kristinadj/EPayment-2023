@@ -57,7 +57,7 @@ namespace BitcoinPaymentService.WebApi.Controllers
             await _invoiceService.UpdateBitPayIdAsync(invoice.InvoiceId, bitPayInvoice.Id!);
             await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.IN_PROGRESS);
 
-            return Ok(new PaymentInstructionsODTO(bitPayInvoice.Url!));
+            return Ok(new PaymentInstructionsODTO(bitPayInvoice.Id!, bitPayInvoice.Url!));
         }
 
         [HttpGet("BitPay/Success/{invoiceId}")]

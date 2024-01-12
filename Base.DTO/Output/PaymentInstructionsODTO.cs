@@ -2,11 +2,12 @@
 {
     public class PaymentInstructionsODTO
     {
-        public int PaymentId { get; set; }
+        public string PaymentId { get; set; }
         public string PaymentUrl { get; set; }
 
-        public PaymentInstructionsODTO(string paymentUrl)
+        public PaymentInstructionsODTO(string paymentId, string paymentUrl)
         {
+            PaymentId = paymentId;
             PaymentUrl = paymentUrl;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Base.DTO.Enums;
 using Microsoft.EntityFrameworkCore;
 using WebShop.DTO.Enums;
 using WebShop.WebApi.Models;

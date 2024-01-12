@@ -6,15 +6,44 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Dense="true" Color="Color.Primary">
-        <MudTooltip Text="Home" Delay="600">
-            <div class="cursor-pointer" @onclick="OnClickHome">
-                <MudText Typo="Typo.h6">Law Publishing Agency</MudText>
-            </div>
-        </MudTooltip>
+        <div class="d-flex flex-row align-center gap-2">
+            <MudTooltip Text="Home" Delay="600">
+                <div class="cursor-pointer" @onclick="OnClickHome">
+                    <MudText Typo="Typo.h6">Law Publishing Agency</MudText>
+                </div>
+            </MudTooltip>
+            @if (GlobalSettings.Role != null)
+            {
+                <div>(@GlobalSettings.Role.ToString()!.ToUpper())</div>
+            }
+        </div>
+        
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
                 <AuthorizeView Roles="BUYER" Context="buyerContext">
+                    @if (GlobalSettings.IsSubscriptionPlanValid != null && (bool)GlobalSettings.IsSubscriptionPlanValid)
+                    {
+                        <div class="d-flex flex-column gap-1">
+                            @if (GlobalSettings.SubscriptionAutomaticRenewel && !GlobalSettings.IsCanceled)
+                            {
+                                <div class="d-flex align-left">Membership will be renewed on</div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-left">Membership active until</div>
+                            }
+                            <div class="d-flex align-left">@GlobalSettings.SubscriptionActiveUntil.ToShortDateString()</div>
+                        </div>
+
+                        @if (GlobalSettings.SubscriptionAutomaticRenewel && !GlobalSettings.IsCanceled)
+                        {
+                            <MudTooltip Text="Cancel Subscription">
+                                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" OnClick="OnClickCancelSubscriptionAsync" />
+                            </MudTooltip>
+                            <hr style="border-left: 3px solid white; height:100%; color: white;">
+                        }
+                    }
                     <MudTooltip Text="Orders Archive">
                         <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Color="Color.Inherit" />
                     </MudTooltip>

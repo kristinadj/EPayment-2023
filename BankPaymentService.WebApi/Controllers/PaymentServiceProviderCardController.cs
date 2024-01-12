@@ -34,7 +34,10 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<PaymentMethodDTO>> RegisterCard()
         {
-            var paymentMethod = new PaymentMethodDTO(_cardPaymentMethod.Name, _consulAppSettings.Service, _cardPaymentMethod.ServiceApiSufix);
+            var paymentMethod = new PaymentMethodDTO(_cardPaymentMethod.Name, _consulAppSettings.Service, _cardPaymentMethod.ServiceApiSufix)
+            {
+                SupportsAutomaticPayments = _cardPaymentMethod.SupportsAutomaticPayments
+            };
             var result = await _consulHttpClient.PostAsync(_cardPaymentMethod.PspServiceName, _cardPaymentMethod.PspRegisterApiEndpoint, paymentMethod);
 
             if (result == null) return BadRequest();

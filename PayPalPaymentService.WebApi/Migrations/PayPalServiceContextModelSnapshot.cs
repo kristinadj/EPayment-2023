@@ -93,14 +93,24 @@ namespace PayPalPaymentService.WebApi.Migrations
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("InvoiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
+
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
 
                     b.Property<string>("PayPalOrderId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PayPalSubscriptionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PayerId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RecurringPayment")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -168,6 +178,12 @@ namespace PayPalPaymentService.WebApi.Migrations
 
                     b.Property<string>("ClientId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayPalBillingPlanId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayPalBillingPlanProductId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PaymentServiceMerchantId")

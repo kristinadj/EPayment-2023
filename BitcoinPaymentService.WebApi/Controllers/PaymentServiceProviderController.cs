@@ -29,7 +29,10 @@ namespace BitcoinPaymentService.WebApi.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<PaymentMethodDTO>> Register()
         {
-            var paymentMethod = new PaymentMethodDTO(_paymentMethod.Name, _consulAppSettings.Service, _paymentMethod.ServiceApiSufix);
+            var paymentMethod = new PaymentMethodDTO(_paymentMethod.Name, _consulAppSettings.Service, _paymentMethod.ServiceApiSufix)
+            {
+                SupportsAutomaticPayments = _paymentMethod.SupportsAutomaticPayments
+            };
             var result = await _consulHttpClient.PostAsync(_paymentMethod.PspServiceName, _paymentMethod.PspRegisterApiEndpoint, paymentMethod);
 
             if (result == null) return BadRequest();

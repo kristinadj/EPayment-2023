@@ -1,12 +1,11 @@
 ﻿using Base.DTO.Input;
 using Base.DTO.Output;
-using Base.DTO.Shared;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PayPalPaymentService.WebApi.AppSettings;
-using PayPalPaymentService.WebApi.DTO.PayPal.Input;
+using PayPalPaymentService.WebApi.Helpers;
 using PayPalPaymentService.WebApi.Services;
 
 namespace PayPalPaymentService.WebApi.Controllers
@@ -27,7 +26,7 @@ namespace PayPalPaymentService.WebApi.Controllers
         public InvoiceController(
             IInvoiceService invoiceService,
             IMerchantService merchantService,
-            IPayPalClientService paytPalClientService, 
+            IPayPalClientService paytPalClientService,
             IOptions<PayPalSettings> payPalSettings,
             IOptions<PaymentMethod> paymetnMethod,
             IConsulHttpClient consulHttpClient)
@@ -49,39 +48,15 @@ namespace PayPalPaymentService.WebApi.Controllers
             var accessToken = await _paytPalClientService.GenerateAccessTokenAsync(merchant.ClientId, merchant.Secret);
             if (accessToken == null) return BadRequest();
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
+            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, paymentRequestDTO.InvoiceType, false);
             if (invoice == null) return BadRequest();
 
-            var orderIDTO = new OrderIDTO
-            {
-                PurchaseUnits = new List<PurchaseUnitIDTO>
-                {
-                    new() {
-                        Amount = new AmountIDTO
-                        {
-                            CurrencyCode = paymentRequestDTO.CurrencyCode,
-                            Value = paymentRequestDTO.Amount.ToString()
-                        },
-                        ReferenceId = invoice.InvoiceId.ToString()
-                    }
-                },
-                PaymentSource = new PaymentSourceIDTO
-                {
-                    Paypal = new PaypalIDTO
-                    {
-                        ExperienceContext = new ExperienceContextIDTO
-                        {
-                            ReturnUrl = _payPalSettings.ReturnUrl,
-                            CancelUrl = _payPalSettings.CancelUrl,
-                        }
-                    }
-                }
-            };
+            var orderIDTO = Mapper.ToOrderIDTO(paymentRequestDTO, invoice, _payPalSettings);
 
-            var orderResponse = await _paytPalClientService.CreateOrderAsync(accessToken, orderIDTO); 
+            var orderResponse = await _paytPalClientService.CreateOrderAsync(accessToken, orderIDTO);
             if (orderResponse == null || orderResponse.Status != "PAYER_ACTION_REQUIRED")
             {
-               await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.ERROR);
+                await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.ERROR);
                 return BadRequest();
             }
 
@@ -89,8 +64,7 @@ namespace PayPalPaymentService.WebApi.Controllers
             await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.IN_PROGRESS);
 
             var redirectUrl = orderResponse.Links.Where(x => x.Rel == "payer-action").FirstOrDefault();
-            var paymentInstructions = new PaymentInstructionsODTO(redirectUrl!.Href);
-
+            var paymentInstructions = new PaymentInstructionsODTO(orderResponse.Id, redirectUrl!.Href);
             return Ok(paymentInstructions);
         }
 
@@ -121,7 +95,7 @@ namespace PayPalPaymentService.WebApi.Controllers
             if (invoice == null) return BadRequest();
 
             await _invoiceService.UpdateInvoiceStatusAsync(invoice.InvoiceId, Enums.TransactionStatus.FAIL);
-            
+
             try
             {
                 await _consulHttpClient.PutAsync(_paymentMethod.PspServiceName, $"{invoice!.ExternalInvoiceId}/Failure");
