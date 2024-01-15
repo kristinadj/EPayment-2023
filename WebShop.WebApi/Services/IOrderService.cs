@@ -30,7 +30,8 @@ namespace WebShop.WebApi.Services
             var order = await _context.Orders
                 .Where(x => x.OrderId == orderId)
                 .Include(x => x.OrderLogs)
-                .Include(x => x.OrderItems)
+                .Include(x => x.MerchantOrders!)
+                .ThenInclude(x => x.OrderItems)
                 .FirstOrDefaultAsync();
 
             if (order == null) return null;
@@ -50,7 +51,8 @@ namespace WebShop.WebApi.Services
             });
 
             var shoppingCartItems = new List<ShoppingCartItem>();
-            foreach (var orderItem in order.OrderItems!)
+            var orderItems = order.MerchantOrders!.SelectMany(x => x.OrderItems!).ToList();
+            foreach (var orderItem in orderItems!)
             {
                 var shoppingCartItem = new ShoppingCartItem
                 {
@@ -81,7 +83,20 @@ namespace WebShop.WebApi.Services
             if (shoppingCart == null) return null;
 
             var order = _mapper.Map<Order>(shoppingCart);
-            order.MerchantId = shoppingCart.ShoppingCartItems!.First().Item!.MerchantId;
+            order.MerchantOrders = new List<MerchantOrder>();
+
+            var groupedShoppingCartItems = shoppingCart.ShoppingCartItems!.GroupBy(x => x.Item!.MerchantId, x => x, (key, g) => new { MerchantId = key, Items = g.ToList() });
+
+            foreach (var group in groupedShoppingCartItems)
+            {
+                var merchantOrder = new MerchantOrder
+                {
+                    MerchantId = group.MerchantId,
+                    OrderItems = _mapper.Map<List<OrderItem>>(group.Items)
+                };
+                order.MerchantOrders.Add(merchantOrder);
+            }
+
             await _context.Orders.AddAsync(order);
 
             _context.ShoppingCartItems.RemoveRange(shoppingCart.ShoppingCartItems!);
@@ -101,7 +116,7 @@ namespace WebShop.WebApi.Services
         public async Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId)
         {
             return await _context.Orders
-                .Where(x => x.InvoiceId == invoiceId)
+                .Where(x => x.MerchantOrders!.Any(x => x.InvoiceId == invoiceId))
                 .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }

@@ -19,7 +19,7 @@ namespace Bank1.WebApi.Services
 
         public async Task<Account?> GetAccountByCreditCardAsync(string cardHolderName, string panNumber, string expiratoryDate, int cvv)
         {
-            return await _context.Accounts
+            return await _context.Accounts!
                 .Where(x => x.Cards!.Any(x => x.CardHolderName == cardHolderName && x.PanNumber == panNumber && x.ExpiratoryDate == expiratoryDate && x.CVV == cvv))
                 .FirstOrDefaultAsync();
         }

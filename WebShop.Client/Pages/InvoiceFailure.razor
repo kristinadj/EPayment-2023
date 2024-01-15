@@ -29,23 +29,42 @@
                     <MudPaper Class="d-flex flex-column gap-1" Elevation="0">
                         @if (invoice!.InvoiceType == InvoiceType.ORDER)
                         {
-                            <MudTable Items="@order!.OrderItems" Elevation="0" Dense="true">
-                                <HeaderContent>
-                                    <MudTh><b>Service Name</b></MudTh>
-                                    <MudTh><b>Quantity</b></MudTh>
-                                    <MudTh><b>Price</b></MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Service Name">@context.Item!.Name</MudTd>
-                                        <MudTd DataLabel="Quantity">x @context!.Quantity</MudTd>
-                                        <MudTd DataLabel="Price">@context.Item!.Currency!.Symbol @context.Item!.Price.ToString("N2")</MudTd>
-                                    </RowTemplate>
-                                </MudTable>
-                            <div class="d-flex flex-row justify-end pr-3 pb-3">
-                                <MudText Class="d-flex">
-                                    <b>Total Price: @order!.OrderItems![0].Item!.Currency!.Symbol @(order.OrderItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
-                                </MudText>
-                            </div>
+                            @foreach (var merchantOrder in order!.MerchantOrders!)
+                            {
+                                <MudTable Items="@merchantOrder.OrderItems" Elevation="0" Dense="true">
+                                    <HeaderContent>
+                                        <MudTh><b>Service Name</b></MudTh>
+                                        <MudTh><b>Quantity</b></MudTh>
+                                        <MudTh><b>Price</b></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Service Name">@context.Item!.Name</MudTd>
+                                            <MudTd DataLabel="Quantity">x @context!.Quantity</MudTd>
+                                            <MudTd DataLabel="Price">@context.Item!.Currency!.Symbol @context.Item!.Price.ToString("N2")</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                <div class="d-flex flex-row justify-end pr-3 pb-3">
+                                    <MudText Class="d-flex gap-1">
+                                        @if (merchantOrder.Invoice != null)
+                                        {
+                                            if (merchantOrder.Invoice.Transaction!.TransactionStatus == DTO.Enums.TransactionStatus.ERROR)
+                                            {
+                                                <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Color="Color.Error" />
+                                            }
+                                            else if (merchantOrder.Invoice.Transaction.TransactionStatus == DTO.Enums.TransactionStatus.COMPLETED)
+                                            {
+                                                <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                                            }
+                                        }
+
+                                        <b>Total Price: @merchantOrder.OrderItems![0].Item!.Currency!.Symbol @(merchantOrder.OrderItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
+                                    </MudText>
+                                </div>
+                                @if (merchantOrder.Invoice!.InvoiceId == InvoiceId)
+                                {
+                                    <MudAlert Class="d-flex justify-center" Severity="Severity.Warning">Payment failed</MudAlert>
+                                }
+                            }
                         }
                         else
                         {
@@ -53,7 +72,10 @@
                         }
                     </MudPaper>
                     <MudDivider></MudDivider>
-                    <MudAlert Class="d-flex justify-center" Severity="Severity.Warning">Payment failed</MudAlert>
+                    @if (invoice!.InvoiceType != InvoiceType.ORDER)
+                    {
+                        <MudAlert Class="d-flex justify-center" Severity="Severity.Warning">Payment failed</MudAlert>
+                    }
                 </MudCardContent>
                 <MudCardActions Class="d-flex gap-4 justify-center">
                     <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickContinueShopping">Back to Home</MudButton>

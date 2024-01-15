@@ -30,7 +30,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<List<ItemODTO>>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -50,7 +50,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<ShoppingCartODTO>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -70,7 +70,7 @@ namespace WebShop.Client.Services
 
                 isSuccess = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -89,7 +89,7 @@ namespace WebShop.Client.Services
 
                 isSuccess = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -109,7 +109,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -129,7 +129,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -149,7 +149,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodODTO>>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -169,7 +169,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -189,7 +189,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -209,7 +209,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -229,7 +229,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<InvoiceODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -249,7 +249,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -266,7 +266,7 @@ namespace WebShop.Client.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -286,7 +286,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<List<SubscriptionPlanODTO>>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -306,7 +306,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodMerchantODTO>>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -326,7 +326,7 @@ namespace WebShop.Client.Services
 
                 isSuccess = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -343,7 +343,7 @@ namespace WebShop.Client.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -360,7 +360,7 @@ namespace WebShop.Client.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -377,7 +377,7 @@ namespace WebShop.Client.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -395,7 +395,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadAsStringAsync();
                 if (tempData != null && bool.TryParse(tempData, out var isValid)) { return isValid; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -415,7 +415,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<UserSubscriptionPlanDetailsODTO>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -436,7 +436,7 @@ namespace WebShop.Client.Services
                 var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO>();
                 if (tempData != null) { data = tempData; }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -458,7 +458,7 @@ namespace WebShop.Client.Services
                 var response = await _httpClient.PutAsync(requestUri, null);
                 response.EnsureSuccessStatusCode();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }
@@ -473,7 +473,7 @@ namespace WebShop.Client.Services
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO:
             }

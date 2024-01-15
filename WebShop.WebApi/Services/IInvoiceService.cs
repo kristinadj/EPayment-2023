@@ -29,21 +29,21 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<InvoiceODTO?> CreateInvoiceAsync(int orderId)
+        public async Task<InvoiceODTO?> CreateInvoiceAsync(int merchantOrderId)
         {
-            var order = await _context.Orders
-                .Where(x => x.OrderId == orderId && x.OrderStatus == OrderStatus.CREATED)
-                .Include(x => x.OrderItems)
+            var merchantOrder = await _context.MerchantOrders
+                .Where(x => x.MerchantOrderId == merchantOrderId && (x.Order!.OrderStatus == OrderStatus.CREATED || x.Order.OrderStatus == OrderStatus.PARTIALLY_COMPLETED))
+                .Include(x => x.Order)
                 .FirstOrDefaultAsync();
 
-            if (order == null) return null;
+            if (merchantOrder == null) return null;
 
-            var invoice = new Invoice(order.UserId)
+            var invoice = new Invoice(merchantOrder.Order!.UserId)
             {
                 InvoiceType = InvoiceType.ORDER,
-                MerchantId = order.MerchantId,
-                TotalPrice = order.OrderItems!.Select(x => x.Quantity * x.Price).Sum(),
-                CurrencyId = order.OrderItems!.Select(x => x.CurrencyId).FirstOrDefault(),
+                MerchantId = merchantOrder.MerchantId,
+                TotalPrice = merchantOrder.OrderItems!.Select(x => x.Quantity * x.Price).Sum(),
+                CurrencyId = merchantOrder.OrderItems!.Select(x => x.CurrencyId).FirstOrDefault(),
                 Transaction = new Transaction
                 {
                     CreatedTimestamp = DateTime.Now,
@@ -59,7 +59,7 @@ namespace WebShop.WebApi.Services
                 },
             };
 
-            order.Invoice = invoice;
+            merchantOrder.Invoice = invoice;
             await _context.SaveChangesAsync();
 
             return await _context.Invoices

@@ -21,6 +21,7 @@ namespace WebShop.WebApi.Models
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<UserSubscriptionPlan> UserSubscriptionPlans { get; set; }
+        public DbSet<MerchantOrder> MerchantOrders { get; set; }
 
         public WebShopContext(DbContextOptions<WebShopContext> options) : base(options) { }
 
@@ -88,18 +89,21 @@ namespace WebShop.WebApi.Models
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.Property(d => d.OrderStatus)
+                    .HasConversion<string>();
+            });
+
+            builder.Entity<MerchantOrder>(entity =>
+            {
                 entity.HasOne(x => x.Merchant)
-                    .WithMany(x => x.Orders)
+                    .WithMany(x => x.MerchantOrders)
                     .HasForeignKey(x => x.MerchantId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Invoice)
                     .WithOne()
-                    .HasForeignKey<Order>(x => x.InvoiceId)
+                    .HasForeignKey<MerchantOrder>(x => x.InvoiceId)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(d => d.OrderStatus)
-                    .HasConversion<string>();
             });
 
             builder.Entity<OrderItem>(entity =>
@@ -109,9 +113,9 @@ namespace WebShop.WebApi.Models
                     .HasForeignKey(x => x.CurrencyId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.Order)
+                entity.HasOne(x => x.MerchantOrder)
                     .WithMany(x => x.OrderItems)
-                    .HasForeignKey(x => x.OrderId)
+                    .HasForeignKey(x => x.MerchantOrderId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(x => x.Item)

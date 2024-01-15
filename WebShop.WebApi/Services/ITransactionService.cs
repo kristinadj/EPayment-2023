@@ -42,29 +42,47 @@ namespace WebShop.WebApi.Services
             if (transaction.Invoice!.InvoiceType == InvoiceType.ORDER)
             {
                 var order = await _context.Orders
-                .Where(x => x.InvoiceId == transaction.Invoice!.InvoiceId)
-                .Include(x => x.OrderLogs)
-                .FirstOrDefaultAsync();
+                    .Where(x => x.MerchantOrders!.Any(x => x.InvoiceId == transaction.Invoice!.InvoiceId))
+                    .Include(x => x.OrderLogs)
+                    .Include(x => x.MerchantOrders)
+                    .FirstOrDefaultAsync();
 
                 if (order == null) return false;
 
-                if (transactionStatus == TransactionStatus.COMPLETED)
+                if (order.OrderStatus == OrderStatus.CREATED || order.OrderStatus != OrderStatus.PARTIALLY_COMPLETED)
                 {
-                    order.OrderStatus = OrderStatus.COMPLETED;
-                    order.OrderLogs!.Add(new OrderLog
+                    if (transactionStatus == TransactionStatus.COMPLETED)
                     {
-                        OrderStatus = OrderStatus.COMPLETED,
-                        Timestamp = DateTime.Now
-                    });
-                }
-                else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
-                {
-                    order.OrderStatus = OrderStatus.INVALID;
-                    order.OrderLogs!.Add(new OrderLog
+                        var isCompleted = order.MerchantOrders!.All(x => x.Invoice!.Transaction!.TransactionStatus == TransactionStatus.COMPLETED);
+
+                        if (isCompleted)
+                        {
+                            order.OrderStatus = OrderStatus.COMPLETED;
+                            order.OrderLogs!.Add(new OrderLog
+                            {
+                                OrderStatus = OrderStatus.COMPLETED,
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                        else
+                        {
+                            order.OrderStatus = OrderStatus.PARTIALLY_COMPLETED;
+                            order.OrderLogs!.Add(new OrderLog
+                            {
+                                OrderStatus = OrderStatus.PARTIALLY_COMPLETED,
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
+                    else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
                     {
-                        OrderStatus = OrderStatus.INVALID,
-                        Timestamp = DateTime.Now
-                    });
+                        order.OrderStatus = OrderStatus.INVALID;
+                        order.OrderLogs!.Add(new OrderLog
+                        {
+                            OrderStatus = OrderStatus.INVALID,
+                            Timestamp = DateTime.Now
+                        });
+                    }
                 }
             }
             
