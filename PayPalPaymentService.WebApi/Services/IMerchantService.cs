@@ -42,10 +42,20 @@ namespace PayPalPaymentService.WebApi.Services
                 .Where(x => x.PaymentServiceMerchantId == updateMerchantCredentialsIDTO.PaymentServiceMerchantId)
                 .FirstOrDefaultAsync();
 
-            if (merchant == null) return false;
+            if (merchant == null)
+            {
+                merchant = new Merchant(updateMerchantCredentialsIDTO.Code, updateMerchantCredentialsIDTO.Secret)
+                {
+                    PaymentServiceMerchantId = updateMerchantCredentialsIDTO.PaymentServiceMerchantId
+                };
 
-            merchant.ClientId = updateMerchantCredentialsIDTO.Code;
-            merchant.Secret = updateMerchantCredentialsIDTO.Secret;
+                await _context.Merchants.AddAsync(merchant);
+            }
+            else
+            {
+                merchant.ClientId = updateMerchantCredentialsIDTO.Code;
+                merchant.Secret = updateMerchantCredentialsIDTO.Secret;
+            }
 
             await _context.SaveChangesAsync();
             return true;

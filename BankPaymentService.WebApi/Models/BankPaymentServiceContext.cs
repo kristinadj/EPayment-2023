@@ -81,7 +81,7 @@ namespace BankPaymentService.WebApi.Models
 
             // Merchant
             builder.Entity<Merchant>().HasData(
-                new Merchant("105-0000000000000-29", "LPAPassword5!") { MerchantId = 1, PaymentServiceMerchantId = 2, BankMerchantId = 1, BankId = 1 });
+                new Merchant("105-0000000000000-29", "LPAPassword5!") { MerchantId = 1, PaymentServiceMerchantId = 1, BankMerchantId = 1, BankId = 1 });
 
             #endregion
         }
