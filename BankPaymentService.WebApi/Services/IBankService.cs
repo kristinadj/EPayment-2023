@@ -14,6 +14,7 @@ namespace BankPaymentService.WebApi.Services
         Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment);
         Task<PaymentInstructionsODTO?> SendRecurringPaymentToBankAsync(Invoice invoice, RecurringPaymentRequestIDTO paymentRequestIDTO);
         Task<bool> CancelSubscriptionAsync(int subscriptionId, Merchant merchant);
+        Task<List<InstitutionODTO>> GetBanksAsync();
     }
 
     public class BankService : IBankService
@@ -43,6 +44,16 @@ namespace BankPaymentService.WebApi.Services
             {
                 return false;
             }
+        }
+
+        public async Task<List<InstitutionODTO>> GetBanksAsync()
+        {
+            return await _context.Banks
+                .Select(x => new InstitutionODTO
+                {
+                    InstitutionId = x.BankId,
+                    InstitutionName = x.BankName
+                }).ToListAsync();
         }
 
         public async Task<PaymentInstructionsODTO?> SendInvoiceToBankAsync(Invoice invoice, PaymentRequestIDTO paymentRequestIDTO, bool isQrCodePayment)

@@ -69,13 +69,6 @@ namespace PayPalPaymentService.WebApi.Models
                 new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
                 );
 
-            // Merchant
-            builder.Entity<Merchant>().HasData(
-                new Merchant("AV3Z4kgHI5D0Dbmcx9Aad6ES4BNG2TgPSipgEEtc2x0sq44FjQcDD3nbbKd9swsAz2wuW_HLKu6L64uh", "EAnL13M1IeQPT2YTsdwgmrO1R9RI97mqWFnF7mD7WQULXL6fmiTWIn9pDI1X6aAdK6leDX0RLdjM7tDh") { MerchantId = 1, PaymentServiceMerchantId = 2 });
-
-            builder.Entity<Merchant>().HasData(
-                new Merchant(string.Empty, string.Empty) { MerchantId = 2, PaymentServiceMerchantId = 3 });
-
             #endregion
         }
     }

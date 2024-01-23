@@ -25,15 +25,17 @@ namespace PSP.WebApi.Services
 
         public async Task<MerchantODTO?> AddMerchantAsync(MerchantIDTO merchantIDTO)
         {
-            var isExists = await _context.Merchants
+            var merchant = await _context.Merchants
                 .Where(x => x.ServiceName == merchantIDTO.ServiceName && x.MerchantExternalId.Equals(merchantIDTO.MerchantExternalId))
-                .AnyAsync();
+                .FirstOrDefaultAsync();
 
-            if (isExists) return null;
+            if (merchant == null)
+            {
+                merchant = _mapper.Map<Merchant>(merchantIDTO);
+                await _context.Merchants.AddAsync(merchant);
+                await _context.SaveChangesAsync();
+            }
 
-            var merchant = _mapper.Map<Merchant>(merchantIDTO);
-            await _context.Merchants.AddAsync(merchant);
-            await _context.SaveChangesAsync();
             return _mapper.Map<MerchantODTO>(merchant);
         }
 

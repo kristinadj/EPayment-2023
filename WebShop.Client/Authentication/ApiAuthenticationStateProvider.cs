@@ -11,9 +11,9 @@ namespace WebShop.Client.Authentication
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
 
-        public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+        public ApiAuthenticationStateProvider(IHttpClientFactory httpClientFactory, ILocalStorageService localStorage)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("WebShopAPI");
             _localStorage = localStorage;
         }
 

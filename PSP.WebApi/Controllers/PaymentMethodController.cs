@@ -1,4 +1,5 @@
 ﻿using Base.DTO.Input;
+using Base.DTO.Output;
 using Base.DTO.Shared;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Cors;
@@ -71,7 +72,8 @@ namespace PSP.WebApi.Controllers
 
                 var updateMerchantCredentials = new UpdateMerchantCredentialsIDTO(paymentMethodSubscribe.Code, paymentMethodSubscribe.Secret)
                 {
-                    PaymentServiceMerchantId = merchant.MerchantId
+                    PaymentServiceMerchantId = merchant.MerchantId,
+                    InstitutionId = paymentMethodSubscribe.InstitutionId
                 };
 
                 try
@@ -92,6 +94,7 @@ namespace PSP.WebApi.Controllers
             }
         }
 
+
         [HttpPut("Unsubscribe/{paymentMethodId};{merchantId}")]
         public async Task<ActionResult<bool>> Unsubscribe([FromRoute] int paymentMethodId, [FromRoute] int merchantId)
         {
@@ -104,6 +107,25 @@ namespace PSP.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("Institutions/{paymentMethodId}")]
+        public async Task<ActionResult<List<InstitutionODTO>>> GetInstitutions([FromRoute] int paymentMethodId)
+        {
+            var institutions = new List<InstitutionODTO>();
+
+            try
+            {
+                var paymentMethod = await _paymentMethodServices.GetPaymentMethodByIdAsync(paymentMethodId);
+                if (paymentMethod == null) return NotFound();
+
+                institutions = await _consulHttpClient.GetAsync<List<InstitutionODTO>>(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/Institutions");
+            }
+            catch (Exception)
+            {
+            }
+
+            return Ok(institutions);
         }
     }
 }

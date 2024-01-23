@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Base.DTO.Output;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using WebShop.Client.Services;
 using WebShop.DTO.Input;
@@ -21,15 +22,31 @@ namespace WebShop.Client.Dialogs
         [Parameter]
         public int PaymentMethodId { get; set; }
 
+        private List<InstitutionODTO> institutions = new();
+
         private PaymentMethodSubscribeIDTO paymentMethodSubscribe = new();
 
-        private bool isSubscribing { get; set; }
+        private bool isLoading = false;
+        private bool isSubscribing = false;
         private MudForm? form = new();
         private bool isValid;
 
         private bool showPassword = false;
         private InputType passwordInputType = InputType.Password;
         private string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+        protected override async Task OnInitializedAsync()
+        {
+            isLoading = true;
+
+            institutions = await ApiServices.GetPaymentMethodInstitutionsAsync(PaymentMethodId);
+            if (institutions.Count != 0)
+            {
+                paymentMethodSubscribe.InstitutionId = institutions.First().InstitutionId;
+            }
+
+            isLoading = false;
+        }
 
         async void Submit()
         {

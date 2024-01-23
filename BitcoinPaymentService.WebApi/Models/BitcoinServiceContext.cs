@@ -66,10 +66,6 @@ namespace BitcoinPaymentService.WebApi.Models
                 new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
                 );
 
-            // Merchant
-            builder.Entity<Merchant>().HasData(
-                new Merchant("", "") { MerchantId = 1, PaymentServiceMerchantId = 2 });
-
             #endregion
         }
     }

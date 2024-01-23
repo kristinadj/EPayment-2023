@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using System.Security.Claims;
 using WebShop.Client.Code;
+using WebShop.Client.Components;
 using WebShop.Client.Dialogs;
 using WebShop.Client.Services;
 using WebShop.DTO.Enums;
@@ -38,6 +39,8 @@ namespace WebShop.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            base.OnInitialized();
+
             isLoading = true;
 
             var user = (await AuthenticationStateTask).User;
@@ -54,53 +57,55 @@ namespace WebShop.Client.Pages
                         GlobalSettings.ShoppingCartId = shoppingCart.ShoppingCartId;
                         GlobalSettings.ShoppingCartItemsCount = shoppingCart.ShoppingCartItems!.Select(x => x.Quantity).Sum();
                     }
-                }
 
-                var role = user.Claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault();
-                if (role != null)
-                {
-                    GlobalSettings.Role = role.Value.ToString() == Role.BUYER.ToString() ? Role.BUYER : Role.MERCHANT;
-                    GlobalSettings.InvokeChange();
-                }
-
-                if (GlobalSettings.Role == Role.BUYER)
-                {
-                    var subscriptionPlanDetails = await ApiServices.GetSubscriptionPlanDetailsAsync(GlobalSettings.UserId!);
-                    
-                    if (subscriptionPlanDetails == null || !subscriptionPlanDetails.IsValid)
+                    var role = user.Claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault();
+                    if (role != null)
                     {
-                        Navigation!.NavigateTo("/plan");
+                        GlobalSettings.Role = role.Value.ToString() == Role.BUYER.ToString() ? Role.BUYER : Role.MERCHANT;
+                        GlobalSettings.InvokeChange();
+                    }
+
+                    if (GlobalSettings.Role == Role.BUYER)
+                    {
+                        var subscriptionPlanDetails = await ApiServices.GetSubscriptionPlanDetailsAsync(GlobalSettings.UserId!);
+
+                        if (subscriptionPlanDetails == null || !subscriptionPlanDetails.IsValid)
+                        {
+                            Navigation!.NavigateTo("/plan");
+                        }
+                        else
+                        {
+                            GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
+                            GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
+                            GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
+                            GlobalSettings.IsCanceled = subscriptionPlanDetails.IsCanceled;
+                            GlobalSettings.InvokeChange();
+                        }
+                    }
+
+                    if (GlobalSettings.Role == Role.BUYER)
+                    {
+                        items = await ApiServices.GetItemsAsync();
                     }
                     else
                     {
-                        GlobalSettings.IsSubscriptionPlanValid = subscriptionPlanDetails!.IsValid;
-                        GlobalSettings.SubscriptionAutomaticRenewel = subscriptionPlanDetails.AutomaticRenewel;
-                        GlobalSettings.SubscriptionActiveUntil = subscriptionPlanDetails.ActiveUntil;
-                        GlobalSettings.IsCanceled = subscriptionPlanDetails.IsCanceled;
-                        GlobalSettings.InvokeChange();
+                        isMerchantRegistered = await ApiServices.IsMerchantRegisteredOnPspAsync(GlobalSettings.UserId!);
+
+                        if (isMerchantRegistered)
+                        {
+                            paymentMethods = await ApiServices.GetPaymentMethodsByUserIdAsync(GlobalSettings.UserId!);
+                        }
                     }
                 }
+
+                
+
+                isLoading = false;
             }
             else
             {
                 Navigation!.NavigateTo("/login");
             }
-
-            if (GlobalSettings.Role == Role.BUYER)
-            {
-                items = await ApiServices.GetItemsAsync();
-            }
-            else
-            {
-                isMerchantRegistered = await ApiServices.IsMerchantRegisteredOnPspAsync(GlobalSettings.UserId!);
-
-                if (isMerchantRegistered)
-                {
-                    paymentMethods = await ApiServices.GetPaymentMethodsByUserIdAsync(GlobalSettings.UserId!);
-                }
-            }
-
-            isLoading = false;
         }
 
         private async Task OnUnsubscribeButtonClicked(int paymentMethodId)

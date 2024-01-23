@@ -39,6 +39,12 @@ namespace BankPaymentService.WebApi.Services
 
         public async Task<bool> UpdateMerchantCredentialsAsync(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO)
         {
+            var bank = await _context.Banks
+                .Where(x => x.BankId == updateMerchantCredentialsIDTO.InstitutionId)
+                .FirstOrDefaultAsync();
+
+            if (bank == null) return false;
+
             var merchant = await _context.Merchants
                 .Where(x => x.PaymentServiceMerchantId == updateMerchantCredentialsIDTO.PaymentServiceMerchantId)
                 .FirstOrDefaultAsync();
@@ -48,7 +54,8 @@ namespace BankPaymentService.WebApi.Services
                 merchant = new Merchant(string.Empty, updateMerchantCredentialsIDTO.Secret)
                 {
                     BankMerchantId = int.Parse(updateMerchantCredentialsIDTO.Code),
-                    PaymentServiceMerchantId = updateMerchantCredentialsIDTO.PaymentServiceMerchantId
+                    PaymentServiceMerchantId = updateMerchantCredentialsIDTO.PaymentServiceMerchantId,
+                    BankId = bank.BankId
                 };
 
                 await _context.Merchants.AddAsync(merchant);
@@ -57,6 +64,7 @@ namespace BankPaymentService.WebApi.Services
             {
                 merchant.BankMerchantId = int.Parse(updateMerchantCredentialsIDTO.Code);
                 merchant.Secret = updateMerchantCredentialsIDTO.Secret;
+                merchant.BankId = bank.BankId;
             }
 
             await _context.SaveChangesAsync();

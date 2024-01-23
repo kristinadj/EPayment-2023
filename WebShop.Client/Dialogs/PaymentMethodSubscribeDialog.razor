@@ -1,13 +1,33 @@
 ﻿<MudDialog>
     <DialogContent>
-        <MudForm @ref="@form" @bind-IsValid="@isValid" Class="d-flex flex-column gap-2">
-            <MudTextField T="string" Label="Payment Service Code" @bind-Value="@paymentMethodSubscribe.Code" Required="true" RequiredError="Code is required!" />
-            <MudTextField T="string" Label="Payment Service Secret" @bind-Value="@paymentMethodSubscribe.Secret" Required="true" RequiredError="Secret is required!" InputType="@passwordInputType" Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="OnShowPassword" />
-        </MudForm>
+        @if (isLoading)
+        {
+            <div class="d-flex flex-wrap gap-4 pa-3 justify-center">
+                <MudProgressCircular Indeterminate="true" />
+            </div>
+
+        }
+        else
+        {
+            <MudForm @ref="@form" @bind-IsValid="@isValid" Class="d-flex flex-column gap-2">
+                <MudTextField T="string" Label="Payment Service Code" @bind-Value="@paymentMethodSubscribe.Code" Required="true" RequiredError="Code is required!" />
+                <MudTextField T="string" Label="Payment Service Secret" @bind-Value="@paymentMethodSubscribe.Secret" Required="true" RequiredError="Secret is required!" InputType="@passwordInputType" Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="OnShowPassword" />
+                @if (institutions.Count != 0)
+                {
+                    <MudDivider></MudDivider>
+                    <MudRadioGroup @bind-Value="@paymentMethodSubscribe.InstitutionId">
+                        @foreach (var institution in institutions)
+                        {
+                            <div class="d-flex justify-left"><MudRadio Value="@institution.InstitutionId" Color="Color.Primary">@institution.InstitutionName</MudRadio></div>
+                        }
+                    </MudRadioGroup>
+                }
+            </MudForm>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel" Disabled="isSubscribing">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="isSubscribing || !isValid">
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="isSubscribing || !isValid || isLoading">
             @if (isSubscribing)
             {
                 <span class="spinner-border spinner-border-sm mr-1"></span>

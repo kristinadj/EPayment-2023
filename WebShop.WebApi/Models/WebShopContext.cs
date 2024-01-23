@@ -225,6 +225,12 @@ namespace WebShop.WebApi.Models
                 new Currency("American Dollar", "USD", "$") { CurrencyId = 3 }
                 );
 
+            builder.Entity<SubscriptionPlan>().HasData(
+                new SubscriptionPlan("One-time Access (1 year)", "Access to the application for a duration of one year.") { SubscriptionPlanId = 1, Price = 300, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = false },
+                new SubscriptionPlan("Annual Subscription", "Annual subscription with automatic renewal.") { SubscriptionPlanId = 2, Price = 250, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = true }
+                );
+
+
             var merchantId = "408b89e8-e8e5-4b97-9c88-f19593d66378";
             var hasher = new PasswordHasher<IdentityUser>();
             builder.Entity<User>().HasData(
@@ -284,11 +290,6 @@ namespace WebShop.WebApi.Models
                 new Item("International Law Consultation", "Expertise in international legal matters.") { ItemId = 18, MerchantId = 2, Price = 850, CurrencyId = 2 },
                 new Item("Dispute Resolution Services", "Assistance in resolving legal disputes.") { ItemId = 19, MerchantId = 2, Price = 700, CurrencyId = 2 },
                 new Item("Legal Training Seminars", "Seminars on various legal topics.") { ItemId = 20, MerchantId = 2, Price = 750, CurrencyId = 2 }
-                );
-
-            builder.Entity<SubscriptionPlan>().HasData(
-                new SubscriptionPlan("One-time Access (1 year)", "Access to the application for a duration of one year.") { SubscriptionPlanId = 1, Price = 300, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = false },
-                new SubscriptionPlan("Annual Subscription", "Annual subscription with automatic renewal.") { SubscriptionPlanId = 2, Price = 250, CurrencyId = 2, DurationInDays = 365, AutomaticRenewel = true }
                 );
 
             #endregion

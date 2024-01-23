@@ -4,11 +4,11 @@
 @inject NavigationManager Navigation
 
 <AuthorizeView>
-    <Authorized>
+    @* <Authorized>
         @{
             Navigation.NavigateTo("/");
         }
-    </Authorized>
+    </Authorized> *@
     <NotAuthorized>
         <div class="d-flex align-content-center justify-center">
             <MudPaper Class="pa-4">

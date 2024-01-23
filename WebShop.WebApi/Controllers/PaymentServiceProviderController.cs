@@ -1,4 +1,5 @@
-﻿using Base.DTO.Shared;
+﻿using Base.DTO.Output;
+using Base.DTO.Shared;
 using Base.Services.AppSettings;
 using Base.Services.Clients;
 using Microsoft.AspNetCore.Mvc;
@@ -116,13 +117,14 @@ namespace WebShop.WebApi.Controllers
                 var merchant = await _merchantService.GetMerchantByUserIdAsync(paymentMethodSubscribeIDTO.UserId);
                 if (merchant == null || merchant.PspMerchantId == null) return NotFound();
 
-                var paymentMethod = await _paymentMethodService.GetPaymentMethodById(paymentMethodSubscribeIDTO.PaymentMethodId);
+                var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodSubscribeIDTO.PaymentMethodId);
                 if (paymentMethod == null) return NotFound();
 
                 var pspPaymentMethodSubscribe = new PspPaymentMethodSubscribeIDTO(paymentMethodSubscribeIDTO.Code.ToString(), paymentMethodSubscribeIDTO.Secret)
                 {
                     MerchantId = (int)merchant.PspMerchantId,
-                    PaymentMethodId = paymentMethod.PspPaymentMethodId
+                    PaymentMethodId = paymentMethod.PspPaymentMethodId,
+                    InstitutionId = paymentMethodSubscribeIDTO.InstitutionId
                 };
 
                 var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Subscribe", pspPaymentMethodSubscribe);
@@ -144,7 +146,7 @@ namespace WebShop.WebApi.Controllers
                 var merchant = await _merchantService.GetMerchantByUserIdAsync(userId);
                 if (merchant == null || merchant.PspMerchantId == null) return NotFound();
 
-                var paymentMethod = await _paymentMethodService.GetPaymentMethodById(paymentMethodId);
+                var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
                 if (paymentMethod == null) return NotFound();
 
                 var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Unsubscribe/{paymentMethod.PspPaymentMethodId};{merchant.PspMerchantId}");
@@ -156,6 +158,25 @@ namespace WebShop.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("Institutions/{paymentMethodId}")]
+        public async Task<ActionResult<List<InstitutionODTO>>> GetInstitutions([FromRoute] int paymentMethodId)
+        {
+            var institutions = new List<InstitutionODTO>();
+
+            try
+            {
+                var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
+                if (paymentMethod == null) return NotFound();
+
+                institutions = await _consulHttpClient.GetAsync<List<InstitutionODTO>>(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Institutions/{paymentMethod.PspPaymentMethodId}");
+            }
+            catch (Exception)
+            {
+            }
+
+            return Ok(institutions);
         }
     }
 }

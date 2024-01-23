@@ -13,9 +13,6 @@ namespace WebShop.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
-        [Inject]
-        private ISnackbar Snackbar { get; set; }
-
         private MudForm? form = new();
         private AuthenticateIDTO authenticateDTO = new();
         private bool isValid;
@@ -26,6 +23,12 @@ namespace WebShop.Client.Pages
         private string passwordInputIcon = Icons.Material.Filled.VisibilityOff;
 
         private bool isLoading = false;
+
+        protected async override Task OnInitializedAsync()
+        {
+            base.OnInitialized();
+            await AuthService.Logout();
+        }
 
         void OnShowPassword()
         {
@@ -45,30 +48,19 @@ namespace WebShop.Client.Pages
 
         private async void OnLoginAsync()
         {
-            try
+            if (isValid && authenticateDTO != null)
             {
-                if (isValid && authenticateDTO != null)
+                isLoading = true;
+                var result = await AuthService.Login(authenticateDTO);
+                if (result != null)
                 {
-                    isLoading = true;
-                    var result = await AuthService.Login(authenticateDTO);
-                    if (result != null)
-                    {
-                        isLoading = false;
-                        NavigationManager.NavigateTo("/");
-                    }
-                    else
-                    {
-                        
-                        Snackbar.Add("Bad Credentials", Severity.Error);
-                    }
+                    isLoading = false;
+                    NavigationManager.NavigateTo("/");
                 }
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add("Unexpected Exception", Severity.Error);
             }
 
             isLoading = false;
+            StateHasChanged();
         }
     }
 }

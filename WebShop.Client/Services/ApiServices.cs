@@ -6,33 +6,40 @@ using WebShop.DTO.Output;
 using Base.DTO.Shared;
 using WebShop.DTO.Enums;
 using Microsoft.AspNetCore.WebUtilities;
+using Base.DTO.Output;
+using Microsoft.Extensions.Options;
+using System.Runtime.CompilerServices;
 
 namespace WebShop.Client.Services
 {
     public class ApiServices : IApiServices
     {
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ApiServices(HttpClient httpClient)
+        public ApiServices(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("WebShopAPI");
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
         }
 
         public async Task<List<ItemODTO>> GetItemsAsync()
         {
             var data = new List<ItemODTO>();
 
-            try
+            var response = await _httpClient.GetAsync("api/Items");
+            
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync("api/Items");
-                response.EnsureSuccessStatusCode();
-
-                var tempData = await response.Content.ReadFromJsonAsync<List<ItemODTO>>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<ItemODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -42,17 +49,16 @@ namespace WebShop.Client.Services
         {
             ShoppingCartODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/ShoppingCart/ByUser/{userId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/ShoppingCart/ByUser/{userId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<ShoppingCartODTO>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<ShoppingCartODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -60,58 +66,35 @@ namespace WebShop.Client.Services
 
         public async Task<bool> AddItemInShoppingCartAsync(ShoppingCartItemIDTO itemDTO)
         {
-            var isSuccess = false;
+            var content = new StringContent(JsonSerializer.Serialize(itemDTO), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/ShoppingCartItem", content);
 
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(itemDTO), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"api/ShoppingCartItem", content);
-                response.EnsureSuccessStatusCode();
-
-                isSuccess = true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
-
-            return isSuccess;
+            if (response.IsSuccessStatusCode) return true;
+            return false;
         }
 
         public async Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId)
         {
-            var isSuccess = false;
-
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"api/ShoppingCartItem/{shoppingCartItemId}");
-                response.EnsureSuccessStatusCode();
-
-                isSuccess = true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
-
-            return isSuccess;
+            var response = await _httpClient.DeleteAsync($"api/ShoppingCartItem/{shoppingCartItemId}");
+            
+            if (response.IsSuccessStatusCode) return true;
+            return false;
         }
 
         public async Task<OrderODTO?> CreateOrderAsync(int shoppingCartId)
         {
             OrderODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.PostAsync($"api/ShoppingCart/Checkout/{shoppingCartId}", null);
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"api/ShoppingCart/Checkout/{shoppingCartId}", null);
 
-                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<OrderODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -121,17 +104,16 @@ namespace WebShop.Client.Services
         {
             RedirectUrlDTO? data = null;
 
-            try
+            var response = await _httpClient.PostAsync($"api/Invoice/{orderId}", null);
+            
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.PostAsync($"api/Invoice/{orderId}", null);
-                response.EnsureSuccessStatusCode();
-
-                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -141,17 +123,16 @@ namespace WebShop.Client.Services
         {
             var data = new List<PaymentMethodODTO>();
 
-            try
-            {
-                var response = await _httpClient.GetAsync("api/PaymentMethod");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync("api/PaymentMethod");
 
-                var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodODTO>>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<PaymentMethodODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -161,17 +142,16 @@ namespace WebShop.Client.Services
         {
             OrderODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.PutAsync($"api/Order/Cancel/{orderId}", null);
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PutAsync($"api/Order/Cancel/{orderId}", null);
 
-                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<OrderODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -181,17 +161,16 @@ namespace WebShop.Client.Services
         {
             OrderODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/Order/ById/{orderId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/Order/ById/{orderId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<OrderODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -201,17 +180,16 @@ namespace WebShop.Client.Services
         {
             OrderODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<OrderODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -221,17 +199,16 @@ namespace WebShop.Client.Services
         {
             InvoiceODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/Invoice/ById/{invoiceId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/Invoice/ById/{invoiceId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<InvoiceODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<InvoiceODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -241,17 +218,16 @@ namespace WebShop.Client.Services
         {
             OrderODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/Order/ByInvoiceId/{invoiceId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<OrderODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<OrderODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -259,17 +235,8 @@ namespace WebShop.Client.Services
 
         public async Task<bool> UpdateTransactionStatusAsync(int transactionid, TransactionStatus transactionStatus)
         {
-            try
-            {
-                var response = await _httpClient.PutAsync($"api/Transaction/{transactionid};{transactionStatus}", null);
-                response.EnsureSuccessStatusCode();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
+            var response = await _httpClient.PutAsync($"api/Transaction/{transactionid};{transactionStatus}", null);
+            if (response.IsSuccessStatusCode) return true;
 
             return false;
         }
@@ -278,17 +245,15 @@ namespace WebShop.Client.Services
         {
             var data = new List<SubscriptionPlanODTO>();
 
-            try
+            var response = await _httpClient.GetAsync($"api/SubscriptionPlans");
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/SubscriptionPlans");
-                response.EnsureSuccessStatusCode();
-
-                var tempData = await response.Content.ReadFromJsonAsync<List<SubscriptionPlanODTO>>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<SubscriptionPlanODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -298,17 +263,16 @@ namespace WebShop.Client.Services
         {
             var data = new List<PaymentMethodMerchantODTO>();
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/PaymentMethods/ByMerchantId/{userId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/PaymentMethods/ByMerchantId/{userId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodMerchantODTO>>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<PaymentMethodMerchantODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -316,90 +280,50 @@ namespace WebShop.Client.Services
 
         public async Task<bool> SubscribeToPaymentMethodAsync(PaymentMethodSubscribeIDTO paymentMethodSubscribeIDTO)
         {
-            var isSuccess = false;
+            var content = new StringContent(JsonSerializer.Serialize(paymentMethodSubscribeIDTO), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Subscribe", content);
+            if (response.IsSuccessStatusCode) return true;
 
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(paymentMethodSubscribeIDTO), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Subscribe", content);
-                response.EnsureSuccessStatusCode();
-
-                isSuccess = true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
-
-            return isSuccess;
+            return false;
         }
 
         public async Task<bool> UnsubscribeFromPaymentMethodAsync(int paymentMethodId, string userId)
         {
-            try
-            {
-                var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Unsubscribe/{paymentMethodId};{userId}", null);
-                response.EnsureSuccessStatusCode();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
+            var response = await _httpClient.PutAsync($"api/PaymentServiceProvider/PaymentMethods/Unsubscribe/{paymentMethodId};{userId}", null);
+            if (response.IsSuccessStatusCode) return true;
 
             return false;
         }
 
         public async Task<bool> IsMerchantRegisteredOnPspAsync(string userId)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Merchant/IsRegistered/{userId}");
-                response.EnsureSuccessStatusCode();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
+            var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Merchant/IsRegistered/{userId}");
+            if (response.IsSuccessStatusCode) return true;
 
             return false;
         }
 
         public async Task<bool> RegisterMerchantOnPspAsync(string userId)
         {
-            try
-            {
-                var response = await _httpClient.PostAsync($"api/PaymentServiceProvider/Merchant/Register/{userId}", null);
-                response.EnsureSuccessStatusCode();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
+            var response = await _httpClient.PostAsync($"api/PaymentServiceProvider/Merchant/Register/{userId}", null);
+            if (response.IsSuccessStatusCode) return true;
 
             return false;
         }
 
         public async Task<bool> IsSubscriptionPlanValidAsync(string userId)
         {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/SubscriptionPlans/IsValid/{userId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/SubscriptionPlans/IsValid/{userId}");
 
-                var tempData = await response.Content.ReadAsStringAsync();
-                if (tempData != null && bool.TryParse(tempData, out var isValid)) { return isValid; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    return JsonSerializer.Deserialize<bool>(content, _jsonSerializerOptions);
+                }
             }
-
+            
             return false;
         }
 
@@ -407,38 +331,36 @@ namespace WebShop.Client.Services
         {
             UserSubscriptionPlanDetailsODTO? data = null;
 
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/SubscriptionPlans/Details/{userId}");
-                response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync($"api/SubscriptionPlans/Details/{userId}");
 
-                var tempData = await response.Content.ReadFromJsonAsync<UserSubscriptionPlanDetailsODTO>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<UserSubscriptionPlanDetailsODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
         }
 
-        public async Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
+        public async Task<RedirectUrlDTO?> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
         {
             RedirectUrlDTO? data = null;
 
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(userSubscriptionPlanIDTO), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"api/SubscriptionPlans/Choose", content);
-                response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(userSubscriptionPlanIDTO), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/SubscriptionPlans/Choose", requestContent);
 
-                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -452,33 +374,35 @@ namespace WebShop.Client.Services
                 ["externalSubscriptionId"] = externalSubscriptionId
             };
 
-            try
-            {
-                var requestUri = QueryHelpers.AddQueryString($"api/SubscriptionPlans/ExternalSubscriptionId", queryString);
-                var response = await _httpClient.PutAsync(requestUri, null);
-                response.EnsureSuccessStatusCode();
-            }
-            catch (Exception)
-            {
-                // TODO:
-            }
+            var requestUri = QueryHelpers.AddQueryString($"api/SubscriptionPlans/ExternalSubscriptionId", queryString);
+            await _httpClient.PutAsync(requestUri, null);
         }
 
         public async Task<bool> CancelSubscriptionAsync(string userId)
         {
-            try
-            {
-                var response = await _httpClient.PutAsync($"api/SubscriptionPlans/CancelSubscription/{userId}", null);
-                if (!response.IsSuccessStatusCode) return false;
+            var response = await _httpClient.PutAsync($"api/SubscriptionPlans/CancelSubscription/{userId}", null);
+            if (!response.IsSuccessStatusCode) return false;
 
-                return true;
-            }
-            catch (Exception)
+            return true;
+        }
+
+        public async Task<List<InstitutionODTO>> GetPaymentMethodInstitutionsAsync(int paymentMethodId)
+        {
+            List<InstitutionODTO>? data = new();
+
+            var response = await _httpClient.GetAsync($"api/PaymentServiceProvider/Institutions/{paymentMethodId}");
+
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<InstitutionODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
-            return false;
+            return data;
         }
     }
 }

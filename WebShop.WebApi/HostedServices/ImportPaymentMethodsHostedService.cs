@@ -24,6 +24,8 @@ namespace WebShop.WebApi.HostedServices
             var pspAppSettings = scope.ServiceProvider.GetService<IOptions<PspAppSettings>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<ImportPaymentMethodsHostedService>>();
 
+            
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var now = DateTime.UtcNow;
@@ -33,19 +35,28 @@ namespace WebShop.WebApi.HostedServices
                     startTime = new DateTime(now.Year, now.Month, now.Day, 2, 0, 0) - DateTime.UtcNow;
                 }
 
-                try
+                var isSuccess = false;
+
+                do
                 {
-                    var result = await consulHttpClient!.GetAsync<List<PaymentMethodDTO>>(pspAppSettings!.Value.ServiceName, "/api/PaymentMethod");
-                    if (result != null) 
+                    try
                     {
-                        await paymentMethodsService!.ImportFromPspAsync(result);
+                        var result = await consulHttpClient!.GetAsync<List<PaymentMethodDTO>>(pspAppSettings!.Value.ServiceName, "/api/PaymentMethod");
+                        if (result != null)
+                        {
+                            await paymentMethodsService!.ImportFromPspAsync(result);
+                            isSuccess = true;
+                        }
+
                     }
-                    
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex?.Message, "Error while cleaning up PoiCompanies, Locations, Locationmatrix");
-                }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex?.Message, "Error while getting PaymentMethods from PSP");
+                        await Task.Delay(10000, stoppingToken);
+                    }
+
+                } while (!isSuccess);
+                
 
                 await Task.Delay(startTime, stoppingToken);
             }

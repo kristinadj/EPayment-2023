@@ -49,6 +49,8 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPut("Merchant/UpdateCredentials")]
         public async Task<ActionResult<PaymentMethodDTO>> UpdateMerchantCredentials(UpdateMerchantCredentialsIDTO updateMerchantCredentialsIDTO)
         {
+            if (updateMerchantCredentialsIDTO.InstitutionId == null) return BadRequest("Isntitutionid is null");
+
             var isSuccess = await _merchantService.UpdateMerchantCredentialsAsync(updateMerchantCredentialsIDTO);
             if (!isSuccess) return BadRequest();
 

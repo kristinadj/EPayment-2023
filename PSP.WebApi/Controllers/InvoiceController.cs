@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PSP.WebApi.AppSettings;
 using PSP.WebApi.DTO.Output;
+using PSP.WebApi.Models;
 using PSP.WebApi.Services;
 
 namespace PSP.WebApi.Controllers
@@ -44,7 +45,7 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<InvoiceODTO>> GetInvoiceById([FromRoute] int invoiceId)
         {
             var invoice = await _invoiceService.GetInvoiceByIdAsyync(invoiceId);
-            if (invoice == null) return NotFound();
+            if (invoice == null) return NotFound($"Invoice {invoiceId} doesn't exist");
 
             return Ok(invoice);
         }
@@ -53,14 +54,21 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<string>> CreateInvoice([FromBody] PspInvoiceIDTO invoiceIDTO)
         {
             var merchant = await _merchantService.GetMerchantByIdAsync(invoiceIDTO.MerchantId);
-            if (merchant == null) return NotFound();
+            if (merchant == null) return NotFound($"Merchant {invoiceIDTO.MerchantId} doesn't exist");
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(merchant, invoiceIDTO, invoiceIDTO.InvoiceType);
-            if (invoice == null) return BadRequest();
+            try
+            {
+                var invoice = await _invoiceService.CreateInvoiceAsync(merchant, invoiceIDTO, invoiceIDTO.InvoiceType);
+                if (invoice == null) return BadRequest($"Invalid currency {invoiceIDTO.CurrencyCode}");
 
-            var result = _mapper.Map<InvoiceODTO>(invoiceIDTO);
-            result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}/false";
-            return Ok(result);
+                var result = _mapper.Map<InvoiceODTO>(invoiceIDTO);
+                result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}/false";
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("PaymentMethod/{invoiceId};{paymentMethodId}")]
