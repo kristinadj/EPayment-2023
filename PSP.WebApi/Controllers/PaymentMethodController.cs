@@ -29,32 +29,57 @@ namespace PSP.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PaymentMethodODTO>>> GetPaymentMethods()
         {
-            var result = await _paymentMethodServices.GetPaymentMethodsAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _paymentMethodServices.GetPaymentMethodsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<PaymentMethodODTO>> AddPaymentMethod([FromBody] PaymentMethodIDTO paymentMethod)
         {
-            var result = await _paymentMethodServices.AddPaymentMethodAsync(paymentMethod);
-            
-            if (result == null) return BadRequest();
-
-            return Ok(result);
+            try
+            {
+                var result = await _paymentMethodServices.AddPaymentMethodAsync(paymentMethod);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("ByMerchantId/{merchantId}")]
         public async Task<ActionResult<List<PaymentMethodMerchantODTO>>> GetPaymentMethodsByMerchantId([FromRoute] int merchantId)
         {
-            var result = await _paymentMethodServices.GetPaymentMethodsByMerchantIdAsync(merchantId);
-            return Ok(result);
+            try
+            {
+                var result = await _paymentMethodServices.GetPaymentMethodsByMerchantIdAsync(merchantId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("Active/ByMerchantId/{merchantId};{recurringPayment}")]
         public async Task<ActionResult<List<PaymentMethodODTO>>> GetActivePaymentMethodsByMerchantId([FromRoute] int merchantId, [FromRoute] bool recurringPayment)
         {
-            var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId, recurringPayment);
-            return Ok(result);
+            try
+            {
+                var result = await _paymentMethodServices.GetActivePaymentMethodsByMerchantIdAsync(merchantId, recurringPayment);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("Subscribe")]
@@ -63,22 +88,18 @@ namespace PSP.WebApi.Controllers
             try
             {
                 var paymentMethod = await _paymentMethodServices.GetPaymentMethodByIdAsync(paymentMethodSubscribe.PaymentMethodId);
-                if (paymentMethod == null) return NotFound();
-
                 var merchant = await _merchantService.GetMerchantByIdAsync(paymentMethodSubscribe.MerchantId);
-                if (merchant == null) return NotFound();    
-
                 var result = await _paymentMethodServices.SubscribeAsync(paymentMethodSubscribe);
 
                 var updateMerchantCredentials = new UpdateMerchantCredentialsIDTO(paymentMethodSubscribe.Code, paymentMethodSubscribe.Secret)
                 {
-                    PaymentServiceMerchantId = merchant.MerchantId,
+                    PaymentServiceMerchantId = merchant!.MerchantId,
                     InstitutionId = paymentMethodSubscribe.InstitutionId
                 };
 
                 try
                 {
-                    var isSuccess = await _consulHttpClient.PutAsync(paymentMethod.ServiceName, $"{paymentMethod.ServiceApiSufix}/PaymentServiceProvider/Merchant/UpdateCredentials", updateMerchantCredentials);
+                    var isSuccess = await _consulHttpClient.PutAsync(paymentMethod!.ServiceName, $"{paymentMethod.ServiceApiSufix}/PaymentServiceProvider/Merchant/UpdateCredentials", updateMerchantCredentials);
                     if (!isSuccess) return BadRequest();
                 }
                 catch (HttpRequestException)

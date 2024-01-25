@@ -46,7 +46,7 @@ namespace WebShop.WebApi.Services
                 .Include(x => x.User)
                 .FirstOrDefaultAsync();
 
-            if (merchant == null) return false;
+            if (merchant == null) throw new Exception($"Merchant {merchantId} not found");
 
             merchant.PspMerchantId = pspMerchantId;
             await _context.SaveChangesAsync();

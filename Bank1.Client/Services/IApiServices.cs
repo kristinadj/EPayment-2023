@@ -1,7 +1,6 @@
 ﻿using Base.DTO.Input;
 using Base.DTO.NBS;
 using Base.DTO.Shared;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -19,66 +18,56 @@ namespace Bank1.Client.Services
     public class ApiServices : IApiServices
     {
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ApiServices(HttpClient httpClient)
+        public ApiServices(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("BankAPI");
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
         }
 
         public async Task<string?> GenerateQrCodeAsync(int transactionId)
         {
-            string? qrCodeSvg = null;
+            var response = await _httpClient.GetAsync($"api/Transaction/QrCode/{transactionId}");
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/Transaction/QrCode/{transactionId}");
-                response.EnsureSuccessStatusCode();
-
-                qrCodeSvg = await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                return await response.Content.ReadAsStringAsync();
             }
 
-            return qrCodeSvg;
+            return null;
         }
 
         public async Task<string?> GetQrCodeInputAsync(int transactionId)
         {
-            string? qrCodeInput = null;
+            var response = await _httpClient.GetAsync($"api/Transaction/QrCode/Input/{transactionId}");
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/Transaction/QrCode/Input/{transactionId}");
-                response.EnsureSuccessStatusCode();
-
-                qrCodeInput = await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                return await response.Content.ReadAsStringAsync();
             }
 
-            return qrCodeInput;
+            return null;
         }
 
         public async Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO)
         {
             RedirectUrlDTO? data = null;
 
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(payTransactionIDTO), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"api/Transaction", content);
-                response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(payTransactionIDTO), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"api/Transaction", requestContent);
 
-                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -88,17 +77,15 @@ namespace Bank1.Client.Services
         {
             QrCodeODTO? data = null;
 
-            try
+            var response = await _httpClient.GetAsync($"api/Transaction/QrCode/Validate/{transactionId}");
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/Transaction/QrCode/Validate/{transactionId}");
-                response.EnsureSuccessStatusCode();
-
-                var tempData = await response.Content.ReadFromJsonAsync<QrCodeODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<QrCodeODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -108,18 +95,17 @@ namespace Bank1.Client.Services
         {
             QrCodeODTO? data = null;
 
-            try
-            {
-                var content = new StringContent(JsonSerializer.Serialize(input), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"api/Transaction/QrCode/Validate", content);
-                response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(input), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/Transaction/QrCode/Validate", requestContent);
 
-                var tempData = await response.Content.ReadFromJsonAsync<QrCodeODTO?>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
+            if (response.IsSuccessStatusCode)
             {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<QrCodeODTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;

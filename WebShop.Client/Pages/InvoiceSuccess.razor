@@ -60,10 +60,23 @@
                                         <b>Total Price: @merchantOrder.OrderItems![0].Item!.Currency!.Symbol @(merchantOrder.OrderItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
                                     </MudText>
                                 </div>
-                                @if (merchantOrder.Invoice!.InvoiceId == InvoiceId)
+                                @if (merchantOrder.Invoice == null)
+                                {
+                                    <div class="d-flex flex-row-reverse">
+                                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled=@(isPaymentInProgress) OnClick="@(() => OnClickPayAsync(merchantOrder.MerchantOrderId))">
+                                            @if (isPaymentInProgress)
+                                            {
+                                                <span class="spinner-border spinner-border-sm mr-1"></span>
+                                            }
+                                            Pay
+                                        </MudButton>
+                                    </div>
+                                }
+                                else if (merchantOrder.Invoice.InvoiceId == InvoiceId)
                                 {
                                     <MudAlert Class="d-flex justify-center" Severity="Severity.Success">Transaction successfully completed!</MudAlert>
                                 }
+                                <MudDivider></MudDivider>
                             }
                         }
                         else
@@ -77,9 +90,12 @@
                         <MudAlert Class="d-flex justify-center" Severity="Severity.Success">Transaction successfully completed!</MudAlert>
                     }
                 </MudCardContent>
-                <MudCardActions Class="d-flex gap-4 justify-center">
-                    <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickContinueShopping">Continue Shopping</MudButton>
-                </MudCardActions>
+                @if (invoice!.InvoiceType != InvoiceType.ORDER || order!.MerchantOrders!.All(x => x.Invoice != null && x.Invoice.Transaction!.TransactionStatus == DTO.Enums.TransactionStatus.COMPLETED))
+                {
+                    <MudCardActions Class="d-flex gap-4 justify-center">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnClickContinueShopping">Continue Shopping</MudButton>
+                    </MudCardActions>
+                }
             </MudCard>
         }
     }

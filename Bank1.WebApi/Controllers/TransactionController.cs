@@ -62,9 +62,8 @@ namespace Bank1.WebApi.Controllers
         public async Task<ActionResult> PayTransaction([FromBody] PayTransactionIDTO payTransactionIDTO)
         {
             var transaction = await _transactionService.GetTransactionByIdAsync(payTransactionIDTO.TransactionId);
-            if (transaction == null) return NotFound($"Transaction {payTransactionIDTO.TransactionId} not found");
 
-            if (transaction.TransactionLogs!.Any(x => x.TransactionStatus == Enums.TransactionStatus.COMPLETED))
+            if (transaction!.TransactionLogs!.Any(x => x.TransactionStatus == Enums.TransactionStatus.COMPLETED))
                 return BadRequest("Transaction is already paid");
 
             var recurringTransactionDefinition = await _transactionService.GetReccurringTransactionDefinitionByTransactionIdAsync(payTransactionIDTO.TransactionId);
@@ -123,8 +122,6 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 var transactionODTO = await _transactionService.PccReceiveToPayTransactionAsync(pccTransactionIDTO, _appSettings.CardStartNumbers);
-                if (transactionODTO == null) return BadRequest("Credit card information is invalid");
-
                 return Ok(transactionODTO);
             }
             catch (Exception)
@@ -139,12 +136,7 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
-
-                if (transaction == null) return NotFound($"Transaction {transactionId} not found");
-
-                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
-                if (amount == null) return BadRequest($"Exchange rate {transaction.Currency!.Code} to RSD doesn't exist");
-
+                var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
                 var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
                 var qrCode = await _nbsClient.GenerateQrCodeAsync(qrCodeGenIDTO);
 
@@ -164,12 +156,7 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
-
-                if (transaction == null) return NotFound($"Transaction {transactionId} not found");
-
-                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
-                if (amount == null) return BadRequest($"Exchange rate {transaction.Currency!.Code} to RSD doesn't exist");
-
+                var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
                 var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
                 return Ok(qrCodeGenIDTO);
             }
@@ -185,11 +172,7 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
-
-                if (transaction == null) return NotFound($"Transaction {transactionId} not found");
-
-                var amount = await _transactionService.ExchangeAsync(transaction.Currency!.Code, "RSD", transaction.Amount);
-                if (amount == null) return BadRequest($"Exchange rate {transaction.Currency!.Code} to RSD doesn't exist");
+                var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
 
                 var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
                 var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodeGenIDTO);

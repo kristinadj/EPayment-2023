@@ -1,5 +1,7 @@
 ﻿using PSP.Client.DTO.Output;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace PSP.Client.Services
 {
@@ -13,28 +15,30 @@ namespace PSP.Client.Services
     public class ApiServices : IApiServices
     {
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ApiServices(HttpClient httpClient)
+        public ApiServices(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("PspAPI");
+            _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
         }
 
         public async Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync(int merchantId, bool recurringPayment)
         {
             var data = new List<PaymentMethodODTO>();
 
-            try
+            var response = await _httpClient.GetAsync($"api/PaymentMethod/Active/ByMerchantId/{merchantId};{recurringPayment}");
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/PaymentMethod/Active/ByMerchantId/{merchantId};{recurringPayment}");
-                response.EnsureSuccessStatusCode();
-
-                var str = await response.Content.ReadAsStringAsync();
-                var tempData = await response.Content.ReadFromJsonAsync<List<PaymentMethodODTO>>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<PaymentMethodODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -44,18 +48,15 @@ namespace PSP.Client.Services
         {
             InvoiceODTO? data = null;
 
-            try
+            var response = await _httpClient.GetAsync($"api/Invoice/{invoiceId}");
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.GetAsync($"api/Invoice/{invoiceId}");
-                response.EnsureSuccessStatusCode();
-
-                var str = await response.Content.ReadAsStringAsync();
-                var tempData = await response.Content.ReadFromJsonAsync<InvoiceODTO>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<InvoiceODTO> (content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;
@@ -65,18 +66,15 @@ namespace PSP.Client.Services
         {
             RedirectUrlDTO? data = null;
 
-            try
+            var response = await _httpClient.PutAsync($"api/Invoice/PaymentMethod/{invoiceId};{paymentMethodId}", null);
+            if (response.IsSuccessStatusCode)
             {
-                var response = await _httpClient.PutAsync($"api/Invoice/PaymentMethod/{invoiceId};{paymentMethodId}", null);
-                response.EnsureSuccessStatusCode();
-
-                var str = await response.Content.ReadAsStringAsync();
-                var tempData = await response.Content.ReadFromJsonAsync<RedirectUrlDTO>();
-                if (tempData != null) { data = tempData; }
-            }
-            catch (Exception ex)
-            {
-                // TODO:
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
             }
 
             return data;

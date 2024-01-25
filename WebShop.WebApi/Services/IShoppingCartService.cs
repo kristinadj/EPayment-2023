@@ -33,14 +33,14 @@ namespace WebShop.WebApi.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (shoppingCart == null) return false;
+            if (shoppingCart == null) throw new Exception($"ShoppingCart {itemDTO.ShoppingCartId} not found");
 
             var item = await _context.Items
                 .Where(x => x.ItemId == itemDTO.ItemId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (item == null) return false;
+            if (item == null) throw new Exception($"Item {itemDTO.ItemId} not found");
 
             var shopiingCartItem = new ShoppingCartItem
             {
@@ -66,7 +66,7 @@ namespace WebShop.WebApi.Services
                 .Where(x => x.ShoppingCartItemId == shoppingCartItemId)
                 .FirstOrDefaultAsync();
 
-            if (shoppingCartItem == null) return false;
+            if (shoppingCartItem == null) throw new Exception($"ShoppingCartItem {shoppingCartItemId} not found");
 
             _context.ShoppingCartItems.Remove(shoppingCartItem);
             await _context.SaveChangesAsync();

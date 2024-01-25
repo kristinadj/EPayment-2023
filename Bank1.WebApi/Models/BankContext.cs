@@ -54,6 +54,11 @@ namespace Bank1.WebApi.Models
                     .WithOne()
                     .HasForeignKey<BusinessCustomer>(x => x.CustomerId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.DefaultAccount)
+                    .WithOne()
+                    .HasForeignKey<BusinessCustomer>(x => x.DefaultAccountId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Card>(entity =>
@@ -186,13 +191,6 @@ namespace Bank1.WebApi.Models
                     CustomerId = 1
                 });
 
-            builder.Entity<BusinessCustomer>().HasData(
-                new BusinessCustomer("LPAPassword5!")
-                {
-                    BusinessCustomerId = 1,
-                    CustomerId = 1
-                });
-
             builder.Entity<Account>().HasData(
                new Account("105-0000000000000-29")
                {
@@ -201,6 +199,14 @@ namespace Bank1.WebApi.Models
                    CurrencyId = 1,
                    OwnerId = 1
                });
+
+            builder.Entity<BusinessCustomer>().HasData(
+                new BusinessCustomer("LPAPassword5!")
+                {
+                    BusinessCustomerId = 1,
+                    CustomerId = 1,
+                    DefaultAccountId = 1
+                });
 
             // Buyer
             builder.Entity<Customer>().HasData(

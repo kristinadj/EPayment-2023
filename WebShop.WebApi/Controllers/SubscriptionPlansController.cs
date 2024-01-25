@@ -49,6 +49,14 @@ namespace WebShop.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<SubscriptionPlanODTO>>> GetSubscriptionPlans()
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             var result = await _subscriptionPlanService.GetSubscriptionPlansAsync();
             return Ok(result);
         }
@@ -56,6 +64,14 @@ namespace WebShop.WebApi.Controllers
         [HttpGet("IsValid/{userId}")]
         public async Task<ActionResult<bool>> IsSubscriptionPlanValid([FromRoute] string userId)
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             var result = await _subscriptionPlanService.IsSubscriptionPlanValidAsync(userId);
             return Ok(result);
         }
@@ -63,6 +79,14 @@ namespace WebShop.WebApi.Controllers
         [HttpGet("Details/{userId}")]
         public async Task<ActionResult<UserSubscriptionPlanDetailsODTO>> SubscriptionPlanDetails([FromRoute] string userId)
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             var result = await _subscriptionPlanService.GetSubscriptionPlanDetailsAsync(userId);
             return Ok(result);
         }
@@ -70,6 +94,14 @@ namespace WebShop.WebApi.Controllers
         [HttpPost("Choose")]
         public async Task<ActionResult> ChooseSubscriptionPlanAsync([FromBody] UserSubscriptionPlanIDTO userSubscriptionPlanIDTO)
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             var userSubscriptionPlan = await _subscriptionPlanService.AddUserSubscriptionPlanAsync(userSubscriptionPlanIDTO);
             if (userSubscriptionPlan == null) return NotFound();
 
@@ -134,19 +166,26 @@ namespace WebShop.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> CancelSubscriptionAsync([FromRoute] string userId)
         {
-            var userSubsriptionPlan = await _subscriptionPlanService.GetUserSubscriptionPlanByUserIdAsync(userId);
-            if (userSubsriptionPlan == null) return NotFound();
+            try
+            {
+                var userSubsriptionPlan = await _subscriptionPlanService.GetUserSubscriptionPlanByUserIdAsync(userId);
+                if (userSubsriptionPlan == null) return NotFound($"Subscription Plan not found for the user {userId}");
 
-            if (string.IsNullOrEmpty(userSubsriptionPlan.ExternalSubscriptionId)) return BadRequest();
+                if (string.IsNullOrEmpty(userSubsriptionPlan.ExternalSubscriptionId)) return BadRequest("Invalid ExternalSubscriptionId");
 
-            var paymentMethod = await _invoiceService.GetPaymentMethodByInvoiceIdAsync((int)userSubsriptionPlan.InvoiceId!);
-            if (paymentMethod == null) return NotFound();
+                var paymentMethod = await _invoiceService.GetPaymentMethodByInvoiceIdAsync((int)userSubsriptionPlan.InvoiceId!);
+                if (paymentMethod == null) return NotFound($"PaymentMethod ot found");
 
-            var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/SubscriptionPayment/CancelSubscription/{paymentMethod.PspPaymentMethodId}/{userSubsriptionPlan.ExternalSubscriptionId}");
-            if (!isSuccess) return BadRequest();
+                var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/SubscriptionPayment/CancelSubscription/{paymentMethod.PspPaymentMethodId}/{userSubsriptionPlan.ExternalSubscriptionId}");
+                if (!isSuccess) return BadRequest("Unexpected exception while canceling subscription");
 
-            await _subscriptionPlanService.CancelUserSubscriptionPlanAsync(userSubsriptionPlan);
-            return Ok();
+                await _subscriptionPlanService.CancelUserSubscriptionPlanAsync(userSubsriptionPlan);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Renewed/{userSubscriptionPlanId}/Success")]
@@ -155,8 +194,7 @@ namespace WebShop.WebApi.Controllers
         {
             try
             {
-                var isSuccess = await _subscriptionPlanService.UserSubscriptionPlanRenewalAsync(userSubscriptionPlanId, TransactionStatus.COMPLETED);
-                if (!isSuccess) return BadRequest();
+                await _subscriptionPlanService.UserSubscriptionPlanRenewalAsync(userSubscriptionPlanId, TransactionStatus.COMPLETED);
                 return Ok();
             }
             catch (Exception ex)
@@ -171,7 +209,6 @@ namespace WebShop.WebApi.Controllers
             try
             {
                 var isSuccess = await _subscriptionPlanService.UserSubscriptionPlanRenewalAsync(userSubscriptionPlanId, TransactionStatus.FAIL);
-                if (!isSuccess) return BadRequest();
                 return Ok();
             }
             catch (Exception ex)

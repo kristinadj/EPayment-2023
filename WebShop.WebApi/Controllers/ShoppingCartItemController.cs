@@ -23,8 +23,15 @@ namespace WebShop.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> AddShoppingCartItem([FromBody] ShoppingCartItemIDTO itemDTO)
         {
-            var result = await _shoppingCartService.AddItemInShoppingCartAsync(itemDTO);
-            return Ok(result);
+            try
+            {
+                var result = await _shoppingCartService.AddItemInShoppingCartAsync(itemDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{shoppingCartItemId}")]
@@ -33,7 +40,7 @@ namespace WebShop.WebApi.Controllers
             try
             {
                 var isSuccess = await _shoppingCartService.DeleteItemInShoppingCartAsync(shoppingCartItemId);
-                if (!isSuccess) return NotFound();
+                if (!isSuccess) return NotFound($"ShoppingCartItem {shoppingCartItemId} not found");
 
                 return Ok();
             }
@@ -41,7 +48,6 @@ namespace WebShop.WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
         }
     }
 }

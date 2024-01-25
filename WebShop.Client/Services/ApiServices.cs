@@ -1,14 +1,11 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
+﻿using Base.DTO.Output;
+using Base.DTO.Shared;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using System.Text.Json;
+using WebShop.DTO.Enums;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
-using Base.DTO.Shared;
-using WebShop.DTO.Enums;
-using Microsoft.AspNetCore.WebUtilities;
-using Base.DTO.Output;
-using Microsoft.Extensions.Options;
-using System.Runtime.CompilerServices;
 
 namespace WebShop.Client.Services
 {
@@ -31,7 +28,7 @@ namespace WebShop.Client.Services
             var data = new List<ItemODTO>();
 
             var response = await _httpClient.GetAsync("api/Items");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -76,7 +73,7 @@ namespace WebShop.Client.Services
         public async Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId)
         {
             var response = await _httpClient.DeleteAsync($"api/ShoppingCartItem/{shoppingCartItemId}");
-            
+
             if (response.IsSuccessStatusCode) return true;
             return false;
         }
@@ -105,7 +102,7 @@ namespace WebShop.Client.Services
             RedirectUrlDTO? data = null;
 
             var response = await _httpClient.PostAsync($"api/Invoice/{orderId}", null);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -323,7 +320,7 @@ namespace WebShop.Client.Services
                     return JsonSerializer.Deserialize<bool>(content, _jsonSerializerOptions);
                 }
             }
-            
+
             return false;
         }
 

@@ -18,8 +18,6 @@ namespace Bank1.WebApi.Controllers
 
         public RecurringTransactionController(
             ITransactionService transactionService,
-            IAccountService accountService,
-            INbsClient nbsClient,
             IOptions<BankSettings> appSettings)
         {
             _transactionService = transactionService;
@@ -32,12 +30,9 @@ namespace Bank1.WebApi.Controllers
             try
             {
                 var transaction = await _transactionService.CreateRecurringTransactionAsync(transactionIDTO);
-                if (transaction == null) return BadRequest("One of the parameters is invalid: CurrencyCode / SenderId / AccountNumber");
-
-                var paymentUrl = $"{_appSettings.BankPaymentUrl}".Replace("@TRANSACTION_ID@", transaction.TransactionId.ToString());
+                var paymentUrl = $"{_appSettings.BankPaymentUrl}".Replace("@TRANSACTION_ID@", transaction!.TransactionId.ToString());
                 var paymentInstructions = new PaymentInstructionsODTO(transaction.TransactionId.ToString(), paymentUrl);
                 return Ok(paymentInstructions);
-
             }
             catch (Exception ex)
             {
@@ -50,9 +45,7 @@ namespace Bank1.WebApi.Controllers
         {
             try
             {
-                var isSuccess = await _transactionService.CancelRecurringTransactionAsync(recurringTransactionDefinitionId);
-                if (!isSuccess) return NotFound($"RecurringTransaction {recurringTransactionDefinitionId} not found");
-
+                await _transactionService.CancelRecurringTransactionAsync(recurringTransactionDefinitionId);
                 return Ok();
             }
             catch (Exception ex)

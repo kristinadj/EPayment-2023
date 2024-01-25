@@ -75,10 +75,10 @@ namespace PSP.WebApi.Controllers
         public async Task<ActionResult<RedirectUrlDTO>> UpdatePaymentMethod([FromRoute] int invoiceId, [FromRoute] int paymentMethodId)
         {
             var invoice = await _invoiceService.UpdatePaymentMethodAsync(invoiceId, paymentMethodId);
-            if (invoice == null) return NotFound();
+            if (invoice == null) return NotFound("Invoice not found");
 
             var paymentMethodCredentials = invoice.Merchant!.PaymentMethods!.Where(x => x.PaymentMethodId == paymentMethodId).FirstOrDefault();
-            if (paymentMethodCredentials == null) return NotFound();
+            if (paymentMethodCredentials == null) return NotFound("Invalid merchant payment credentials - Contact support");
 
             var result = new RedirectUrlDTO(string.Empty);
 
@@ -182,28 +182,43 @@ namespace PSP.WebApi.Controllers
         [HttpPut("{invoiceId}/Success")]
         public async Task<ActionResult<RedirectUrlDTO>> SuccessPayment([FromRoute] int invoiceId)
         {
-            var isSuccess = await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
-            if (!isSuccess) return BadRequest();
-
-            return Ok();
+            try
+            {
+                await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{invoiceId}/Failure")]
         public async Task<ActionResult<RedirectUrlDTO>> FailurePayment([FromRoute] int invoiceId)
         {
-            var isSuccess = await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.FAIL);
-            if (!isSuccess) return BadRequest();
-
-            return Ok();
+            try
+            {
+                await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.FAIL);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{invoiceId}/Error")]
         public async Task<ActionResult<RedirectUrlDTO>> ErrorPayment([FromRoute] int invoiceId)
         {
-            var isSuccess = await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.ERROR);
-            if (!isSuccess) return BadRequest();
-
-            return Ok();
+            try
+            {
+                 await _invoiceService.UpdateTransactionStatusAsync(invoiceId, Enums.TransactionStatus.ERROR);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

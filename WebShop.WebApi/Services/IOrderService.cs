@@ -34,14 +34,14 @@ namespace WebShop.WebApi.Services
                 .ThenInclude(x => x.OrderItems)
                 .FirstOrDefaultAsync();
 
-            if (order == null) return null;
+            if (order == null) throw new Exception($"Order {orderId} not found");
 
             var shoppingCart = await _context.ShoppingCarts
                 .Where(x => x.UserId == order.UserId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (shoppingCart == null) return null;
+            if (shoppingCart == null) throw new Exception($"ShoppingCart for user {order.UserId} not found");
 
             order.OrderStatus = DTO.Enums.OrderStatus.CANCELED;
             order.OrderLogs!.Add(new OrderLog
@@ -80,7 +80,7 @@ namespace WebShop.WebApi.Services
                 .ThenInclude(x => x.Item)
                 .FirstOrDefaultAsync();
 
-            if (shoppingCart == null) return null;
+            if (shoppingCart == null) throw new Exception($"ShoppingCart {shoppingCartId} not found");
 
             var order = _mapper.Map<Order>(shoppingCart);
             order.MerchantOrders = new List<MerchantOrder>();

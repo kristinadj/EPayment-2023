@@ -38,39 +38,48 @@ namespace WebShop.WebApi.Controllers
         [HttpPost("Register")]
         public async Task<ActionResult<AuthenticationODTO>> RegisterAsync([FromBody] UserIDTO userDTO)
         {
-            if (!userDTO.Password.Equals(userDTO.ConfirmPassword))
-                return BadRequest("Passwords doesn't match");
+            try
+            {
+                if (!userDTO.Password.Equals(userDTO.ConfirmPassword))  return BadRequest("Passwords doesn't match");
 
-            var user = await _userManager.FindByEmailAsync(userDTO.Email);
-            if (user != null)
-                return BadRequest("Email is taken");
+                var user = await _userManager.FindByEmailAsync(userDTO.Email);
+                if (user != null) return BadRequest("Email is taken");
 
-            user = _mapper.Map<User>(userDTO);
-            user.Role = Role.BUYER;
+                user = _mapper.Map<User>(userDTO);
+                user.Role = Role.BUYER;
 
-            var result = await _userManager.CreateAsync(user, userDTO.Password);
+                var result = await _userManager.CreateAsync(user, userDTO.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+                if (!result.Succeeded) return BadRequest(result.Errors);
 
-            await _shoppingCartService.CreateShoppingCartAsync(user.Id);
-            var token = _tokenCreationService.CreateToken(user);
-            return Ok(token);
+                await _shoppingCartService.CreateShoppingCartAsync(user.Id);
+                var token = _tokenCreationService.CreateToken(user);
+                return Ok(token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Authenticate")]
         public async Task<ActionResult<AuthenticationODTO>> Login([FromBody] AuthenticateIDTO authenticateDTO)
         {
-            var user = await _userManager.FindByEmailAsync(authenticateDTO.Email);
-            if (user == null)
-                return BadRequest("Bad credentials");
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(authenticateDTO.Email);
+                if (user == null)  return BadRequest("Bad credentials");
 
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, authenticateDTO.Password);
-            if (!isPasswordValid)
-                return BadRequest("Bad credentials");
+                var isPasswordValid = await _userManager.CheckPasswordAsync(user, authenticateDTO.Password);
+                if (!isPasswordValid) return BadRequest("Bad credentials");
 
-            var token = _tokenCreationService.CreateToken(user);
-            return Ok(token);
+                var token = _tokenCreationService.CreateToken(user);
+                return Ok(token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

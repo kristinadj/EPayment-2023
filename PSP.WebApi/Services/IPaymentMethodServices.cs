@@ -37,7 +37,7 @@ namespace PSP.WebApi.Services
                 .Where(x => x.ServiceName == paymentMethodIDTO.ServiceName && x.ServiceApiSufix == paymentMethodIDTO.ServiceApiSufix)
                 .AnyAsync();
 
-            if (isExists) return null;
+            if (isExists) throw new Exception($"Paymentmethod {paymentMethodIDTO.ServiceName} not found");
 
             var paymentMethod = _mapper.Map<PaymentMethod>(paymentMethodIDTO);
 
@@ -66,7 +66,7 @@ namespace PSP.WebApi.Services
                 .Where(x => x.PaymentMethodId == paymentMethodId && x.MerchantId == merchantId)
                 .FirstOrDefaultAsync();
 
-            if (paymentMethodMerchant  == null) return false;
+            if (paymentMethodMerchant  == null) throw new Exception($"Paymentmethod {paymentMethodId} for merchant {merchantId} not found");
 
             paymentMethodMerchant.IsActive = false;
             await _context.SaveChangesAsync();

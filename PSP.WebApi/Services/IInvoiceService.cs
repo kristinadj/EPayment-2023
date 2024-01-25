@@ -44,7 +44,7 @@ namespace PSP.WebApi.Services
                 .Where(x => x.Code == invoiceIDTO.CurrencyCode)
                 .FirstOrDefaultAsync();
 
-            if (currency == null) return null;
+            if (currency == null) throw new Exception($"Currency with code {invoiceIDTO.CurrencyCode} not found");
 
             var invoice = new Invoice(invoiceIDTO.IssuedToUserId)
             {
@@ -78,7 +78,7 @@ namespace PSP.WebApi.Services
                 .Include(x => x.TransactionLogs)
                 .FirstOrDefaultAsync();
 
-            if (transaction == null) return false;
+            if (transaction == null) throw new Exception($"Transaction for invoice {invoiceId} not found");
 
             transaction.TransactionStatus = transactionStatus;
             transaction.TransactionLogs!.Add(new TransactionLog
@@ -97,15 +97,17 @@ namespace PSP.WebApi.Services
                 .Where(x => x.InvoiceId == invoiceId)
                 .Include(x => x.Transaction)
                 .Include(x => x.Merchant)
-                .ThenInclude(x => x.PaymentMethods)
+                .ThenInclude(x => x!.PaymentMethods)
                 .Include(x => x.Currency)
                 .FirstOrDefaultAsync();
+
+            if (invoice == null) throw new Exception($"Invoice {invoiceId} not found");
 
             var paymentMethod = await _context.PaymentMethods
                 .Where(x => x.PaymentMethodId == paymentMethodId)
                 .FirstOrDefaultAsync();
 
-            if (invoice == null || paymentMethod == null) return null;
+            if (paymentMethod == null) throw new Exception($"PaymentMethod {paymentMethodId} not found");
 
             invoice.Transaction!.PaymentMethodId = paymentMethod.PaymentMethodId;
             await _context.SaveChangesAsync();
@@ -119,7 +121,7 @@ namespace PSP.WebApi.Services
                 .Where(x => x.Code == subscriptionPaymentIDTO.CurrencyCode)
                 .FirstOrDefaultAsync();
 
-            if (currency == null) return null;
+            if (currency == null) throw new Exception($"Currency with code {subscriptionPaymentIDTO.CurrencyCode} not found");
 
             var invoice = new Invoice(subscriptionPaymentIDTO.IssuedToUserId)
             {

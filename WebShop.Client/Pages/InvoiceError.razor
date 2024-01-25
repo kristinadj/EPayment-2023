@@ -32,6 +32,11 @@
                         {
                             @foreach (var merchantOrder in order!.MerchantOrders!)
                             {
+                                <div class="d-flex flex-row pr-3 pb-3">
+                                    <MudText Class="d-flex">
+                                        <b>Web Shop: @merchantOrder!.Merchant!.Name</b>
+                                    </MudText>
+                                </div>
                                 <MudTable Items="@merchantOrder.OrderItems" Elevation="0" Dense="true">
                                     <HeaderContent>
                                         <MudTh><b>Service Name</b></MudTh>
@@ -61,7 +66,7 @@
                                         <b>Total Price: @merchantOrder.OrderItems![0].Item!.Currency!.Symbol @(merchantOrder.OrderItems.Select(x => x.Quantity * x.Item!.Price).Sum().ToString("N2"))</b>
                                     </MudText>
                                 </div>
-                                @if (merchantOrder.Invoice!.InvoiceId == InvoiceId)
+                                @if (merchantOrder.Invoice != null && merchantOrder.Invoice.InvoiceId == InvoiceId)
                                 {
                                     <MudAlert Class="d-flex justify-center" Severity="Severity.Error">Some unexpected error occcurred during payment.</MudAlert>
                                 }
