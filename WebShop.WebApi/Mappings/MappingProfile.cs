@@ -32,8 +32,7 @@ namespace WebShop.WebApi.Mappings
             CreateMap<ShoppingCart, Order>()
                 .ForMember(x => x.OrderStatus, x => x.MapFrom(x => OrderStatus.CREATED))
                 .ForMember(x => x.CreatedTimestamp, x => x.MapFrom(x => DateTime.Now))
-                .ForMember(x => x.OrderItems, x => x.MapFrom(x => x.ShoppingCartItems))
-                .ForMember(x => x.OrderLogs, x => x.MapFrom(x => new List<OrderLog> { new OrderLog { OrderStatus = OrderStatus.CREATED, Timestamp = DateTime.Now } }))
+                .ForMember(x => x.OrderLogs, x => x.MapFrom(x => new List<OrderLog> { new() { OrderStatus = OrderStatus.CREATED, Timestamp = DateTime.Now } }))
                 .ConstructUsing(x => new Order(x.UserId));
 
             CreateMap<ShoppingCartItem, OrderItem>()
@@ -43,9 +42,10 @@ namespace WebShop.WebApi.Mappings
             CreateMap<Order, OrderODTO>()
                 .ConstructUsing(x => new OrderODTO(x.UserId));
 
+            CreateMap<MerchantOrder, MerchantOrderODTO>();
             CreateMap<OrderItem, OrderItemODTO>();
             CreateMap<OrderLog, OrderLogODTO>();
-
+            
             CreateMap<PaymentMethodDTO, PaymentMethod>()
                 .ForMember(x => x.PaymentMethodId, x => x.MapFrom(x => 0))
                 .ForMember(x => x.PspPaymentMethodId, x => x.MapFrom(x => x.PaymentMethodId))

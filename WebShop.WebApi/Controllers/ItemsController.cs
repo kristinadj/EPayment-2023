@@ -22,8 +22,15 @@ namespace WebShop.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ItemODTO>>> GetItems()
         {
-            var result = await _itemService.GetItemsAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _itemService.GetItemsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

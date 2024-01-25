@@ -44,38 +44,58 @@ namespace WebShop.WebApi.Controllers
         [HttpGet("ById/{invoiceId}")]
         public async Task<ActionResult<InvoiceODTO?>> GetById([FromRoute] int invoiceId)
         {
-            var result = await _invoiceService.GetInvoiceByIdAsync(invoiceId);
-            return Ok(result);
+            try
+            {
+                var result = await _invoiceService.GetInvoiceByIdAsync(invoiceId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("{orderId}")]
         public async Task<ActionResult<RedirectUrlDTO>> CreateInvoice([FromRoute] int orderId)
         {
-            var invoice = await _invoiceService.CreateInvoiceAsync(orderId);
-
-            if (invoice == null) return BadRequest();
-
-            await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
-
-            var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
-            pspPayment.InvoiceType = InvoiceType.ORDER;
-            var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
-
-            if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
+            try
             {
-                return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
-            }
+                var invoice = await _invoiceService.CreateInvoiceAsync(orderId);
 
-            return Ok(new RedirectUrlDTO(result!.RedirectUrl));
+                if (invoice == null) return BadRequest();
+
+                await _invoiceService.UpdateInvoiceTransactionStatusasync(invoice.InvoiceId, TransactionStatus.IN_PROGRESS);
+
+                var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
+                pspPayment.InvoiceType = InvoiceType.ORDER;
+                var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
+
+                if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
+                {
+                    return Ok(new RedirectUrlDTO($"/invoice/{invoice.InvoiceId}/error"));
+                }
+
+                return Ok(new RedirectUrlDTO(result!.RedirectUrl));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("UpdatePaymentMethod/{invoiceId};{pspPaymentMethodId}")]
         [AllowAnonymous]
         public async Task<ActionResult<RedirectUrlDTO>> UpdatePaymentMethod([FromRoute] int invoiceId, [FromRoute] int pspPaymentMethodId)
         {
-            await _invoiceService.UpdatePaymentMethodAsync(invoiceId, pspPaymentMethodId);
-            return Ok();
+            try
+            {
+                await _invoiceService.UpdatePaymentMethodAsync(invoiceId, pspPaymentMethodId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
     }
 }

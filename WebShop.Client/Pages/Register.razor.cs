@@ -18,6 +18,9 @@ namespace WebShop.Client.Pages
         [Inject]
         private ISnackbar Snackbar { get; set; }
 
+        [Inject]
+        protected GlobalUserSettings GlobalSettings { get; set; }
+
         private MudForm? form = new();
         private UserIDTO userDTO = new();
         private bool isValid;
@@ -103,6 +106,7 @@ namespace WebShop.Client.Pages
                     }
                     else
                     {
+                        GlobalSettings.UserId = authResult.UserId;
                         NavigationManager.NavigateTo("/plan");
                     }
                 }

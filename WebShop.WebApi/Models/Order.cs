@@ -10,17 +10,13 @@ namespace WebShop.WebApi.Models
         [Key]
         public int OrderId { get; set; }
         public string UserId { get; set; }
-        public int MerchantId { get; set; }
 
         [Column(TypeName = "nvarchar(24)")]
         public OrderStatus OrderStatus { get; set; }
         public DateTime CreatedTimestamp { get; set; }
-        public int? InvoiceId { get; set; }
 
         public User? User { get; set; }
-        public Merchant? Merchant { get; set; }
-        public Invoice? Invoice { get; set; }
-        public ICollection<OrderItem>? OrderItems { get; set; }
+        public ICollection<MerchantOrder>? MerchantOrders { get; set; }
         public ICollection<OrderLog>? OrderLogs { get; set; }
 
         public Order(string userId)

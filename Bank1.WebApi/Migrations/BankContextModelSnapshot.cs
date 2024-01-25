@@ -85,6 +85,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DefaultAccountId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -94,6 +97,9 @@ namespace Bank1.WebApi.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
+                    b.HasIndex("DefaultAccountId")
+                        .IsUnique();
+
                     b.ToTable("BusinessCustomers", "dbo");
 
                     b.HasData(
@@ -101,6 +107,7 @@ namespace Bank1.WebApi.Migrations
                         {
                             BusinessCustomerId = 1,
                             CustomerId = 1,
+                            DefaultAccountId = 1,
                             Password = "0hqo5asTUiTJe/2ZcF3vuA=="
                         });
                 });
@@ -573,7 +580,15 @@ namespace Bank1.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Bank1.WebApi.Models.Account", "DefaultAccount")
+                        .WithOne()
+                        .HasForeignKey("Bank1.WebApi.Models.BusinessCustomer", "DefaultAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Customer");
+
+                    b.Navigation("DefaultAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Card", b =>

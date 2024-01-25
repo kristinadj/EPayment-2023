@@ -21,11 +21,15 @@ namespace PSP.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MerchantODTO>> AddMerchant([FromBody] MerchantIDTO merchant)
         {
-            var result = await _merchantServices.AddMerchantAsync(merchant);
-
-            if (result == null) return BadRequest();
-
-            return Ok(result);
+            try
+            {
+                var result = await _merchantServices.AddMerchantAsync(merchant);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

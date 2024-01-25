@@ -15,7 +15,10 @@ namespace Bank1.WebApi.Models
         [EncryptColumn]
         public string Password { get; set; }
 
+        public int DefaultAccountId { get; set; }
+
         public Customer? Customer { get; set; }
+        public Account? DefaultAccount { get; set; }
 
         public BusinessCustomer(string password)
         {

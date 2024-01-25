@@ -42,26 +42,37 @@ namespace PSP.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> CreateSubscriptionPayment([FromBody] PspSubscriptionPaymentDTO subscriptionPaymentDTO)
         {
-            var merchant = await _merchantService.GetMerchantByIdAsync(subscriptionPaymentDTO.MerchantId);
-            if (merchant == null) return NotFound();
+            try
+            {
+                var merchant = await _merchantService.GetMerchantByIdAsync(subscriptionPaymentDTO.MerchantId);
+                var invoice = await _invoiceService.CreateInvoiceAsync(merchant!, subscriptionPaymentDTO);
 
-            var invoice = await _invoiceService.CreateInvoiceAsync(merchant, subscriptionPaymentDTO);
-            if (invoice == null) return BadRequest();
-
-            var result = _mapper.Map<InvoiceODTO>(subscriptionPaymentDTO);
-            result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice.InvoiceId}/true";
-            return Ok(result);
+                var result = _mapper.Map<InvoiceODTO>(subscriptionPaymentDTO);
+                result.RedirectUrl = $"{_pspAppSettings.ClientUrl}/paymentMethods/{invoice!.InvoiceId}/true";
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("CancelSubscription/{paymentMethodId}/{subscriptionId}")]
         public async Task<ActionResult> CancelSubscription([FromRoute] int paymentMethodId, [FromRoute] string subscriptionId)
         {
-            var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
-            var isSuccess = await _consulHttpClient.PutAsync(paymentMethod!.ServiceName, $"{paymentMethod!.ServiceApiSufix}/SubscriptionPayment/CancelSubscription/{subscriptionId}");
+            try
+            {
+                var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
+                var isSuccess = await _consulHttpClient.PutAsync(paymentMethod!.ServiceName, $"{paymentMethod!.ServiceApiSufix}/SubscriptionPayment/CancelSubscription/{subscriptionId}");
 
-            if (!isSuccess) return BadRequest();
+                if (!isSuccess) return BadRequest("Unexpected error while canceling subscription");
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

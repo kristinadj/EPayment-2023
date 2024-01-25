@@ -22,8 +22,15 @@ namespace WebShop.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<CurrencyODTO>>> GetCurrencies()
         {
-            var result = await _currencyService.GetCurrenciesAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _currencyService.GetCurrenciesAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

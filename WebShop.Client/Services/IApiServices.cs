@@ -1,4 +1,5 @@
-﻿using Base.DTO.Shared;
+﻿using Base.DTO.Output;
+using Base.DTO.Shared;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
@@ -28,8 +29,9 @@ namespace WebShop.Client.Services
         Task<bool> DeleteItemInShoppingCartAsync(int shoppingCartItemId);
         Task<bool> IsSubscriptionPlanValidAsync(string userId);
         Task<UserSubscriptionPlanDetailsODTO?> GetSubscriptionPlanDetailsAsync(string userId);
-        Task<RedirectUrlDTO> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
+        Task<RedirectUrlDTO?> ChooseSubscriptionPlanAsync(UserSubscriptionPlanIDTO userSubscriptionPlanIDTO);
         Task UpdateExternalSubscriptionIdAsync(int invoiceId, string extrenalSubscriptionId);
         Task<bool> CancelSubscriptionAsync(string userId);
+        Task<List<InstitutionODTO>> GetPaymentMethodInstitutionsAsync(int paymentMethodId);
     }
 }

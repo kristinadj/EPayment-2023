@@ -55,9 +55,20 @@ namespace Bank1.WebApi.Services
                 .FirstOrDefaultAsync();
             if (customer == null) return null;
 
-            var account = customer.Customer!.Accounts!
-                .Where(x => x.AccountNumber == transactionIDTO.AccountNumber)
-                .FirstOrDefault();
+            Account? account;
+
+            if (!string.IsNullOrEmpty(transactionIDTO.AccountNumber))
+            {
+                account = customer.Customer!.Accounts!
+                    .Where(x => x.AccountNumber == transactionIDTO.AccountNumber)
+                    .FirstOrDefault();
+            }
+            else
+            {
+                var defaultAccountId = customer.DefaultAccountId;
+                account = customer.Customer!.Accounts!.Where(x => x.AccountId == defaultAccountId).FirstOrDefault();
+            }
+
             if (account == null) return null;
 
             // TODO: Currency conversion
@@ -165,7 +176,7 @@ namespace Bank1.WebApi.Services
                     Timestamp = DateTime.Now
                 });
 
-                isSuccess = false;
+                throw new Exception("Insuffiecient amount on the account");
             }
             else
             {
@@ -196,7 +207,7 @@ namespace Bank1.WebApi.Services
                 .Where(x => x.CurrencyId == transaction.CurrencyId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-            if (currency == null) return false;
+            if (currency == null) throw new Exception($"Currency {transaction.CurrencyId} not found");
 
             var pccTransactionIDTO = new PccTransactionIDTO(currency!.Code, transaction.Description)
             {
@@ -230,11 +241,15 @@ namespace Bank1.WebApi.Services
                     }
 
                     await _context.SaveChangesAsync();
-                    return true;
                 }
             }
+            else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"PCC responded with status code {response.StatusCode} and message {responseContent}");
+            }
 
-            return false;
+            return true;
         }
 
         public async Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url)
@@ -244,10 +259,18 @@ namespace Bank1.WebApi.Services
                 using var client = new HttpClient();
                 var response = await client.PutAsync(url, null);
 
-                if (!response.IsSuccessStatusCode) return null;
+                if (!response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"{url} responded with status code {response.StatusCode} and message {responseContent}");
+                }
 
                 var content = await response.Content.ReadAsStringAsync();
-                if (content == null) return default;
+                if (content == null)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"No response {url}");
+                }
 
                 return JsonSerializer.Deserialize<RedirectUrlDTO>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
@@ -270,17 +293,17 @@ namespace Bank1.WebApi.Services
                 .Where(x => x.Code == transactionIDTO.CurrencyCode)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-            if (currency == null) return null;
+            if (currency == null) throw new Exception($"Currency {transactionIDTO.CurrencyCode} not found");
 
             var isLocalCard = transactionIDTO.PayTransaction!.PanNumber.StartsWith(cardStartNumbers);
-            if (!isLocalCard) return null;
+            if (!isLocalCard) throw new Exception($"Card is not local");
 
             var hashedPanNumber = Converter.HashPanNumber(transactionIDTO.PayTransaction.PanNumber);
             var issuerAccount = await _context.Accounts
                 .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == hashedPanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
                 .FirstOrDefaultAsync();
 
-            if (issuerAccount == null) return null;
+            if (issuerAccount == null) throw new Exception($"Invalid credit card data");
 
             // TODO: Currency conversion
             var transaction = new IssuerTransaction(transactionIDTO.Description)
@@ -324,7 +347,7 @@ namespace Bank1.WebApi.Services
                 .Where(x => x.FromCurrency!.Code == fromCurrency && x.ToCurrency!.Code == toCuurency)
                 .FirstOrDefaultAsync();
 
-            if (exchangeRate == null) return null;
+            if (exchangeRate == null) throw new Exception($"Exhange rate from {fromCurrency} to {toCuurency} not found");
 
             return amount * exchangeRate.Rate;
         }
@@ -343,7 +366,7 @@ namespace Bank1.WebApi.Services
                 .Where(x => x.RecurringTransactionDefinitionId == recurringTransactionDefinitionId)
                 .FirstOrDefaultAsync();
 
-            if (recurringTransactionDefinition == null) return false;
+            if (recurringTransactionDefinition == null) throw new Exception($"RecurringTransactionDefinition {recurringTransactionDefinitionId} not found");
 
             recurringTransactionDefinition.IsCanceled = true;
             await _context.SaveChangesAsync();

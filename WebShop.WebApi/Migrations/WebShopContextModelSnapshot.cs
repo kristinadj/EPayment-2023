@@ -442,6 +442,36 @@ namespace WebShop.WebApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("WebShop.WebApi.Models.MerchantOrder", b =>
+                {
+                    b.Property<int>("MerchantOrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantOrderId"), 1L, 1);
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MerchantOrderId");
+
+                    b.HasIndex("InvoiceId")
+                        .IsUnique()
+                        .HasFilter("[InvoiceId] IS NOT NULL");
+
+                    b.HasIndex("MerchantId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderMerchants", "dbo");
+                });
+
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
                 {
                     b.Property<int>("OrderId")
@@ -453,12 +483,6 @@ namespace WebShop.WebApi.Migrations
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MerchantId")
-                        .HasColumnType("int");
-
                     b.Property<string>("OrderStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(24)");
@@ -468,12 +492,6 @@ namespace WebShop.WebApi.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("OrderId");
-
-                    b.HasIndex("InvoiceId")
-                        .IsUnique()
-                        .HasFilter("[InvoiceId] IS NOT NULL");
-
-                    b.HasIndex("MerchantId");
 
                     b.HasIndex("UserId");
 
@@ -494,7 +512,7 @@ namespace WebShop.WebApi.Migrations
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("MerchantOrderId")
                         .HasColumnType("int");
 
                     b.Property<double>("Price")
@@ -509,7 +527,7 @@ namespace WebShop.WebApi.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("MerchantOrderId");
 
                     b.ToTable("OrderItems", "dbo");
                 });
@@ -815,17 +833,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "61d66c5a-7ba1-413d-b430-9927d277277e",
+                            ConcurrencyStamp = "f102c5c3-6d0b-49f1-a339-3a508c8c2000",
                             Email = "webshopadmin@lawpublishingagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFOsGTYtRwaXUcqC0AGmgxolFAHlU0MGeWhnsV8NniMwXCWvLGfK7IJ1CIOKGoQTbQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEG/YfOnF/jbfI50whU62BoICZACCcT7JSgKXeyShoHxTMhgTT6eCwBzprP7v+zBttw==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "fba7c3eb-6e45-41ee-a2a9-0531ea84ae31",
+                            SecurityStamp = "dd853222-b31f-4b04-8d1f-bb64564b50ae",
                             TwoFactorEnabled = false
                         },
                         new
@@ -833,17 +851,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "f7544ad6-8486-40aa-bed2-90e00d5add1b",
+                            ConcurrencyStamp = "106f44c6-caa8-48e1-a46d-5f0454176102",
                             Email = "agencyadmin@legaldocsagency.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJhTGRpS3lPvgv6RsWlxxY/exmMnr5AGCIqL2FI61/yikHdJtTad7YBNsFE4x+d4qw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB2zRQIwaOKBjmIC3Pf+x1bk/Uc1KrAd91LTugFDfu59o0r8RZHpqlVta1gysti+/Q==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "0b23d78c-b3d9-412a-8ccf-81b1986c99bf",
+                            SecurityStamp = "f59f187c-08d6-49f2-b5b8-295e3d93782a",
                             TwoFactorEnabled = false
                         });
                 });
@@ -983,28 +1001,39 @@ namespace WebShop.WebApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
+            modelBuilder.Entity("WebShop.WebApi.Models.MerchantOrder", b =>
                 {
                     b.HasOne("WebShop.WebApi.Models.Invoice", "Invoice")
                         .WithOne()
-                        .HasForeignKey("WebShop.WebApi.Models.Order", "InvoiceId")
+                        .HasForeignKey("WebShop.WebApi.Models.MerchantOrder", "InvoiceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WebShop.WebApi.Models.Merchant", "Merchant")
-                        .WithMany("Orders")
+                        .WithMany("MerchantOrders")
                         .HasForeignKey("MerchantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebShop.WebApi.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("WebShop.WebApi.Models.Order", "Order")
+                        .WithMany("MerchantOrders")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Invoice");
 
                     b.Navigation("Merchant");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
+                {
+                    b.HasOne("WebShop.WebApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1023,9 +1052,9 @@ namespace WebShop.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WebShop.WebApi.Models.Order", "Order")
+                    b.HasOne("WebShop.WebApi.Models.MerchantOrder", "MerchantOrder")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("MerchantOrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1033,7 +1062,7 @@ namespace WebShop.WebApi.Migrations
 
                     b.Navigation("Item");
 
-                    b.Navigation("Order");
+                    b.Navigation("MerchantOrder");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.OrderLog", b =>
@@ -1141,12 +1170,17 @@ namespace WebShop.WebApi.Migrations
 
                     b.Navigation("Items");
 
-                    b.Navigation("Orders");
+                    b.Navigation("MerchantOrders");
+                });
+
+            modelBuilder.Entity("WebShop.WebApi.Models.MerchantOrder", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("WebShop.WebApi.Models.Order", b =>
                 {
-                    b.Navigation("OrderItems");
+                    b.Navigation("MerchantOrders");
 
                     b.Navigation("OrderLogs");
                 });

@@ -37,11 +37,13 @@ namespace WebShop.WebApi.Services
                 .Where(x => x.Id == userSubscriptionPlanIDTO.UserId && x.Role == Role.BUYER)
                 .AnyAsync();
 
+            if (!isUserValid) throw new Exception($"User {userSubscriptionPlanIDTO.UserId} is not buyer");
+
             var subscriptionPlan = await _context.SubscriptionPlans
                 .Where(x => x.SubscriptionPlanId == userSubscriptionPlanIDTO.SubscriptionPlanId)
                 .FirstOrDefaultAsync();
 
-            if (!isUserValid || subscriptionPlan == null) return null;
+            if (subscriptionPlan == null) throw new Exception($"SubscriptionPlan {userSubscriptionPlanIDTO.SubscriptionPlanId} not found");
 
             var userSubscriptionPlan = new UserSubscriptionPlan(userSubscriptionPlanIDTO.UserId)
             {
@@ -80,7 +82,7 @@ namespace WebShop.WebApi.Services
                 .Include(x => x.SubscriptionPlan)
                 .FirstOrDefaultAsync();
 
-            if (subscriptionPlan == null) return null;
+            if (subscriptionPlan == null) throw new Exception($"SubscriptionPlan for user {userId} not found");
 
             var result = new UserSubscriptionPlanDetailsODTO
             {
@@ -109,7 +111,7 @@ namespace WebShop.WebApi.Services
                 .Where(x => x.InvoiceId == invoiceId && x.SubscriptionPlan!.AutomaticRenewel)
                 .FirstOrDefaultAsync();
 
-            if (userSubscriptionPlan == null) return false;
+            if (userSubscriptionPlan == null) throw new Exception($"UserSubscriptionPlan fro invoice {invoiceId} not found");
 
             userSubscriptionPlan.ExternalSubscriptionId = externalSubscriptionId;
             await _context.SaveChangesAsync();
@@ -132,7 +134,7 @@ namespace WebShop.WebApi.Services
                 .Include(x => x.SubscriptionPlan)
                 .FirstOrDefaultAsync();
 
-            if (userSubscriptionPlan == null) return false;
+            if (userSubscriptionPlan == null) throw new Exception($"UserSubscriptionPlan {userSubscriptionPlanId} not found");
 
             var renewedUserSubscriptionPlan = new UserSubscriptionPlan(userSubscriptionPlan.UserId)
             {

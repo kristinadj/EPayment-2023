@@ -22,6 +22,7 @@ namespace WebShop.Client.Pages
 
         private bool isLoading = false;
         private bool unexpectedError = false;
+        private bool isPaymentInProgress = false;
 
         private InvoiceODTO? invoice;
         private OrderODTO? order;
@@ -35,14 +36,20 @@ namespace WebShop.Client.Pages
             {
                 unexpectedError = true;
             }
-            else if (invoice.InvoiceType == InvoiceType.ORDER)
-            {
-                order = await ApiServices.GetOrderByInvoiceIdAsync(InvoiceId);
-                if (order == null) unexpectedError = true;
-            }
 
             var isSuccess = await ApiServices.UpdateTransactionStatusAsync(invoice!.Transaction!.TransactionId, DTO.Enums.TransactionStatus.COMPLETED);
-            if (!isSuccess) unexpectedError = true;
+            if (!isSuccess)
+            {
+                unexpectedError = true;
+            }
+            else
+            {
+                if (invoice.InvoiceType == InvoiceType.ORDER)
+                {
+                    order = await ApiServices.GetOrderByInvoiceIdAsync(InvoiceId);
+                    if (order == null) unexpectedError = true;
+                }
+            }
 
             if (!string.IsNullOrEmpty(ExternalSubscriptionId))
             {
@@ -50,6 +57,19 @@ namespace WebShop.Client.Pages
             }
 
             isLoading = false;
+        }
+
+        private async Task OnClickPayAsync(int merchantOrderId)
+        {
+            isPaymentInProgress = true;
+            var result = await ApiServices.CreateInvoiceAsync(merchantOrderId);
+
+            if (result != null)
+            {
+                NavigationManager.NavigateTo(result.RedirectUrl);
+            }
+
+            isPaymentInProgress = false;
         }
 
         private void OnClickContinueShopping()

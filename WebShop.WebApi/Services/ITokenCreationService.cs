@@ -35,7 +35,7 @@ namespace WebShop.WebApi.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            return new AuthenticationODTO(tokenHandler.WriteToken(token))
+            return new AuthenticationODTO(user.Id, tokenHandler.WriteToken(token))
             {
                 Expiration = expiration
             };

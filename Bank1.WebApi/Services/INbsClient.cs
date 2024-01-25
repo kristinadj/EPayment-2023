@@ -33,15 +33,12 @@ namespace Bank1.WebApi.Services
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-
-                try
-                {
-                    qrCodeODTO = JsonSerializer.Deserialize<QrCodeODTO>(responseContent);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
+                qrCodeODTO = JsonSerializer.Deserialize<QrCodeODTO>(responseContent);
+            }
+            else
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"NBS API for generating QR code responded with status code {response.StatusCode} and message {responseContent}");
             }
 
             return qrCodeODTO;
@@ -55,9 +52,6 @@ namespace Bank1.WebApi.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
             var validateODTO = JsonSerializer.Deserialize<QrCodeODTO>(responseContent);
-
-            if (validateODTO == null) return null;
-
             return validateODTO;
         }
     }

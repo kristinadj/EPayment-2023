@@ -18,21 +18,31 @@ namespace WebShop.WebApi.Controllers
         }
 
         [HttpGet("ById/{orderId}")]
-        public async Task<ActionResult<List<ItemODTO>>> GetById([FromRoute] int orderId)
+        public async Task<ActionResult<OrderODTO>> GetById([FromRoute] int orderId)
         {
-            var result = await _orderService.GetOrderByIdAsync(orderId);
-            if (result == null) return NotFound();
-
-            return Ok(result);
+            try
+            {
+                var result = await _orderService.GetOrderByIdAsync(orderId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("ByInvoiceId/{invoiceId}")]
-        public async Task<ActionResult<List<ItemODTO>>> GetByInvoiceId([FromRoute] int invoiceId)
+        public async Task<ActionResult<OrderODTO>> GetByInvoiceId([FromRoute] int invoiceId)
         {
-            var result = await _orderService.GetOrderByInvoiceIdAsync(invoiceId);
-            if (result == null) return NotFound();
-
-            return Ok(result);
+            try
+            {
+                var result = await _orderService.GetOrderByInvoiceIdAsync(invoiceId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("Cancel/{orderId}")]
@@ -41,9 +51,6 @@ namespace WebShop.WebApi.Controllers
             try
             {
                 var result = await _orderService.CancelOrderAsync(orderId);
-
-                if (result == null) return BadRequest();
-
                 return Ok(result);
             }
             catch (Exception ex)

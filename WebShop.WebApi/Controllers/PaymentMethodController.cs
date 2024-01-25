@@ -22,8 +22,15 @@ namespace WebShop.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PaymentMethodODTO>>> GetPaymentMethods()
         {
-            var result = await _paymentMethodService.GetPaymentMethodsAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _paymentMethodService.GetPaymentMethodsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

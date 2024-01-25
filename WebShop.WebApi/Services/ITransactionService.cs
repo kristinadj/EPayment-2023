@@ -14,12 +14,10 @@ namespace WebShop.WebApi.Services
     public class TransactionService : ITransactionService
     {
         private readonly WebShopContext _context;
-        private readonly IMapper _mapper;
 
-        public TransactionService(WebShopContext context, IMapper mapper)
+        public TransactionService(WebShopContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<bool> UpdateTransactionStatusAsync(int transactionId, TransactionStatus transactionStatus)
@@ -30,7 +28,7 @@ namespace WebShop.WebApi.Services
                 .Include(x => x.TransactionLogs)
                 .FirstOrDefaultAsync();
 
-            if (transaction == null) return false;
+            if (transaction == null) throw new Exception($"Transaction {transactionId} not found");
 
             transaction.TransactionStatus = transactionStatus;
             transaction.TransactionLogs!.Add(new TransactionLog
@@ -42,29 +40,49 @@ namespace WebShop.WebApi.Services
             if (transaction.Invoice!.InvoiceType == InvoiceType.ORDER)
             {
                 var order = await _context.Orders
-                .Where(x => x.InvoiceId == transaction.Invoice!.InvoiceId)
-                .Include(x => x.OrderLogs)
-                .FirstOrDefaultAsync();
+                    .Where(x => x.MerchantOrders!.Any(x => x.InvoiceId == transaction.Invoice!.InvoiceId))
+                    .Include(x => x.OrderLogs)
+                    .Include(x => x.MerchantOrders)!
+                    .ThenInclude(x => x.Invoice)
+                    .ThenInclude(x => x!.Transaction)
+                    .FirstOrDefaultAsync();
 
-                if (order == null) return false;
+                if (order == null) throw new Exception($"Order for invoice {transaction.Invoice!.InvoiceId} not found");
 
-                if (transactionStatus == TransactionStatus.COMPLETED)
+                if (order.OrderStatus == OrderStatus.CREATED || order.OrderStatus != OrderStatus.PARTIALLY_COMPLETED)
                 {
-                    order.OrderStatus = OrderStatus.COMPLETED;
-                    order.OrderLogs!.Add(new OrderLog
+                    if (transactionStatus == TransactionStatus.COMPLETED)
                     {
-                        OrderStatus = OrderStatus.COMPLETED,
-                        Timestamp = DateTime.Now
-                    });
-                }
-                else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
-                {
-                    order.OrderStatus = OrderStatus.INVALID;
-                    order.OrderLogs!.Add(new OrderLog
+                        var isCompleted = order.MerchantOrders!.All(x => x.Invoice != null && x.Invoice.Transaction!.TransactionStatus == TransactionStatus.COMPLETED);
+
+                        if (isCompleted)
+                        {
+                            order.OrderStatus = OrderStatus.COMPLETED;
+                            order.OrderLogs!.Add(new OrderLog
+                            {
+                                OrderStatus = OrderStatus.COMPLETED,
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                        else
+                        {
+                            order.OrderStatus = OrderStatus.PARTIALLY_COMPLETED;
+                            order.OrderLogs!.Add(new OrderLog
+                            {
+                                OrderStatus = OrderStatus.PARTIALLY_COMPLETED,
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
+                    else if (transactionStatus == TransactionStatus.FAIL || transactionStatus == TransactionStatus.ERROR)
                     {
-                        OrderStatus = OrderStatus.INVALID,
-                        Timestamp = DateTime.Now
-                    });
+                        order.OrderStatus = OrderStatus.INVALID;
+                        order.OrderLogs!.Add(new OrderLog
+                        {
+                            OrderStatus = OrderStatus.INVALID,
+                            Timestamp = DateTime.Now
+                        });
+                    }
                 }
             }
             

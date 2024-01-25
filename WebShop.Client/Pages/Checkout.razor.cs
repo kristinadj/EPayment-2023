@@ -41,25 +41,18 @@ namespace WebShop.Client.Pages
                 Snackbar.Add("Order successfully canceled", Severity.Success);
                 NavigationManager.NavigateTo("/shoppingCart");
             }
-            else
-            {
-                Snackbar.Add("Error", Severity.Error);
-            }
         }
 
-        private async Task OnClickPayAsync()
+        private async Task OnClickPayAsync(int merchantOrderId)
         {
             isPaymentInProgress = true;
-            var result = await ApiServices.CreateInvoiceAsync(OrderId);
+            var result = await ApiServices.CreateInvoiceAsync(merchantOrderId);
 
             if (result != null)
             {
                 NavigationManager.NavigateTo(result.RedirectUrl);
             }
-            else
-            {
-                Snackbar.Add("Error", Severity.Error);
-            }
+
             isPaymentInProgress = false;
         }
     }

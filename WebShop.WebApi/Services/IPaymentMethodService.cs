@@ -9,7 +9,7 @@ namespace WebShop.WebApi.Services
 {
     public interface IPaymentMethodService
     {
-        Task<PaymentMethod?> GetPaymentMethodById(int id);
+        Task<PaymentMethod?> GetPaymentMethodByIdAsync(int id);
         Task<List<PaymentMethodODTO>> GetPaymentMethodsAsync();
         Task ImportFromPspAsync(List<PaymentMethodDTO> paymentMethods);
     }
@@ -25,7 +25,7 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<PaymentMethod?> GetPaymentMethodById(int id)
+        public async Task<PaymentMethod?> GetPaymentMethodByIdAsync(int id)
         {
             return await _context.PaymentMethods
                 .Where(x => x.PaymentMethodId == id)

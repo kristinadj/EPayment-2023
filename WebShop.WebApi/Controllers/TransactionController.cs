@@ -25,8 +25,6 @@ namespace WebShop.WebApi.Controllers
             try
             {
                 var isSuccess = await _transactionService.UpdateTransactionStatusAsync(transactionId, transactionStatus);
-                if (!isSuccess) return BadRequest();
-
                 return Ok();
             }
             catch (Exception ex)

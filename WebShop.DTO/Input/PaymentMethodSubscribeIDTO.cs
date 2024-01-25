@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace WebShop.DTO.Input
+﻿namespace WebShop.DTO.Input
 {
     public class PaymentMethodSubscribeIDTO
     {
@@ -8,6 +6,8 @@ namespace WebShop.DTO.Input
         public int PaymentMethodId { get; set; }
         public string Code { get; set; }
         public string Secret { get; set; }
+
+        public int? InstitutionId { get; set; }
 
         public PaymentMethodSubscribeIDTO(string userId, string code, string secret)
         {

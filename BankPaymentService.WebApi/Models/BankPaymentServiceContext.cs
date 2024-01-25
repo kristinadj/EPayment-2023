@@ -79,10 +79,6 @@ namespace BankPaymentService.WebApi.Models
                 new Bank("Capital Bank", "https://localhost:7130/api") { BankId = 2, ExternalBankId = 1 }
                 );
 
-            // Merchant
-            builder.Entity<Merchant>().HasData(
-                new Merchant("105-0000000000000-29", "LPAPassword5!") { MerchantId = 1, PaymentServiceMerchantId = 2, BankMerchantId = 1, BankId = 1 });
-
             #endregion
         }
     }

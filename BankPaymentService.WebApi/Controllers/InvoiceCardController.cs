@@ -21,13 +21,20 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<PaymentInstructionsODTO>> CreateInvoice([FromBody] PaymentRequestIDTO paymentRequestDTO)
         {
-            var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
-            if (invoice == null) return BadRequest();
+            try
+            {
+                var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
+                if (invoice == null) return BadRequest();
 
-            var paymentInstructions = await _bankService.SendInvoiceToBankAsync(invoice, paymentRequestDTO, false);
-            if (paymentInstructions == null) return BadRequest();
+                var paymentInstructions = await _bankService.SendInvoiceToBankAsync(invoice, paymentRequestDTO, false);
+                if (paymentInstructions == null) return BadRequest();
 
-            return Ok(paymentInstructions);
+                return Ok(paymentInstructions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -12,9 +12,9 @@ namespace WebShop.Client.Authentication
 {
     public interface IAuthService
     {
-        Task<AuthenticationODTO> Login(AuthenticateIDTO model);
-        Task Logout();
         Task<AuthenticationODTO?> Register(UserIDTO model);
+        Task<AuthenticationODTO?> Login(AuthenticateIDTO model);
+        Task Logout();
     }
 
     public class AuthService : IAuthService
@@ -23,11 +23,11 @@ namespace WebShop.Client.Authentication
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
 
-        public AuthService(HttpClient httpClient,
+        public AuthService(IHttpClientFactory httpClientFactory,
                            AuthenticationStateProvider authenticationStateProvider,
                            ILocalStorageService localStorage)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("WebShopAPI");
             _authenticationStateProvider = authenticationStateProvider;
             _localStorage = localStorage;
         }
@@ -37,18 +37,20 @@ namespace WebShop.Client.Authentication
             var content = JsonSerializer.Serialize(model);
             var response = await _httpClient.PostAsync("api/Users/Authenticate", new StringContent(content, Encoding.UTF8, "application/json"));
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+            if (response.IsSuccessStatusCode)
+            {
+                var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
+                if (authResult == null)
+                    return null;
 
-            var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
-            if (authResult == null)
-                return null;
+                await _localStorage.SetItemAsync("authToken", authResult.Token);
+                ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(model.Email);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Token);
 
-            await _localStorage.SetItemAsync("authToken", authResult.Token);
-            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(model.Email);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Token);
+                return authResult;
+            }
 
-            return authResult;
+            return null;
         }
 
         public async Task Logout()

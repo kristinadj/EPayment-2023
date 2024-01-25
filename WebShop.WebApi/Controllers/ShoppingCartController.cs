@@ -24,17 +24,29 @@ namespace WebShop.WebApi.Controllers
         [HttpGet("ByUser/{userId}")]
         public async Task<ActionResult<ShoppingCartODTO>> GetShoppingCart([FromRoute] string userId)
         {
-            var result = await _shoppingCartService.GetShoppingCartByUserAsync(userId);
-            return Ok(result);
+            try
+            {
+                var result = await _shoppingCartService.GetShoppingCartByUserAsync(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Checkout/{shoppingCartId}")]
         public async Task<ActionResult<OrderODTO?>> Checkout([FromRoute] int shoppingCartId)
         {
-            var result = await _orderService.CreateOrderAsync(shoppingCartId);
-            if (result == null) return BadRequest();
-
-            return Ok(result);
+            try
+            {
+                var result = await _orderService.CreateOrderAsync(shoppingCartId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }       
         }
     }
 }

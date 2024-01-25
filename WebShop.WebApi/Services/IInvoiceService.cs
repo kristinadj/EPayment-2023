@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Base.DTO.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.Xml;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
+using InvoiceType = Base.DTO.Enums.InvoiceType;
+using TransactionLog = WebShop.WebApi.Models.TransactionLog;
 
 namespace WebShop.WebApi.Services
 {
@@ -29,21 +31,22 @@ namespace WebShop.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<InvoiceODTO?> CreateInvoiceAsync(int orderId)
+        public async Task<InvoiceODTO?> CreateInvoiceAsync(int merchantOrderId)
         {
-            var order = await _context.Orders
-                .Where(x => x.OrderId == orderId && x.OrderStatus == OrderStatus.CREATED)
+            var merchantOrder = await _context.MerchantOrders
+                .Where(x => x.MerchantOrderId == merchantOrderId && (x.Order!.OrderStatus == OrderStatus.CREATED || x.Order.OrderStatus == OrderStatus.PARTIALLY_COMPLETED))
+                .Include(x => x.Order)
                 .Include(x => x.OrderItems)
                 .FirstOrDefaultAsync();
 
-            if (order == null) return null;
+            if (merchantOrder == null) throw new Exception($"MerchantOrder {merchantOrderId} not found");
 
-            var invoice = new Invoice(order.UserId)
+            var invoice = new Invoice(merchantOrder.Order!.UserId)
             {
                 InvoiceType = InvoiceType.ORDER,
-                MerchantId = order.MerchantId,
-                TotalPrice = order.OrderItems!.Select(x => x.Quantity * x.Price).Sum(),
-                CurrencyId = order.OrderItems!.Select(x => x.CurrencyId).FirstOrDefault(),
+                MerchantId = merchantOrder.MerchantId,
+                TotalPrice = merchantOrder.OrderItems!.Select(x => x.Quantity * x.Price).Sum(),
+                CurrencyId = merchantOrder.OrderItems!.Select(x => x.CurrencyId).FirstOrDefault(),
                 Transaction = new Transaction
                 {
                     CreatedTimestamp = DateTime.Now,
@@ -59,7 +62,7 @@ namespace WebShop.WebApi.Services
                 },
             };
 
-            order.Invoice = invoice;
+            merchantOrder.Invoice = invoice;
             await _context.SaveChangesAsync();
 
             return await _context.Invoices
@@ -72,9 +75,9 @@ namespace WebShop.WebApi.Services
         {
             var subscriptionPlan = await _context.SubscriptionPlans
                 .Where(x => x.SubscriptionPlanId == userSubscripptionPlan.SubscriptionPlanId)
-                .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
-            if (subscriptionPlan == null) return null;
+            if (subscriptionPlan == null) throw new Exception($"SubscriptionPlan {userSubscripptionPlan.SubscriptionPlanId} not found");
 
             var merchant = await _context.Merchants
                 .Where(x => x.IsMasterMerchant)
@@ -137,7 +140,7 @@ namespace WebShop.WebApi.Services
                 .Include(x => x.TransactionLogs)
                 .FirstOrDefaultAsync();
 
-            if (transaction == null) return;
+            if (transaction == null) throw new Exception($"Transaction for invocie {invoiceId} not found");
 
             transaction.TransactionStatus = transactionStatus;
             transaction.TransactionLogs!.Add(new TransactionLog
