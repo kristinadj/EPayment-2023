@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.Xml;
 using WebShop.DTO.Enums;
 using WebShop.DTO.Output;
 using WebShop.WebApi.Models;
@@ -18,6 +17,8 @@ namespace WebShop.WebApi.Services
         Task UpdateInvoiceTransactionStatusasync(int invoiceId, TransactionStatus transactionStatus);
         Task<bool> UpdatePaymentMethodAsync(int invoiceId, int pspPaymentMethodId);
         Task<PaymentMethod?> GetPaymentMethodByInvoiceIdAsync(int invoiceId);
+        Task<List<InvoiceODTO>> GetInvoicesByBuyerIdAsync(string userId);
+        Task<List<InvoiceODTO>> GetInvoicesByMerchantIdAsync(string userId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -123,6 +124,64 @@ namespace WebShop.WebApi.Services
                 .Where(x => x.InvoiceId == invoiceId)
                 .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<InvoiceODTO>> GetInvoicesByBuyerIdAsync(string userId)
+        {
+            var invoices = await _context.Invoices
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.Transaction!.CreatedTimestamp)
+                .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            foreach (var invoice in invoices)
+            {
+                if (invoice.InvoiceType == InvoiceType.ORDER)
+                {
+                    invoice.MerchantOrder = await _context.MerchantOrders
+                        .Where(x => x.InvoiceId == invoice.InvoiceId)
+                        .ProjectTo<MerchantOrderODTO>(_mapper.ConfigurationProvider)
+                        .FirstOrDefaultAsync();
+                }
+                else if (invoice.InvoiceType == InvoiceType.SUBSCRIPTION)
+                {
+                    invoice.UserSubscriptionPlan = await _context.UserSubscriptionPlans
+                        .Where(x => x.InvoiceId == invoice.InvoiceId)
+                        .ProjectTo<UserSubscriptionPlanODTO>(_mapper.ConfigurationProvider)
+                        .FirstOrDefaultAsync();
+                }
+            }
+
+            return invoices;
+        }
+
+        public async Task<List<InvoiceODTO>> GetInvoicesByMerchantIdAsync(string userId)
+        {
+            var invoices = await _context.Invoices
+                .Where(x => x.Merchant!.UserId == userId)
+                .OrderByDescending(x => x.Transaction!.CreatedTimestamp)
+                .ProjectTo<InvoiceODTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            foreach (var invoice in invoices)
+            {
+                if (invoice.InvoiceType == InvoiceType.ORDER)
+                {
+                    invoice.MerchantOrder = await _context.MerchantOrders
+                        .Where(x => x.InvoiceId == invoice.InvoiceId)
+                        .ProjectTo<MerchantOrderODTO>(_mapper.ConfigurationProvider)
+                        .FirstOrDefaultAsync();
+                }
+                else if (invoice.InvoiceType == InvoiceType.SUBSCRIPTION)
+                {
+                    invoice.UserSubscriptionPlan = await _context.UserSubscriptionPlans
+                        .Where(x => x.InvoiceId == invoice.InvoiceId)
+                        .ProjectTo<UserSubscriptionPlanODTO>(_mapper.ConfigurationProvider)
+                        .FirstOrDefaultAsync();
+                }
+            }
+
+            return invoices;
         }
 
         public async Task<PaymentMethod?> GetPaymentMethodByInvoiceIdAsync(int invoiceId)

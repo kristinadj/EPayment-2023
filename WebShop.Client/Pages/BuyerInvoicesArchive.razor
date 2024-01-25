@@ -1,0 +1,74 @@
+﻿@page "/buyerInvoicesArchive"
+
+<MudPaper Elevation="0" Class="d-flex flex-column gap-2 ma-4">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-center">
+            <MudProgressCircular Indeterminate="true" />
+        </div>
+    }
+    else
+    {
+         <MudDataGrid Items="@invoices" Class="pa-3" Elevation="0" Dense="true">
+             <Columns>
+                 <HierarchyColumn/>
+                 <PropertyColumn Property="x => x.InvoiceId" Title="Order ID"></PropertyColumn>
+                 <TemplateColumn Title="Merchant">
+                     <CellTemplate>@context.Item.Merchant!.Name</CellTemplate>
+                 </TemplateColumn>
+                <PropertyColumn Property="x => x.Timestamp" Title="Created"></PropertyColumn>
+                <TemplateColumn Title="Type">
+                     <CellTemplate>@context.Item.InvoiceType.ToString()</CellTemplate>
+                 </TemplateColumn>
+                 <TemplateColumn Title="Total Price">
+                     <CellTemplate>@context.Item.Currency!.Symbol @context.Item.TotalPrice.ToString("N2")</CellTemplate>
+                 </TemplateColumn>
+                <TemplateColumn Title="Status">
+                     <CellTemplate>@context.Item.Transaction!.TransactionStatus</CellTemplate>
+                 </TemplateColumn>
+                 <TemplateColumn Title="Payment Method">
+                     <CellTemplate>
+                        @if (context.Item.Transaction!.PaymentMethod != null)
+                        {
+                            <p>@context.Item.Transaction.PaymentMethod.Name</p>
+                        }
+                        else
+                        {
+                            <p>None</p>
+                        }
+                    </CellTemplate>
+                 </TemplateColumn>
+             </Columns>
+             <ChildRowContent>
+                 <MudCard>
+                     <MudCardContent>
+                        @if (context.Item.InvoiceType == Base.DTO.Enums.InvoiceType.ORDER)
+                        {
+                            <MudTable Items="@context.Item.MerchantOrder!.OrderItems" Elevation="0" Dense="true">
+                                <HeaderContent>
+                                    <MudTh><b>Service Name</b></MudTh>
+                                    <MudTh><b>Quantity</b></MudTh>
+                                    <MudTh><b>Price</b></MudTh>
+                                </HeaderContent>
+                                <RowTemplate Context="merchantOrderContext">
+                                    <MudTd DataLabel="Service Name">@merchantOrderContext.Item!.Name</MudTd>
+                                    <MudTd DataLabel="Quantity">x @merchantOrderContext!.Quantity</MudTd>
+                                    <MudTd DataLabel="Price">@merchantOrderContext.Item!.Currency!.Symbol @merchantOrderContext.Item!.Price.ToString("N2")</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                        else if (context.Item.InvoiceType == Base.DTO.Enums.InvoiceType.SUBSCRIPTION)
+                        {
+                            <p><b>Subscription Plan: </b> @context.Item.UserSubscriptionPlan!.SubscriptionPlan!.Name</p>
+                            <p><b>Description: </b> @context.Item.UserSubscriptionPlan!.SubscriptionPlan!.Description</p>
+                            <p><b>Price: </b>  @context.Item.UserSubscriptionPlan!.SubscriptionPlan!.Currency!.Symbol @context.Item.UserSubscriptionPlan!.SubscriptionPlan!.Price.ToString("N2")</p>
+                            <p><b>Start: </b> @context.Item.UserSubscriptionPlan!.StartTimestamp</p>
+                            <p><b>End: </b> @context.Item.UserSubscriptionPlan!.EndTimestamp</p>
+                            <p><b>Automatic Renewel: </b> @(@context.Item.UserSubscriptionPlan!.SubscriptionPlan!.AutomaticRenewel ? "Yes" : "No")</p>
+                        }
+                    </MudCardContent>
+                </MudCard>
+             </ChildRowContent>
+         </MudDataGrid>
+    }
+</MudPaper>

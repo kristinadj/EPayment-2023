@@ -58,6 +58,16 @@ namespace WebShop.Client.Shared
             Navigation!.NavigateTo("/logout");
         }
 
+        private void OnClickBuyerInvoicesArchive(MouseEventArgs e)
+        {
+            Navigation!.NavigateTo("/buyerInvoicesArchive");
+        }
+
+        private void OnClickMerchantInvoicesArchive(MouseEventArgs e)
+        {
+            Navigation!.NavigateTo("/merchantInvoicesArchive");
+        }
+
         private async Task OnClickCancelSubscriptionAsync()
         {
             var isSuccess = await ApiServices.CancelSubscriptionAsync(GlobalSettings.UserId!);

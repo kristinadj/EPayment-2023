@@ -45,6 +45,34 @@ namespace WebShop.WebApi.Controllers
             }
         }
 
+        [HttpGet("ByBuyerId/{userId}")]
+        public async Task<ActionResult<List<OrderODTO>>> GetBuyerOrders([FromRoute] string userId)
+        {
+            try
+            {
+                var orders = await _orderService.GetOrdersByBuyerIdAsync(userId);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ByMerchantId/{userId}")]
+        public async Task<ActionResult<List<MerchantOrderODTO>>> GetMerchantOrders([FromRoute] string userId)
+        {
+            try
+            {
+                var orders = await _orderService.GetOrdersByMerchantIdAsync(userId);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("Cancel/{orderId}")]
         public async Task<ActionResult> CancelOrder([FromRoute] int orderId)
         {
