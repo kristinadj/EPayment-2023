@@ -401,5 +401,43 @@ namespace WebShop.Client.Services
 
             return data;
         }
+
+        public async Task<List<InvoiceODTO>> GetBuyerInvoicesAsync(string userId)
+        {
+            List<InvoiceODTO> data = new();
+
+            var response = await _httpClient.GetAsync($"api/Invoice/ByBuyerId/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<InvoiceODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
+            }
+
+            return data;
+        }
+
+        public async Task<List<InvoiceODTO>> GetMerchantInvoicesAsync(string userId)
+        {
+            List<InvoiceODTO> data = new();
+
+            var response = await _httpClient.GetAsync($"api/Invoice/ByMerchantId/{userId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<List<InvoiceODTO>>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
+            }
+
+            return data;
+        }
     }
 }

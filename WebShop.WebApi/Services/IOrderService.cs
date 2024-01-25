@@ -12,6 +12,8 @@ namespace WebShop.WebApi.Services
         Task<OrderODTO?> GetOrderByInvoiceIdAsync(int invoiceId);
         Task<OrderODTO?> CreateOrderAsync(int shoppingCartId);
         Task<OrderODTO?> CancelOrderAsync(int orderId);
+        Task<List<OrderODTO>> GetOrdersByBuyerIdAsync(string userId);
+        Task<List<MerchantOrderODTO>> GetOrdersByMerchantIdAsync(string userId);
     }
 
     public class OrderService : IOrderService
@@ -119,6 +121,24 @@ namespace WebShop.WebApi.Services
                 .Where(x => x.MerchantOrders!.Any(x => x.InvoiceId == invoiceId))
                 .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<OrderODTO>> GetOrdersByBuyerIdAsync(string userId)
+        {
+            return await _context.Orders
+                .Where(x => x.UserId == userId)
+                .ProjectTo<OrderODTO>(_mapper.ConfigurationProvider)
+                .OrderByDescending(x => x.CreatedTimestamp)
+                .ToListAsync();
+        }
+
+        public async Task<List<MerchantOrderODTO>> GetOrdersByMerchantIdAsync(string userId)
+        {
+            return await _context.MerchantOrders
+               .Where(x => x.Merchant!.UserId == userId)
+               .OrderByDescending(x => x.Order!.MerchantOrders)
+               .ProjectTo<MerchantOrderODTO>(_mapper.ConfigurationProvider)
+               .ToListAsync();
         }
     }
 }

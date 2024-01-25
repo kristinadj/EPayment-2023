@@ -97,5 +97,33 @@ namespace WebShop.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("ByBuyerId/{userId}")]
+        public async Task<ActionResult<List<InvoiceODTO>>> GetBuyerInvoices([FromRoute] string userId)
+        {
+            try
+            {
+                var invoices = await _invoiceService.GetInvoicesByBuyerIdAsync(userId);
+                return Ok(invoices);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ByMerchantId/{userId}")]
+        public async Task<ActionResult<List<InvoiceODTO>>> GetMerchantInvoices([FromRoute] string userId)
+        {
+            try
+            {
+                var invoices = await _invoiceService.GetInvoicesByMerchantIdAsync(userId);
+                return Ok(invoices);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

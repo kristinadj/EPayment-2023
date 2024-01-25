@@ -44,8 +44,8 @@
                             <hr style="border-left: 3px solid white; height:100%; color: white;">
                         }
                     }
-                    <MudTooltip Text="Orders Archive">
-                        <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Color="Color.Inherit" />
+                    <MudTooltip Text="Invoices Archive">
+                        <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Color="Color.Inherit" OnClick="OnClickBuyerInvoicesArchive" />
                     </MudTooltip>
                     @if (GlobalSettings.ShoppingCartItemsCount != 0)
                     {
@@ -61,6 +61,11 @@
                             <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="OnClickShoppingCart" Color="Color.Inherit" />
                         </MudTooltip>
                     }
+                </AuthorizeView>
+                <AuthorizeView Roles="MERCHANT" Context="merchantContext">
+                    <MudTooltip Text="Invoices Archive">
+                        <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Color="Color.Inherit" OnClick="OnClickMerchantInvoicesArchive" />
+                    </MudTooltip>
                 </AuthorizeView>
                 <MudTooltip Text="Logout">
                     <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="OnClickLogout" Color="Color.Inherit" />

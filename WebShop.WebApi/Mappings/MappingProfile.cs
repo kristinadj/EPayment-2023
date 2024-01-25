@@ -15,10 +15,12 @@ namespace WebShop.WebApi.Mappings
             CreateMap<UserIDTO, User>()
                 .ForMember(d => d.UserName, s => s.MapFrom(x => x.Email))
                 .ConstructUsing(x => new User($"{x.FirstName} {x.LastName}"));
+            CreateMap<User, UserODTO>();
 
             CreateMap<Currency, CurrencyODTO>();
 
             CreateMap<SubscriptionPlan, SubscriptionPlanODTO>();
+            CreateMap<UserSubscriptionPlan, UserSubscriptionPlanODTO>();
 
             CreateMap<Item, ItemODTO>();
 

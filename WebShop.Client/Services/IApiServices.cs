@@ -33,5 +33,7 @@ namespace WebShop.Client.Services
         Task UpdateExternalSubscriptionIdAsync(int invoiceId, string extrenalSubscriptionId);
         Task<bool> CancelSubscriptionAsync(string userId);
         Task<List<InstitutionODTO>> GetPaymentMethodInstitutionsAsync(int paymentMethodId);
+        Task<List<InvoiceODTO>> GetBuyerInvoicesAsync(string userId);
+        Task<List<InvoiceODTO>> GetMerchantInvoicesAsync(string userId);
     }
 }
