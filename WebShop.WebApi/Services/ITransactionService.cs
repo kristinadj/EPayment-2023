@@ -9,6 +9,7 @@ namespace WebShop.WebApi.Services
     public interface ITransactionService
     {
         Task<bool> UpdateTransactionStatusAsync(int transactionId, TransactionStatus transactionStatus);
+        Task<List<Transaction>> GetTransactionsCreatedBeforeGivenDateTimeAsync(DateTime toDateTime);
     }
 
     public class TransactionService : ITransactionService
@@ -18,6 +19,13 @@ namespace WebShop.WebApi.Services
         public TransactionService(WebShopContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<Transaction>> GetTransactionsCreatedBeforeGivenDateTimeAsync(DateTime toDateTime)
+        {
+            return await _context.Transactions
+                .Where(x => x.CreatedTimestamp < toDateTime && (x.TransactionStatus == TransactionStatus.CREATED || x.TransactionStatus == TransactionStatus.IN_PROGRESS))
+                .ToListAsync();
         }
 
         public async Task<bool> UpdateTransactionStatusAsync(int transactionId, TransactionStatus transactionStatus)
@@ -80,6 +88,15 @@ namespace WebShop.WebApi.Services
                         order.OrderLogs!.Add(new OrderLog
                         {
                             OrderStatus = OrderStatus.INVALID,
+                            Timestamp = DateTime.Now
+                        });
+                    }
+                    else if (transactionStatus == TransactionStatus.EXPIRED)
+                    {
+                        order.OrderStatus = OrderStatus.EXPIRED;
+                        order.OrderLogs!.Add(new OrderLog
+                        {
+                            OrderStatus = OrderStatus.EXPIRED,
                             Timestamp = DateTime.Now
                         });
                     }

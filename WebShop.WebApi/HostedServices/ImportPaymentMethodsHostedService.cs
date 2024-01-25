@@ -24,8 +24,6 @@ namespace WebShop.WebApi.HostedServices
             var pspAppSettings = scope.ServiceProvider.GetService<IOptions<PspAppSettings>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<ImportPaymentMethodsHostedService>>();
 
-            
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var now = DateTime.UtcNow;

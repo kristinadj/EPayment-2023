@@ -66,6 +66,7 @@ builder.Services.AddConsul();
 #region Services
 
 builder.Services.AddHostedService<ImportPaymentMethodsHostedService>();
+builder.Services.AddHostedService<UpdateExpiredTransactionStatusHostedService>();
 
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
 

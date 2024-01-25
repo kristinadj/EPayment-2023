@@ -2,6 +2,6 @@
 {
     public enum TransactionStatus
     {
-        CREATED, IN_PROGRESS, COMPLETED, FAIL, ERROR
+        CREATED, IN_PROGRESS, COMPLETED, FAIL, ERROR, EXPIRED
     }
 }
