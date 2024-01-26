@@ -38,10 +38,16 @@ namespace Bank1.Client.Pages
             var result = await ApiServices.PayTransactionAsync(request);
             if (result == null)
             {
-                Snackbar.Add("Unexpected error occurred", Severity.Error);
-                isLoading = false;
+                await Task.Delay(2000);
+                result = await ApiServices.UpdateTransactionFailedAsync(TransactionId);
+                if (result == null)
+                {
+                    Snackbar.Add("Unexpected error occurred", Severity.Error);
+                    isLoading = false;
+                }
             }
-            else
+            
+            if (result != null)
             {
                 NavigationManager.NavigateTo(result.RedirectUrl);
             }

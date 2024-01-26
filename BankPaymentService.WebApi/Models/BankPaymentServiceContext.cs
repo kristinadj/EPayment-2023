@@ -1,7 +1,9 @@
-﻿using EntityFrameworkCore.EncryptColumn.Extension;
+﻿using Base.Services.AppSettings;
+using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BankPaymentService.WebApi.Models
 {
@@ -14,10 +16,9 @@ namespace BankPaymentService.WebApi.Models
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
 
-        public BankPaymentServiceContext(DbContextOptions<BankPaymentServiceContext> options) : base(options) 
+        public BankPaymentServiceContext(DbContextOptions<BankPaymentServiceContext> options, IOptions<PaymentMethod> paymentMethodSettings) : base(options)
         {
-            var key = "QlT9h3wtpdaRU+k3R+QOkA==";
-            _provider = new GenerateEncryptionProvider(key);
+            _provider = new GenerateEncryptionProvider(paymentMethodSettings.Value.EncriptionKey);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

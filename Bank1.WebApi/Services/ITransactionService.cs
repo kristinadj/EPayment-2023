@@ -113,7 +113,7 @@ namespace Bank1.WebApi.Services
             if (account == null) return null;
 
             // TODO: Currency conversion
-            var recurringTransaction = new RecurringTransactionDefinition  
+            var recurringTransaction = new RecurringTransactionDefinition
             {
                 Amount = transactionIDTO.Amount,
                 CurrencyId = currency.CurrencyId,

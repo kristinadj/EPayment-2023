@@ -9,10 +9,12 @@ namespace Bank1.Client.Services
     public interface IApiServices
     {
         Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO);
+        Task<RedirectUrlDTO?> UpdateTransactionFailedAsync(int transactionId);
         Task<string?> GenerateQrCodeAsync(int transactionId);
         Task<string?> GetQrCodeInputAsync(int transactionId);
         Task<QrCodeODTO?> ValdiateQrCodeAsync(int transactionId);
         Task<QrCodeODTO?> ValdiateQrCodeAsync(BankvalidateQrCodeIDTO input);
+
     }
 
     public class ApiServices : IApiServices
@@ -59,6 +61,25 @@ namespace Bank1.Client.Services
 
             var requestContent = new StringContent(JsonSerializer.Serialize(payTransactionIDTO), Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync($"api/Transaction", requestContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
+            }
+
+            return data;
+        }
+
+        public async Task<RedirectUrlDTO?> UpdateTransactionFailedAsync(int transactionId)
+        {
+            RedirectUrlDTO? data = null;
+
+            var response = await _httpClient.PutAsync($"api/Transaction/Failed/{transactionId}", null);
 
             if (response.IsSuccessStatusCode)
             {

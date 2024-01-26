@@ -1,8 +1,9 @@
-﻿using Bank1.WebApi.Helpers;
+﻿using Bank1.WebApi.AppSettings;
 using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Bank1.WebApi.Models
 {
@@ -21,10 +22,9 @@ namespace Bank1.WebApi.Models
         public DbSet<RecurringTransactionDefinition> RecurringTransactionDefinitions { get; set; }
         public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
-        public BankContext(DbContextOptions<BankContext> options) : base(options)
+        public BankContext(DbContextOptions<BankContext> options, IOptions<BankSettings> bankSettings) : base(options)
         {
-            var key = "tQL9h3wtpfAtU+k3R+QOkA==";
-            _provider = new GenerateEncryptionProvider(key);
+            _provider = new GenerateEncryptionProvider(bankSettings.Value.EncriptionKey);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

@@ -24,7 +24,7 @@ namespace Bank1.WebApi.Controllers
         private readonly INbsClient _nbsClient;
 
         public TransactionController(
-            ITransactionService transactionService, 
+            ITransactionService transactionService,
             IAccountService accountService,
             INbsClient nbsClient,
             IOptions<BankSettings> appSettings)
@@ -64,7 +64,7 @@ namespace Bank1.WebApi.Controllers
             var transaction = await _transactionService.GetTransactionByIdAsync(payTransactionIDTO.TransactionId);
 
             if (transaction!.TransactionLogs!.Any(x => x.TransactionStatus == Enums.TransactionStatus.COMPLETED))
-                return BadRequest("Transaction is already paid");
+                return Conflict("Transaction is already paid");
 
             var recurringTransactionDefinition = await _transactionService.GetReccurringTransactionDefinitionByTransactionIdAsync(payTransactionIDTO.TransactionId);
             var successUrl = transaction.TransactionSuccessUrl;
@@ -73,11 +73,16 @@ namespace Bank1.WebApi.Controllers
                 successUrl = $"{transaction.TransactionSuccessUrl}/{recurringTransactionDefinition.RecurringTransactionDefinitionId}";
                 await _transactionService.UpdatePaymentDataAsync(recurringTransactionDefinition, payTransactionIDTO);
             }
-                
+
             RedirectUrlDTO? redirectUrl = null;
             try
             {
-                // TODO: VERIFY CARD
+                var isExpired = CardChecker.IsCardExpired(payTransactionIDTO.ExpiratoryDate);
+                if (isExpired)
+                {
+                    return BadRequest("Card is expired");
+                }
+
                 var isLocalCard = payTransactionIDTO.PanNumber.StartsWith(_appSettings.CardStartNumbers);
 
                 if (!isLocalCard)
@@ -96,12 +101,22 @@ namespace Bank1.WebApi.Controllers
                 else
                 {
                     var sender = await _accountService.GetAccountByCreditCardAsync(payTransactionIDTO.CardHolderName, payTransactionIDTO.PanNumber, payTransactionIDTO.ExpiratoryDate, payTransactionIDTO.CVV);
-                    var isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
-                    if (isSuccess)
+
+                    var isSuccess = false;
+                    if (sender != null)
                     {
-                        redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
+                        isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
+                        if (isSuccess)
+                        {
+                            redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
+                        }
                     }
                     else
+                    {
+                        return BadRequest("Invalid card information");
+                    }
+
+                    if (!isSuccess)
                     {
                         redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
                     }
@@ -114,6 +129,25 @@ namespace Bank1.WebApi.Controllers
             }
 
             return Ok(redirectUrl);
+        }
+
+        [HttpPut("Failed/{transactionId}")]
+        public async Task<ActionResult> UpdateTransactionFailed([FromRoute] int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+                if (transaction == null) return NotFound($"Transaction {transactionId} not found");
+
+                await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.FAIL);
+
+                var redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                return Ok(redirectUrl);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("PCC")]
@@ -177,7 +211,7 @@ namespace Bank1.WebApi.Controllers
                 var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
                 var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodeGenIDTO);
 
-                if (qrCode == null || qrCode.Status!.Code !=  0 ) return BadRequest("Unexpected error while generating QR code");
+                if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest("Unexpected error while generating QR code");
 
                 return Ok(qrCode);
             }
