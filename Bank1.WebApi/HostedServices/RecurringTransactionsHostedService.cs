@@ -66,7 +66,7 @@ namespace Bank1.WebApi.HostedServices
                             
                             try
                             {
-                                var response = await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionSuccessUrl, null);
+                                var response = await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionSuccessUrl, null, stoppingToken);
 
                                 if (response.IsSuccessStatusCode)
                                 {
@@ -80,7 +80,7 @@ namespace Bank1.WebApi.HostedServices
                         }
                         else
                         {
-                            await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionFailureUrl, null);
+                            await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionFailureUrl, null, stoppingToken);
                         }
                     }
                 }

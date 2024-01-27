@@ -71,7 +71,6 @@ namespace Bank1.WebApi.Services
 
             if (account == null) return null;
 
-            // TODO: Currency conversion
             var transaction = new Transaction(transactionIDTO.ExternalInvoiceId.ToString(), transactionIDTO.TransactionSuccessUrl, transactionIDTO.TransactionFailureUrl, transactionIDTO.TransactionErrorUrl)
             {
                 Amount = transactionIDTO.Amount,
@@ -112,7 +111,6 @@ namespace Bank1.WebApi.Services
                 .FirstOrDefault();
             if (account == null) return null;
 
-            // TODO: Currency conversion
             var recurringTransaction = new RecurringTransactionDefinition
             {
                 Amount = transactionIDTO.Amount,
@@ -163,11 +161,15 @@ namespace Bank1.WebApi.Services
 
         public async Task<bool> PayTransctionAsync(Transaction transaction, Account sender)
         {
-            // TODO: Currency conversion
-
             var isSuccess = true;
 
-            if (sender.Balance < transaction.Amount)
+            double senderAmount = transaction.Amount;
+            if (sender.Currency!.Code != transaction!.Currency!.Code)
+            {
+                senderAmount = (double)await ExchangeAsync(transaction!.Currency!.Code, sender.Currency.Code, transaction.Amount);
+            }
+
+            if (sender.Balance < senderAmount)
             {
                 transaction.TransactionStatus = TransactionStatus.FAIL;
                 transaction.TransactionLogs!.Add(new TransactionLog
@@ -176,16 +178,25 @@ namespace Bank1.WebApi.Services
                     Timestamp = DateTime.Now
                 });
 
-                throw new Exception("Insuffiecient amount on the account");
+                return false;
             }
             else
             {
                 var receiver = await _context.Accounts
-                    .Where(x => x.OwnerId == transaction.ReceiverAccountId)
+                    .Where(x => x.AccountId == transaction.ReceiverAccountId)
+                    .Include(x => x.Currency)
                     .FirstOrDefaultAsync();
 
-                receiver!.Balance += transaction.Amount;
-                sender.Balance -= transaction.Amount;
+                if (receiver == null) throw new Exception($"Account {transaction.ReceiverAccountId} not found");
+
+                double receiverAmount = transaction.Amount;
+                if (receiver!.Currency!.Code != transaction!.Currency!.Code)
+                {
+                    receiverAmount = (double)await ExchangeAsync(transaction!.Currency!.Code, receiver.Currency.Code, transaction.Amount);
+                }
+
+                receiver!.Balance += receiverAmount;
+                sender.Balance -= senderAmount;
 
                 transaction.TransactionStatus = TransactionStatus.COMPLETED;
                 transaction.TransactionLogs!.Add(new TransactionLog
@@ -305,7 +316,6 @@ namespace Bank1.WebApi.Services
 
             if (issuerAccount == null) throw new Exception($"Invalid credit card data");
 
-            // TODO: Currency conversion
             var transaction = new IssuerTransaction(transactionIDTO.Description)
             {
                 Amount = transactionIDTO.Amount,
@@ -403,7 +413,6 @@ namespace Bank1.WebApi.Services
 
         public async Task<RecurringTransaction?> CreateRecurringTransactionAsync(RecurringTransactionDefinition recurringTransactionDefinition, Transaction initialTransaction)
         {
-            // TODO: Currency conversion
             var recurringTransaction = new RecurringTransaction
             {
                 Transaction = new Transaction(string.Empty, string.Empty, string.Empty, string.Empty)

@@ -200,12 +200,21 @@ namespace Bank1.WebApi.Models
                    OwnerId = 1
                });
 
+            builder.Entity<Account>().HasData(
+               new Account("105-0000000000001-37")
+               {
+                   AccountId = 3,
+                   Balance = 500,
+                   CurrencyId = 2,
+                   OwnerId = 1
+               });
+
             builder.Entity<BusinessCustomer>().HasData(
                 new BusinessCustomer("LPAPassword5!")
                 {
                     BusinessCustomerId = 1,
                     CustomerId = 1,
-                    DefaultAccountId = 1
+                    DefaultAccountId = 3
                 });
 
             // Buyer
@@ -220,7 +229,7 @@ namespace Bank1.WebApi.Models
                {
                    AccountId = 2,
                    Balance = 6530,
-                   CurrencyId = 1,
+                   CurrencyId = 3,
                    OwnerId = 2
                });
 

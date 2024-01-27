@@ -110,6 +110,10 @@ namespace Bank1.WebApi.Controllers
                         {
                             redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
                         }
+                        else
+                        {
+                            return BadRequest("Insufficient balance");
+                        }
                     }
                     else
                     {

@@ -12,11 +12,11 @@
                 var month = int.Parse(expiratoryDateSplit[0]);
                 var year = int.Parse(expiratoryDateSplit[1]);
 
-                if (year < DateTime.Today.Year)
+                if (year < DateTime.Today.Year % 100)
                 {
                     return true;
                 }
-                else
+                else if (year == DateTime.Today.Year % 100)
                 {
                     if (month < DateTime.Today.Month)
                     {

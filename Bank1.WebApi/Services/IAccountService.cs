@@ -21,6 +21,7 @@ namespace Bank1.WebApi.Services
         {
             return await _context.Accounts!
                 .Where(x => x.Cards!.Any(x => x.CardHolderName == cardHolderName && x.PanNumber == panNumber && x.ExpiratoryDate == expiratoryDate && x.CVV == cvv))
+                .Include(x => x.Currency)
                 .FirstOrDefaultAsync();
         }
     }
