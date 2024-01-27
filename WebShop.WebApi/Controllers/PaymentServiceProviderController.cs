@@ -15,28 +15,25 @@ namespace WebShop.WebApi.Controllers
     [ApiController]
     public class PaymentServiceProviderController : ControllerBase
     {
-        private readonly PspAppSettings _pspAppSettings;
         private readonly WebShopAppSettings _webShopAppSettings;
         private readonly ConsulAppSettings _consulAppSettings;
 
         private readonly IMerchantService _merchantService;
         private readonly IPaymentMethodService _paymentMethodService;
-        private readonly IConsulHttpClient _consulHttpClient;
+        private readonly IPspApiHttpClient _pspApiHttpClient;
 
         public PaymentServiceProviderController(
             IMerchantService merchantService,
             IPaymentMethodService paymentMethodService,
-            IOptions<PspAppSettings> pspAppSettings,
             IOptions<ConsulAppSettings> consulAppSettings,
             IOptions<WebShopAppSettings> webShopAppSettings,
-            IConsulHttpClient consulHttpClient)
+            IPspApiHttpClient pspApiHttpClient)
         {
             _merchantService = merchantService;
             _paymentMethodService = paymentMethodService;
-            _pspAppSettings = pspAppSettings.Value;
             _consulAppSettings = consulAppSettings.Value;
             _webShopAppSettings = webShopAppSettings.Value;
-            _consulHttpClient = consulHttpClient;
+            _pspApiHttpClient = pspApiHttpClient;
         }
 
         [HttpGet("Merchant/IsRegistered/{userId}")]
@@ -69,7 +66,7 @@ namespace WebShop.WebApi.Controllers
                     TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",
                     TransactionErrorUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/error"
                 };
-                var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, _pspAppSettings.RegisterMerchantApiEndpoint, merchantDTO);
+                var result = await _pspApiHttpClient.PostAsync("/Merchant", merchantDTO);
 
                 if (result == null) return BadRequest();
 
@@ -89,7 +86,7 @@ namespace WebShop.WebApi.Controllers
         {
             try
             {
-                var result = await _consulHttpClient.GetAsync<List<PaymentMethodDTO>>(_pspAppSettings.ServiceName, "/api/PaymentMethod");
+                var result = await _pspApiHttpClient.GetAsync<List<PaymentMethodDTO>>("PaymentMethod");
                 if (result == null) return BadRequest("Unexpected exception while getting PaymentMethods from PSP");
 
                 return Ok(result);
@@ -105,7 +102,7 @@ namespace WebShop.WebApi.Controllers
         {
             try
             {
-                var result = await _consulHttpClient.GetAsync<List<PaymentMethodDTO>>(_pspAppSettings.ServiceName, "/api/PaymentMethod");
+                var result = await _pspApiHttpClient.GetAsync<List<PaymentMethodDTO>>("PaymentMethod");
                 if (result == null) return BadRequest("Unexpected exception while getting PaymentMethods from PSP");
 
                 await _paymentMethodService.ImportFromPspAsync(result);
@@ -126,7 +123,7 @@ namespace WebShop.WebApi.Controllers
                 var merchant = await _merchantService.GetMerchantByUserIdAsync(userId);
                 if (merchant == null || merchant.PspMerchantId == null) return NotFound("Merchant not found");
 
-                var result = await _consulHttpClient.GetAsync<List<PaymentMethodMerchantODTO>>(_pspAppSettings.ServiceName, $"/api/PaymentMethod/ByMerchantId/{merchant.PspMerchantId}");
+                var result = await _pspApiHttpClient.GetAsync<List<PaymentMethodMerchantODTO>>($"PaymentMethod/ByMerchantId/{merchant.PspMerchantId}");
                 if (result == null) return BadRequest("Unexpected exception while getting PaymentMethods from PSP");
 
                 return Ok(result);
@@ -155,7 +152,7 @@ namespace WebShop.WebApi.Controllers
                     InstitutionId = paymentMethodSubscribeIDTO.InstitutionId
                 };
 
-                var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Subscribe", pspPaymentMethodSubscribe);
+                var isSuccess = await _pspApiHttpClient.PutAsync($"PaymentMethod/Subscribe", pspPaymentMethodSubscribe);
                 if (!isSuccess) return BadRequest("Unexpected exception  from PSP while subscribing to PaymentMethod");
 
                 return Ok();
@@ -177,7 +174,7 @@ namespace WebShop.WebApi.Controllers
                 var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
                 if (paymentMethod == null) return NotFound($"Payment Method {paymentMethodId} not found");
 
-                var isSuccess = await _consulHttpClient.PutAsync(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Unsubscribe/{paymentMethod.PspPaymentMethodId};{merchant.PspMerchantId}");
+                var isSuccess = await _pspApiHttpClient.PutAsync($"PaymentMethod/Unsubscribe/{paymentMethod.PspPaymentMethodId};{merchant.PspMerchantId}");
                 if (!isSuccess) return BadRequest("Unexpected exception  from PSP while unsubscribing from PaymentMethod");
 
                 return Ok();
@@ -198,7 +195,7 @@ namespace WebShop.WebApi.Controllers
                 var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
                 if (paymentMethod == null) return NotFound($"Payment Method {paymentMethodId} not found");
 
-                institutions = await _consulHttpClient.GetAsync<List<InstitutionODTO>>(_pspAppSettings.ServiceName, $"/api/PaymentMethod/Institutions/{paymentMethod.PspPaymentMethodId}");
+                institutions = await _pspApiHttpClient.GetAsync<List<InstitutionODTO>>($"PaymentMethod/Institutions/{paymentMethod.PspPaymentMethodId}");
             }
             catch (Exception ex)
             {

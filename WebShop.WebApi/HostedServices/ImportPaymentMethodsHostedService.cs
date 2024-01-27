@@ -1,8 +1,4 @@
 ﻿using Base.DTO.Shared;
-using Base.Services.Clients;
-using Microsoft.Extensions.Options;
-using System.Runtime;
-using WebShop.WebApi.AppSettings;
 using WebShop.WebApi.Services;
 
 namespace WebShop.WebApi.HostedServices
@@ -20,8 +16,7 @@ namespace WebShop.WebApi.HostedServices
         {
             using var scope = _serviceProvider.CreateScope();
             var paymentMethodsService = scope.ServiceProvider.GetService<IPaymentMethodService>();
-            var consulHttpClient = scope.ServiceProvider.GetService<IConsulHttpClient>();
-            var pspAppSettings = scope.ServiceProvider.GetService<IOptions<PspAppSettings>>();
+            var pspApiHttpClient = scope.ServiceProvider.GetService<IPspApiHttpClient>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<ImportPaymentMethodsHostedService>>();
 
             while (!stoppingToken.IsCancellationRequested)
@@ -39,7 +34,7 @@ namespace WebShop.WebApi.HostedServices
                 {
                     try
                     {
-                        var result = await consulHttpClient!.GetAsync<List<PaymentMethodDTO>>(pspAppSettings!.Value.ServiceName, "/api/PaymentMethod");
+                        var result = await pspApiHttpClient!.GetAsync<List<PaymentMethodDTO>>("PaymentMethod");
                         if (result != null)
                         {
                             await paymentMethodsService!.ImportFromPspAsync(result);
@@ -50,11 +45,11 @@ namespace WebShop.WebApi.HostedServices
                     catch (Exception ex)
                     {
                         logger.LogError(ex?.Message, "Error while getting PaymentMethods from PSP");
-                        await Task.Delay(10000, stoppingToken);
                     }
 
+                    await Task.Delay(10000, stoppingToken);
                 } while (!isSuccess);
-                
+
 
                 await Task.Delay(startTime, stoppingToken);
             }
