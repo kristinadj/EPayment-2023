@@ -2,9 +2,9 @@
 using BitPay.Models.Invoice;
 using Environment = BitPay.Environment;
 
-namespace BitcoinPaymentService.WebApi.Services
+namespace BitcoinPaymentService.WebApi.BitcoinClients
 {
-    public static class BitcoinClient
+    public static class BitPayClient
     {
         public async static Task<Invoice> GetInvoiceAsync(string token, string invoiceId)
         {

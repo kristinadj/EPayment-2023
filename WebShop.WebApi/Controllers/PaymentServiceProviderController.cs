@@ -16,7 +16,6 @@ namespace WebShop.WebApi.Controllers
     public class PaymentServiceProviderController : ControllerBase
     {
         private readonly WebShopAppSettings _webShopAppSettings;
-        private readonly ConsulAppSettings _consulAppSettings;
 
         private readonly IMerchantService _merchantService;
         private readonly IPaymentMethodService _paymentMethodService;
@@ -25,13 +24,11 @@ namespace WebShop.WebApi.Controllers
         public PaymentServiceProviderController(
             IMerchantService merchantService,
             IPaymentMethodService paymentMethodService,
-            IOptions<ConsulAppSettings> consulAppSettings,
             IOptions<WebShopAppSettings> webShopAppSettings,
             IPspApiHttpClient pspApiHttpClient)
         {
             _merchantService = merchantService;
             _paymentMethodService = paymentMethodService;
-            _consulAppSettings = consulAppSettings.Value;
             _webShopAppSettings = webShopAppSettings.Value;
             _pspApiHttpClient = pspApiHttpClient;
         }
@@ -60,7 +57,7 @@ namespace WebShop.WebApi.Controllers
                 var merchant = await _merchantService.GetMerchantByUserIdAsync(userId);
                 if (merchant == null) return NotFound("Merchant not found");
 
-                var merchantDTO = new MerchantDTO(merchant.MerchantId.ToString(), merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber!, merchant.User!.Email!, _consulAppSettings.Service)
+                var merchantDTO = new MerchantDTO(merchant.MerchantId.ToString(), merchant.User!.Name, merchant.User!.Address!, merchant.User!.PhoneNumber!, merchant.User!.Email!, _webShopAppSettings.WebApiUrl)
                 {
                     TransactionSuccessUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/success",
                     TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",

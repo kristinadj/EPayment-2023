@@ -73,6 +73,7 @@ builder.Services.AddHostedService<UpdateExpiredTransactionStatusHostedService>()
 builder.Services.AddScoped<IPspApiHttpClient, PspApiHttpClient>();
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
 
+
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IItemService, ItemServices>();

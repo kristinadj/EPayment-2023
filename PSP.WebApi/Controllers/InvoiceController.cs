@@ -21,6 +21,7 @@ namespace PSP.WebApi.Controllers
         private readonly IMerchantService _merchantService;
         private readonly IInvoiceService _invoiceService;
         private readonly IConsulHttpClient _consulHttpClient;
+        private readonly IWebShopHttpClient _webShopHttpClient;
 
         private readonly IMapper _mapper;
         private readonly PspAppSettings _pspAppSettings;
@@ -30,6 +31,7 @@ namespace PSP.WebApi.Controllers
             IMerchantService merchantService,
             IInvoiceService invoiceService,
             IConsulHttpClient consulHttpClient,
+            IWebShopHttpClient webShopHttpClient,
             IMapper mapper,
             IOptions<PspAppSettings> pspAppSettings)
         {
@@ -37,6 +39,7 @@ namespace PSP.WebApi.Controllers
             _merchantService = merchantService;
             _invoiceService = invoiceService;
             _consulHttpClient = consulHttpClient;
+            _webShopHttpClient = webShopHttpClient;
             _mapper = mapper;
             _pspAppSettings = pspAppSettings.Value;
         }
@@ -85,7 +88,7 @@ namespace PSP.WebApi.Controllers
             // 1. Update WebShop Invoice with choosen payment method
             try
             {
-                await _consulHttpClient.PutAsync(invoice.Merchant.ServiceName, $"api/Invoice/UpdatePaymentMethod/{invoice.ExternalInvoiceId};{paymentMethodId}");
+                await _webShopHttpClient.PutAsync(invoice.Merchant.ServiceName, $"Invoice/UpdatePaymentMethod/{invoice.ExternalInvoiceId};{paymentMethodId}");
             }
             catch (Exception)
             {

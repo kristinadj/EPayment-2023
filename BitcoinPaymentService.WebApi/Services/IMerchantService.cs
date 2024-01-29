@@ -34,8 +34,10 @@ namespace BitcoinPaymentService.WebApi.Services
 
             if (merchant == null)
             {
-                merchant = new Merchant(updateMerchantCredentialsIDTO.Code, updateMerchantCredentialsIDTO.Secret)
+                merchant = new Merchant
                 {
+                    ApiKey = updateMerchantCredentialsIDTO.Secret,
+                    Code = updateMerchantCredentialsIDTO.Code,
                     PaymentServiceMerchantId = updateMerchantCredentialsIDTO.PaymentServiceMerchantId
                 };
 
@@ -43,8 +45,8 @@ namespace BitcoinPaymentService.WebApi.Services
             }
             else
             {
-                merchant.Token = updateMerchantCredentialsIDTO.Code;
-                merchant.PairingCode = updateMerchantCredentialsIDTO.Secret;
+                merchant.Code = updateMerchantCredentialsIDTO.Code;
+                merchant.ApiKey = updateMerchantCredentialsIDTO.Secret;
             }
 
             await _context.SaveChangesAsync();

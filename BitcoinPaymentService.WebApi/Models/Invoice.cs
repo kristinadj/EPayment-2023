@@ -10,7 +10,7 @@ namespace BitcoinPaymentService.WebApi.Models
         [Key]
         public int InvoiceId { get; set; }
         public int ExternalInvoiceId { get; set; }
-        public string? BitPayId { get; set; }
+        public string? ExternalPaymentServiceInvoiceId { get; set; }
         public string? PayerId { get; set; }
         public int MerchantId { get; set; }
         public double Amount { get; set; }

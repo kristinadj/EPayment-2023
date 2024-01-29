@@ -4,6 +4,7 @@ using BitcoinPaymentService.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BitcoinPaymentService.WebApi.Migrations
 {
     [DbContext(typeof(BitcoinServiceContext))]
-    partial class BitcoinServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20240129100712_CrypotCloudUpdates")]
+    partial class CrypotCloudUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,7 +171,7 @@ namespace BitcoinPaymentService.WebApi.Migrations
                     b.Property<string>("ApiKey")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Code")
+                    b.Property<string>("CryptoCloudShopId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PaymentServiceMerchantId")

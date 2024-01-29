@@ -1,5 +1,6 @@
 using Base.Services.AppSettings;
 using BitcoinPaymentService.WebApi.AppSettings;
+using BitcoinPaymentService.WebApi.BitcoinClients;
 using BitcoinPaymentService.WebApi.Configurations;
 using BitcoinPaymentService.WebApi.Models;
 using BitcoinPaymentService.WebApi.Services;
@@ -16,6 +17,8 @@ builder.Services.Configure<BitcoinSettings>(builder.Configuration.GetSection("Bi
 
 builder.Services.AddScoped<IMerchantService, MerchantService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<ICryptoCloudClient, CryptoCloudClient>();
+builder.Services.AddScoped<ICoingateClient, CoingateClient>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
