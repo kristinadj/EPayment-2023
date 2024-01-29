@@ -1,11 +1,37 @@
 ﻿@page "/"
 
+@using Bank1.Client.Components
+@using Bank1.Client.QrCode
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
 <div class="d-flex align-content-center justify-center gap-3 mt-3">
     <MudGrid Class="justify-space-between" Style="max-width: 400px;">
         <MudItem xs="12">
-            <div class="d-flex justify-center">
+            <div class="d-flex justify-center gap-3">
                 <MudText Typo="Typo.h6">HSBC Bank</MudText>
+                
             </div>
         </MudItem>
+        <QRCodeScanner />
     </MudGrid>
 </div>
+
+@code {
+
+    private QRCodeScannerJsInterop? _qrCodeScannerJsInterop;
+    private Action<string>? _onQrCodeScanAction;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _onQrCodeScanAction = (code) => OnQrCodeScan(code);
+
+        _qrCodeScannerJsInterop = new QRCodeScannerJsInterop(JSRuntime);
+        await _qrCodeScannerJsInterop.Init(_onQrCodeScanAction);
+    }
+
+    private static void OnQrCodeScan(string code)
+    {
+        Console.WriteLine($"OnQrCodeScan {code}");
+    }
+}
