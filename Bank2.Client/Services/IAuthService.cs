@@ -1,13 +1,13 @@
 ﻿using Bank.DTO.Input;
 using Bank.DTO.Output;
-using Bank1.Client.Authentication;
+using Bank2.Client.Authentication;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace Bank1.Client.Services
+namespace Bank2.Client.Services
 {
     public interface IAuthService
     {
