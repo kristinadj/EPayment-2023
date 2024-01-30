@@ -13,7 +13,7 @@ namespace Bank1.WebApi.Models
         public string AccountNumber { get; set; }
         public double Balance { get; set; }
         public int CurrencyId { get; set; }
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
 
         public Customer? Owner { get; set; }
         public Currency? Currency { get; set; }

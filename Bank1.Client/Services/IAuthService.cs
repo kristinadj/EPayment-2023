@@ -1,17 +1,17 @@
-﻿using Blazored.LocalStorage;
+﻿using Bank.DTO.Input;
+using Bank.DTO.Output;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using WebShop.DTO.Input;
-using WebShop.DTO.Output;
+using System.Text;
+using Blazored.LocalStorage;
+using System.Net.Http.Json;
+using Bank1.Client.Authentication;
 
-namespace WebShop.Client.Authentication
+namespace Bank1.Client.Services
 {
     public interface IAuthService
     {
-        Task<AuthenticationODTO?> Register(UserIDTO model);
         Task<AuthenticationODTO?> Login(AuthenticateIDTO model);
         Task Logout();
     }
@@ -26,7 +26,7 @@ namespace WebShop.Client.Authentication
                            AuthenticationStateProvider authenticationStateProvider,
                            ILocalStorageService localStorage)
         {
-            _httpClient = httpClientFactory.CreateClient("WebShopAPI");
+            _httpClient = httpClientFactory.CreateClient("BankAPI");
             _authenticationStateProvider = authenticationStateProvider;
             _localStorage = localStorage;
         }
@@ -38,7 +38,8 @@ namespace WebShop.Client.Authentication
 
             if (response.IsSuccessStatusCode)
             {
-                var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var authResult = JsonSerializer.Deserialize<AuthenticationODTO>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
                 if (authResult == null)
                     return null;
 
@@ -57,25 +58,6 @@ namespace WebShop.Client.Authentication
             await _localStorage.RemoveItemAsync("authToken");
             ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
             _httpClient.DefaultRequestHeaders.Authorization = null;
-        }
-
-        public async Task<AuthenticationODTO?> Register(UserIDTO model)
-        {
-            var content = JsonSerializer.Serialize(model);
-            var response = await _httpClient.PostAsync("api/Users/Register", new StringContent(content, Encoding.UTF8, "application/json"));
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var authResult = await response.Content.ReadFromJsonAsync<AuthenticationODTO>();
-            if (authResult == null)
-                return null;
-
-            await _localStorage.SetItemAsync("authToken", authResult.Token);
-            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(model.Email);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.Token);
-
-            return authResult;
         }
     }
 }

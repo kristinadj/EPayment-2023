@@ -13,6 +13,9 @@ namespace Bank1.Client.Pages
         [Inject]
         private ISnackbar Snackbar { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         [Parameter]
         public int TransactionId { get; set; }
 
@@ -25,6 +28,8 @@ namespace Bank1.Client.Pages
         public bool isValid = false;
         public bool showValidationResult = false;
         public string validationResult = string.Empty;
+
+        public bool isRefreshing = false;
 
         protected async override Task OnInitializedAsync()
         {
@@ -69,6 +74,19 @@ namespace Bank1.Client.Pages
 
             showValidationResult = true;
             isValidating = false;
+        }
+
+        private async Task OnClickRefreshAsync()
+        {
+            isRefreshing = true;
+
+            var result = await ApiServices.GetTransactionStatusAsync(TransactionId);
+            if (result != null)
+            {
+                NavigationManager.NavigateTo(result.RedirectUrl);
+            }
+
+            isRefreshing = false;
         }
     }
 }

@@ -15,19 +15,20 @@ namespace Bank1.WebApi.Helpers
                 V = "01",
                 C = "1",
                 R = transaction.ReceiverAccount!.AccountNumber.Replace("-", string.Empty),
-                N = $"{transaction.ReceiverAccount!.Owner!.FirstName} {transaction.ReceiverAccount.Owner.LastName}\r\n{transaction.ReceiverAccount.Owner.Address}",
+                N = $"{transaction.ReceiverAccount!.Owner!.Name}\r\n{transaction.ReceiverAccount.Owner.Address}",
                 I = $"{currencyCode}{amount:N2}".Replace(".", ","),
-                SF = "189"
+                SF = "189",
+                S = $"{transaction.BankPaymentServiceTransactionId}"
             };
 
             return qrCodeGenIDTO;
         }
 
-        public static string ConvertToQrCodoeGenerateIDTO(Transaction transaction, double amount, string currencyCode)
+        public static string ConvertToQrCodeGenerateIDTO(Transaction transaction, double amount, string currencyCode)
         {
             return $"K:PR|V:01|C:1|R:{transaction.ReceiverAccount!.AccountNumber.Replace("-", string.Empty)}" +
-                $"|N:{transaction.ReceiverAccount!.Owner!.FirstName} {transaction.ReceiverAccount.Owner.LastName}\r\n{transaction.ReceiverAccount.Owner.Address}" +
-                $"|I:{currencyCode}{amount.ToString().Replace(".", ",")}|SF:189";
+                $"|N:{transaction.ReceiverAccount!.Owner!.Name}\r\n{transaction.ReceiverAccount.Owner.Address}" +
+                $"|I:{currencyCode}{amount.ToString().Replace(".", ",")}|SF:189|S:{transaction.BankPaymentServiceTransactionId}";
         }
 
         public static string HashPanNumber(string panNumber)

@@ -5,12 +5,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Bank1.WebApi.Migrations
 {
-    public partial class IntializingModel : Migration
+    public partial class AddedIdentity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "dbo");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Currencies",
@@ -29,21 +56,94 @@ namespace Bank1.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
-                schema: "dbo",
+                name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.CustomerId);
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Accounts",
+                schema: "dbo",
+                columns: table => new
+                {
+                    AccountId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Balance = table.Column<double>(type: "float", nullable: false),
+                    CurrencyId = table.Column<int>(type: "int", nullable: false),
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
+                    table.ForeignKey(
+                        name: "FK_Accounts_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Accounts_Currencies_CurrencyId",
+                        column: x => x.CurrencyId,
+                        principalSchema: "dbo",
+                        principalTable: "Currencies",
+                        principalColumn: "CurrencyId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,55 +177,31 @@ namespace Bank1.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Accounts",
-                schema: "dbo",
-                columns: table => new
-                {
-                    AccountId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Balance = table.Column<double>(type: "float", nullable: false),
-                    CurrencyId = table.Column<int>(type: "int", nullable: false),
-                    OwnerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
-                    table.ForeignKey(
-                        name: "FK_Accounts_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalSchema: "dbo",
-                        principalTable: "Currencies",
-                        principalColumn: "CurrencyId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Accounts_Customers_OwnerId",
-                        column: x => x.OwnerId,
-                        principalSchema: "dbo",
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BusinessCustomers",
                 schema: "dbo",
                 columns: table => new
                 {
                     BusinessCustomerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SecretKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DefaultAccountId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BusinessCustomers", x => x.BusinessCustomerId);
                     table.ForeignKey(
-                        name: "FK_BusinessCustomers_Customers_CustomerId",
-                        column: x => x.CustomerId,
+                        name: "FK_BusinessCustomers_Accounts_DefaultAccountId",
+                        column: x => x.DefaultAccountId,
                         principalSchema: "dbo",
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId",
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BusinessCustomers_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -207,7 +283,9 @@ namespace Bank1.WebApi.Migrations
                     RecurringCycleDays = table.Column<int>(type: "int", nullable: false),
                     StartTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NextPaymentTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsCanceled = table.Column<bool>(type: "bit", nullable: false)
+                    IsCanceled = table.Column<bool>(type: "bit", nullable: false),
+                    RecurringTransactionSuccessUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RecurringTransactionFailureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -327,6 +405,15 @@ namespace Bank1.WebApi.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "cc1e5433-cf53-40d1-851e-e2102180eb55", 0, "789 Ulica jorgovana,", "40d0d67b-255c-4524-9f15-bfaa9e79b915", "johndoe@email.com", false, false, null, "John Doe", null, null, "AQAAAAEAACcQAAAAEE8+3TqN8KtvOQ+MvzloSW8L9EZ2UQZi2iNJf11RWuKsgAuM6ov1tHl+eSqAVWxJCw==", "+1 555-987-6543", false, "995b1230-1745-4aaa-b69f-e2f5ec3efb1c", false, null },
+                    { "ff997333-0c10-4fef-9d07-d2599fca2795", 0, "123 Glavna ulica", "725c2c77-db4b-4c79-ae0d-ec9ab2c2f0f8", "webshopadmin@lawpublishingagency.com", false, false, null, "Web prodavnica pravnog izdavaštva", null, null, "AQAAAAEAACcQAAAAEGEVT8KJCuDA6P9xsrxUvNivPlNEkKbus70dUmCoBCQN60EG1qJdyVzOWweN7h6LrA==", "+1 555-123-4567", false, "74e4aa14-d6dd-4166-b60b-d8b8e86963f3", false, null }
+                });
+
+            migrationBuilder.InsertData(
                 schema: "dbo",
                 table: "Currencies",
                 columns: new[] { "CurrencyId", "Code", "Name", "Symbol" },
@@ -339,29 +426,14 @@ namespace Bank1.WebApi.Migrations
 
             migrationBuilder.InsertData(
                 schema: "dbo",
-                table: "Customers",
-                columns: new[] { "CustomerId", "Address", "Email", "FirstName", "LastName", "PhoneNumber" },
-                values: new object[,]
-                {
-                    { 1, "123 Glavna ulica", "webshopadmin@lawpublishingagency.com", "Web prodavnica pravnog izdavaštva", "", "+1 555-123-4567" },
-                    { 2, "789 Ulica jorgovana,", "johndoe@email.com", "John", "Doe", "+1 555-987-6543" }
-                });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
                 table: "Accounts",
                 columns: new[] { "AccountId", "AccountNumber", "Balance", "CurrencyId", "OwnerId" },
                 values: new object[,]
                 {
-                    { 1, "105-0000000000000-29", 14500.0, 1, 1 },
-                    { 2, "106-0000000000000-30", 6530.0, 1, 2 }
+                    { 1, "105-0000000000000-29", 14500.0, 1, "ff997333-0c10-4fef-9d07-d2599fca2795" },
+                    { 2, "106-0000000000000-30", 6530.0, 3, "cc1e5433-cf53-40d1-851e-e2102180eb55" },
+                    { 3, "105-0000000000001-37", 500.0, 2, "ff997333-0c10-4fef-9d07-d2599fca2795" }
                 });
-
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "BusinessCustomers",
-                columns: new[] { "BusinessCustomerId", "CustomerId", "Password" },
-                values: new object[] { 1, 1, "0hqo5asTUiTJe/2ZcF3vuA==" });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
@@ -376,6 +448,12 @@ namespace Bank1.WebApi.Migrations
                     { 5, 3, 107.53, 1 },
                     { 6, 3, 0.92000000000000004, 2 }
                 });
+
+            migrationBuilder.InsertData(
+                schema: "dbo",
+                table: "BusinessCustomers",
+                columns: new[] { "BusinessCustomerId", "CustomerId", "DefaultAccountId", "SecretKey" },
+                values: new object[] { 1, "ff997333-0c10-4fef-9d07-d2599fca2795", 3, "Fy5Mib9nbUSKQCZYRPeWKA==" });
 
             migrationBuilder.InsertData(
                 schema: "dbo",
@@ -403,10 +481,46 @@ namespace Bank1.WebApi.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Email",
+                table: "AspNetUsers",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BusinessCustomers_CustomerId",
                 schema: "dbo",
                 table: "BusinessCustomers",
                 column: "CustomerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusinessCustomers_DefaultAccountId",
+                schema: "dbo",
+                table: "BusinessCustomers",
+                column: "DefaultAccountId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -499,6 +613,15 @@ namespace Bank1.WebApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
                 name: "BusinessCustomers",
                 schema: "dbo");
 
@@ -535,11 +658,10 @@ namespace Bank1.WebApi.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Currencies",
-                schema: "dbo");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Customers",
+                name: "Currencies",
                 schema: "dbo");
         }
     }

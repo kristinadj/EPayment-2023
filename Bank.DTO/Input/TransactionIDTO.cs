@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bank1.WebApi.DTO.Input
+namespace Bank.DTO.Input
 {
     public class TransactionIDTO
     {

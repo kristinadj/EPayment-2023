@@ -9,6 +9,7 @@ namespace Bank1.WebApi.Models
     {
         [Key]
         public int TransactionId { get; set; }
+        public int BankPaymentServiceTransactionId { get; set; }
         public double Amount { get; set; }
         public int CurrencyId { get; set; }
 

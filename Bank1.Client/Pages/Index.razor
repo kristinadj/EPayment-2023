@@ -1,37 +1,63 @@
 ﻿@page "/"
 
-@using Bank1.Client.Components
-@using Bank1.Client.QrCode
-@using Microsoft.JSInterop
-@inject IJSRuntime JSRuntime
+@using System.ComponentModel.DataAnnotations
 
-<div class="d-flex align-content-center justify-center gap-3 mt-3">
-    <MudGrid Class="justify-space-between" Style="max-width: 400px;">
-        <MudItem xs="12">
+<AuthorizeView>
+    <Authorized>
+        <div class="d-flex flex-column gap-3">
             <div class="d-flex justify-center gap-3">
                 <MudText Typo="Typo.h6">HSBC Bank</MudText>
-                
             </div>
-        </MudItem>
-        <QRCodeScanner />
-    </MudGrid>
-</div>
+            <div class="d-flex align-content-center justify-center">
+                <QRCodeScanner />
+            </div>
+            <div class="d-flex justify-center">
+                @if (!string.IsNullOrEmpty(scannedValue))
+                {
+                    <MudText>@scannedValue</MudText>
+                }
+            </div>
+            <div class="d-flex justify-center">
+                @if (!string.IsNullOrEmpty(scannedValue))
+                {
+                    <MudButton OnClick="OnClickPay" Variant="Variant.Filled" Color="Color.Secondary" Disabled="isLoading || isPaid">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm mr-1"></span>
+                        }
+                        Pay
+                    </MudButton>
+                }
+            </div>
+            <div class="d-flex justify-center">
+                <MudButton OnClick="OnClickLogout" StartIcon="@Icons.Material.Filled.Logout">Log out</MudButton>
+            </div>
+        </div>
+    </Authorized>
 
-@code {
+    <NotAuthorized>
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-center gap-3">
+                <MudText Typo="Typo.h6">HSBC Bank</MudText>
+            </div>
+            <div class="d-flex align-content-center justify-center">
+                <MudPaper Class="pa-4">
+                    <MudForm @ref="@form" @bind-IsValid="@isValid" @bind-Errors="@errors" Class="d-flex flex-column gap-2">
+                        <MudTextField T="string" Label="Email" @bind-Value="@authenticateDTO.Email" Required="true" RequiredError="Email is required!" Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+                        <MudTextField T="string" Label="Password" @bind-Value="@authenticateDTO.Password" Required="true" RequiredError="Password is required!" InputType="@passwordInputType" Adornment="Adornment.End" AdornmentIcon="@passwordInputIcon" OnAdornmentClick="OnShowPassword" />
+                        <div class="d-flex justify-center">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!isValid || isLoading)" OnClick="OnLoginAsync">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                                }
+                                Login
+                            </MudButton>
+                        </div>
+                    </MudForm>
+                </MudPaper>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
-    private QRCodeScannerJsInterop? _qrCodeScannerJsInterop;
-    private Action<string>? _onQrCodeScanAction;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _onQrCodeScanAction = (code) => OnQrCodeScan(code);
-
-        _qrCodeScannerJsInterop = new QRCodeScannerJsInterop(JSRuntime);
-        await _qrCodeScannerJsInterop.Init(_onQrCodeScanAction);
-    }
-
-    private static void OnQrCodeScan(string code)
-    {
-        Console.WriteLine($"OnQrCodeScan {code}");
-    }
-}

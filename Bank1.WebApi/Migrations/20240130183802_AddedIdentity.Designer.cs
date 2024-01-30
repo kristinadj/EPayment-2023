@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank1.WebApi.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20240112140814_RecurringTransactionWebhooks")]
-    partial class RecurringTransactionWebhooks
+    [Migration("20240130183802_AddedIdentity")]
+    partial class AddedIdentity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,8 +43,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AccountId");
 
@@ -64,15 +65,23 @@ namespace Bank1.WebApi.Migrations
                             AccountNumber = "105-0000000000000-29",
                             Balance = 14500.0,
                             CurrencyId = 1,
-                            OwnerId = 1
+                            OwnerId = "ff997333-0c10-4fef-9d07-d2599fca2795"
+                        },
+                        new
+                        {
+                            AccountId = 3,
+                            AccountNumber = "105-0000000000001-37",
+                            Balance = 500.0,
+                            CurrencyId = 2,
+                            OwnerId = "ff997333-0c10-4fef-9d07-d2599fca2795"
                         },
                         new
                         {
                             AccountId = 2,
                             AccountNumber = "106-0000000000000-30",
                             Balance = 6530.0,
-                            CurrencyId = 1,
-                            OwnerId = 2
+                            CurrencyId = 3,
+                            OwnerId = "cc1e5433-cf53-40d1-851e-e2102180eb55"
                         });
                 });
 
@@ -84,10 +93,14 @@ namespace Bank1.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessCustomerId"), 1L, 1);
 
-                    b.Property<int>("CustomerId")
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DefaultAccountId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("SecretKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -96,14 +109,18 @@ namespace Bank1.WebApi.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
+                    b.HasIndex("DefaultAccountId")
+                        .IsUnique();
+
                     b.ToTable("BusinessCustomers", "dbo");
 
                     b.HasData(
                         new
                         {
                             BusinessCustomerId = 1,
-                            CustomerId = 1,
-                            Password = "0hqo5asTUiTJe/2ZcF3vuA=="
+                            CustomerId = "ff997333-0c10-4fef-9d07-d2599fca2795",
+                            DefaultAccountId = 3,
+                            SecretKey = "Fy5Mib9nbUSKQCZYRPeWKA=="
                         });
                 });
 
@@ -208,58 +225,113 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>
                 {
-                    b.Property<int>("CustomerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"), 1L, 1);
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerId");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.ToTable("Customers", "dbo");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
-                            CustomerId = 1,
+                            Id = "ff997333-0c10-4fef-9d07-d2599fca2795",
+                            AccessFailedCount = 0,
                             Address = "123 Glavna ulica",
+                            ConcurrencyStamp = "725c2c77-db4b-4c79-ae0d-ec9ab2c2f0f8",
                             Email = "webshopadmin@lawpublishingagency.com",
-                            FirstName = "Web prodavnica pravnog izdavaštva",
-                            LastName = "",
-                            PhoneNumber = "+1 555-123-4567"
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "Web prodavnica pravnog izdavaštva",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGEVT8KJCuDA6P9xsrxUvNivPlNEkKbus70dUmCoBCQN60EG1qJdyVzOWweN7h6LrA==",
+                            PhoneNumber = "+1 555-123-4567",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "74e4aa14-d6dd-4166-b60b-d8b8e86963f3",
+                            TwoFactorEnabled = false
                         },
                         new
                         {
-                            CustomerId = 2,
+                            Id = "cc1e5433-cf53-40d1-851e-e2102180eb55",
+                            AccessFailedCount = 0,
                             Address = "789 Ulica jorgovana,",
+                            ConcurrencyStamp = "40d0d67b-255c-4524-9f15-bfaa9e79b915",
                             Email = "johndoe@email.com",
-                            FirstName = "John",
-                            LastName = "Doe",
-                            PhoneNumber = "+1 555-987-6543"
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "John Doe",
+                            PasswordHash = "AQAAAAEAACcQAAAAEE8+3TqN8KtvOQ+MvzloSW8L9EZ2UQZi2iNJf11RWuKsgAuM6ov1tHl+eSqAVWxJCw==",
+                            PhoneNumber = "+1 555-987-6543",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "995b1230-1745-4aaa-b69f-e2f5ec3efb1c",
+                            TwoFactorEnabled = false
                         });
                 });
 
@@ -548,6 +620,72 @@ namespace Bank1.WebApi.Migrations
                     b.ToTable("TransactionLogs", "dbo");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Account", b =>
                 {
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
@@ -575,7 +713,15 @@ namespace Bank1.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Bank1.WebApi.Models.Account", "DefaultAccount")
+                        .WithOne()
+                        .HasForeignKey("Bank1.WebApi.Models.BusinessCustomer", "DefaultAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Customer");
+
+                    b.Navigation("DefaultAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Card", b =>
@@ -700,6 +846,33 @@ namespace Bank1.WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Account", b =>

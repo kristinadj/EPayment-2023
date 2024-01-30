@@ -1,5 +1,5 @@
 ﻿using Bank1.WebApi.AppSettings;
-using Bank1.WebApi.DTO.Input;
+using Bank.DTO.Input;
 using Bank1.WebApi.Services;
 using Base.DTO.Output;
 using Microsoft.AspNetCore.Cors;

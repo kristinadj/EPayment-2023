@@ -29,7 +29,16 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPut("{invoiceId}/Success")]
         public async Task<ActionResult<RedirectUrlDTO>> SuccessPayment([FromRoute] int invoiceId)
         {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
+            var invoice = await _invoiceService.GetInvoiceByInvoiceIdAsync(invoiceId);
+            if (invoice == null) return NotFound($"Invoice {invoiceId} not found");
+
+            if (invoice.TransactionStatus == Enums.TransactionStatus.COMPLETED)
+            {
+                var redirectUrl = new RedirectUrlDTO(invoice.TransactionSuccessUrl);
+                return Ok(redirectUrl);
+            }
+
+            invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.COMPLETED);
             if (invoice == null) return BadRequest();
 
             try
@@ -67,7 +76,16 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPut("{invoiceId}/Failure")]
         public async Task<ActionResult<RedirectUrlDTO>> FailurePayment([FromRoute] int invoiceId)
         {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.FAIL);
+            var invoice = await _invoiceService.GetInvoiceByInvoiceIdAsync(invoiceId);
+            if (invoice == null) return NotFound($"Invoice {invoiceId} not found");
+
+            if (invoice.TransactionStatus == Enums.TransactionStatus.FAIL)
+            {
+                var redirectUrl = new RedirectUrlDTO(invoice.TransactionFailureUrl);
+                return Ok(redirectUrl);
+            }
+
+            invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.FAIL);
             if (invoice == null) return BadRequest();
 
             try
@@ -85,7 +103,16 @@ namespace BankPaymentService.WebApi.Controllers
         [HttpPut("{invoiceId}/Error")]
         public async Task<ActionResult<RedirectUrlDTO>> ErrorPayment([FromRoute] int invoiceId)
         {
-            var invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.ERROR);
+            var invoice = await _invoiceService.GetInvoiceByInvoiceIdAsync(invoiceId);
+            if (invoice == null) return NotFound($"Invoice {invoiceId} not found");
+
+            if (invoice.TransactionStatus == Enums.TransactionStatus.ERROR)
+            {
+                var redirectUrl = new RedirectUrlDTO(invoice.TransactionErrorUrl);
+                return Ok(redirectUrl);
+            }
+
+            invoice = await _invoiceService.UpdateInvoiceStatusAsync(invoiceId, Enums.TransactionStatus.ERROR);
             if (invoice == null) return BadRequest();
 
             try

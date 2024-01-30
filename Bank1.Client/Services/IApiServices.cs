@@ -1,4 +1,5 @@
-﻿using Base.DTO.Input;
+﻿using Bank.DTO.Input;
+using Base.DTO.Input;
 using Base.DTO.NBS;
 using Base.DTO.Shared;
 using System.Text;
@@ -8,12 +9,14 @@ namespace Bank1.Client.Services
 {
     public interface IApiServices
     {
+        Task<RedirectUrlDTO?> GetTransactionStatusAsync(int transactionId);
         Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO);
         Task<RedirectUrlDTO?> UpdateTransactionFailedAsync(int transactionId);
         Task<string?> GenerateQrCodeAsync(int transactionId);
         Task<string?> GetQrCodeInputAsync(int transactionId);
         Task<QrCodeODTO?> ValdiateQrCodeAsync(int transactionId);
         Task<QrCodeODTO?> ValdiateQrCodeAsync(BankvalidateQrCodeIDTO input);
+        Task<bool> PayQrCodeAsync(QrCodePaymentIDTO qrCodePayment);
 
     }
 
@@ -53,6 +56,34 @@ namespace Bank1.Client.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> PayQrCodeAsync(QrCodePaymentIDTO qrCodePayment)
+        {
+            var requestContent = new StringContent(JsonSerializer.Serialize(qrCodePayment), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"api/Transaction/QrCode/Pay", requestContent);
+
+            if (response.IsSuccessStatusCode) return true;
+            return false;
+        }
+
+        public async Task<RedirectUrlDTO?> GetTransactionStatusAsync(int transactionId)
+        {
+            RedirectUrlDTO? data = null;
+
+            var response = await _httpClient.GetAsync($"api/Transaction/Status/{transactionId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(content))
+                {
+                    var tempData = JsonSerializer.Deserialize<RedirectUrlDTO>(content, _jsonSerializerOptions);
+                    if (tempData != null) { data = tempData; }
+                }
+            }
+
+            return data;
         }
 
         public async Task<RedirectUrlDTO?> PayTransactionAsync(PayTransactionIDTO payTransactionIDTO)

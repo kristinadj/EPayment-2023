@@ -1,4 +1,4 @@
-﻿using Bank1.WebApi.DTO.Input;
+﻿using Bank.DTO.Input;
 using Bank1.WebApi.Enums;
 using Bank1.WebApi.Helpers;
 using Bank1.WebApi.Models;
@@ -17,6 +17,7 @@ namespace Bank1.WebApi.Services
         Task<Transaction?> CreateRecurringTransactionAsync(TransactionIDTO transactionIDTO);
         Task<RecurringTransaction?> CreateRecurringTransactionAsync(RecurringTransactionDefinition recurringTransactionDefinition, Transaction initialTransaction);
         Task<Transaction?> GetTransactionByIdAsync(int transactionId);
+        Task<Transaction?> GetTransactionByBankPaymentServiceTransactionIdIdAsync(int extrenalTransactionId);
         Task<bool> PayTransctionAsync(Transaction transaction, Account account);
         Task<bool> PccSendToPayTransctionAsync(Transaction transaction, PayTransactionIDTO payTransactionIDTO, int bankId, string pccUrl);
         Task<RedirectUrlDTO?> UpdatePaymentServiceInvoiceStatusAsync(string url);
@@ -28,6 +29,7 @@ namespace Bank1.WebApi.Services
         Task UpdatePaymentDataAsync(RecurringTransactionDefinition recurringTransactionDefinition, PayTransactionIDTO payTransactionIDTO);
         Task<List<RecurringTransactionDefinition>> GetExpiringRecurringTransactionsDefinitionsAsync();
         Task UpdateRecurringTransactionDefinitionNextPaymentDateAsync(RecurringTransactionDefinition recurringTransactionDefinition);
+        Task UpdateReceiverAccountIdAsync(Transaction transaction, Account receiverAccount);
     }
 
     public class TransactionService : ITransactionService
@@ -49,7 +51,7 @@ namespace Bank1.WebApi.Services
 
             var businsessCustomers = await _context.BusinessCustomer.ToListAsync();
             var customer = await _context.BusinessCustomer
-                .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.Password == transactionIDTO.Secret)
+                .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.SecretKey == transactionIDTO.Secret)
                 .Include(x => x.Customer!.Accounts)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -73,14 +75,15 @@ namespace Bank1.WebApi.Services
 
             var transaction = new Transaction(transactionIDTO.ExternalInvoiceId.ToString(), transactionIDTO.TransactionSuccessUrl, transactionIDTO.TransactionFailureUrl, transactionIDTO.TransactionErrorUrl)
             {
+                BankPaymentServiceTransactionId = transactionIDTO.ExternalInvoiceId,
                 Amount = transactionIDTO.Amount,
                 CurrencyId = currency.CurrencyId,
                 ReceiverAccountId = account.AccountId,
-                TransactionStatus = Enums.TransactionStatus.CREATED,
+                TransactionStatus = TransactionStatus.CREATED,
                 Timestamp = transactionIDTO.Timestamp,
                 TransactionLogs = new List<TransactionLog>
                 {
-                    new() { TransactionStatus = Enums.TransactionStatus.CREATED, Timestamp = DateTime.Now }
+                    new() { TransactionStatus = TransactionStatus.CREATED, Timestamp = DateTime.Now }
                 }
             };
 
@@ -100,7 +103,7 @@ namespace Bank1.WebApi.Services
 
             var businsessCustomers = await _context.BusinessCustomer.ToListAsync();
             var customer = await _context.BusinessCustomer
-                .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.Password == transactionIDTO.Secret)
+                .Where(x => x.BusinessCustomerId == transactionIDTO.SenderId && x.SecretKey == transactionIDTO.Secret)
                 .Include(x => x.Customer!.Accounts)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -434,6 +437,24 @@ namespace Bank1.WebApi.Services
             await _context.SaveChangesAsync();
 
             return recurringTransaction;
+        }
+
+        public async Task UpdateReceiverAccountIdAsync(Transaction transaction, Account receiverAccount)
+        {
+            transaction.ReceiverAccountId = receiverAccount.AccountId;
+            _context.Entry(transaction).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Transaction?> GetTransactionByBankPaymentServiceTransactionIdIdAsync(int extrenalTransactionId)
+        {
+            return await _context.Transactions
+                .Where(x => x.BankPaymentServiceTransactionId == extrenalTransactionId)
+                .Include(x => x.Currency)
+                .Include(x => x.ReceiverAccount)
+                .ThenInclude(x => x!.Owner)
+                .Include(x => x.TransactionLogs)
+                .FirstOrDefaultAsync();
         }
     }
 }

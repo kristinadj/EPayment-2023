@@ -1,6 +1,7 @@
-﻿using Bank1.WebApi.AppSettings;
-using Bank1.WebApi.DTO.Input;
+﻿using Bank.DTO.Input;
+using Bank1.WebApi.AppSettings;
 using Bank1.WebApi.Helpers;
+using Bank1.WebApi.Models;
 using Bank1.WebApi.Services;
 using Base.DTO.Input;
 using Base.DTO.NBS;
@@ -35,6 +36,39 @@ namespace Bank1.WebApi.Controllers
             _nbsClient = nbsClient;
         }
 
+        [HttpGet("Status/{transactionId}")]
+        public async Task<ActionResult<RedirectUrlDTO?>> GeTransactionStatus([FromRoute] int transactionId)
+        {
+            RedirectUrlDTO? redirectUrl = null;
+
+            try
+            {
+                var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
+
+                if (transaction!.TransactionStatus == Enums.TransactionStatus.CREATED || transaction!.TransactionStatus == Enums.TransactionStatus.IN_PROGRESS)
+                    return BadRequest("Transaction is still in progress");
+
+                if (transaction.TransactionStatus == Enums.TransactionStatus.COMPLETED)
+                {
+                    redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                }
+                else if (transaction.TransactionStatus == Enums.TransactionStatus.FAIL)
+                {
+                    redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                }
+                else
+                {
+                    redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionErrorUrl);
+                }
+
+                return Ok(redirectUrl);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<PaymentInstructionsODTO>> CreateTransaction([FromBody] TransactionIDTO transactionIDTO)
         {
@@ -59,7 +93,7 @@ namespace Bank1.WebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PayTransaction([FromBody] PayTransactionIDTO payTransactionIDTO)
+        public async Task<ActionResult<RedirectUrlDTO?>> PayTransaction([FromBody] PayTransactionIDTO payTransactionIDTO)
         {
             var transaction = await _transactionService.GetTransactionByIdAsync(payTransactionIDTO.TransactionId);
 
@@ -175,7 +209,7 @@ namespace Bank1.WebApi.Controllers
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
                 var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
-                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                var qrCodeGenIDTO = Converter.ConvertToQrCodeGenerateIDTO(transaction, (double)amount, "RSD");
                 var qrCode = await _nbsClient.GenerateQrCodeAsync(qrCodeGenIDTO);
 
                 if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest("Unexpected error while generating QR code");
@@ -195,7 +229,7 @@ namespace Bank1.WebApi.Controllers
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
                 var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
-                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                var qrCodeGenIDTO = Converter.ConvertToQrCodeGenerateIDTO(transaction, (double)amount, "RSD");
                 return Ok(qrCodeGenIDTO);
             }
             catch (Exception ex)
@@ -212,7 +246,7 @@ namespace Bank1.WebApi.Controllers
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
                 var amount = await _transactionService.ExchangeAsync(transaction!.Currency!.Code, "RSD", transaction.Amount);
 
-                var qrCodeGenIDTO = Converter.ConvertToQrCodoeGenerateIDTO(transaction, (double)amount, "RSD");
+                var qrCodeGenIDTO = Converter.ConvertToQrCodeGenerateIDTO(transaction, (double)amount, "RSD");
                 var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodeGenIDTO);
 
                 if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest("Unexpected error while generating QR code");
@@ -235,6 +269,63 @@ namespace Bank1.WebApi.Controllers
             }
             catch (Exception ex)
             {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("QrCode/Pay")]
+        public async Task<ActionResult> PayQrCodeTransaction([FromBody] QrCodePaymentIDTO qrCodePayment)
+        {
+            Transaction? transaction = null;
+
+            try
+            {
+                var senderAccount = await _accountService.GetAccountByCustomerIdAsync(qrCodePayment.PayerId);
+                if (senderAccount == null) return NotFound("Invalid payer account");
+
+                var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodePayment.ScannedQrCode);
+                if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest("NBS - Invalid QR code format");
+
+                var receiverAccount = await _accountService.GetAcountByAccountNumberAsync(qrCode.Data!.R, false);
+
+                if (receiverAccount == null)
+                {
+                    // TODO: PCC redirect
+                }
+                else
+                {
+                    var isSuccess = int.TryParse(qrCode.Data!.S, out int extrenalTransactionId);
+                    if (!isSuccess) return BadRequest("TransactionId is not encoded in QR code");
+
+                    transaction = await _transactionService.GetTransactionByBankPaymentServiceTransactionIdIdAsync(extrenalTransactionId);
+                    if (transaction == null) return NotFound($"Transaction {extrenalTransactionId} not found");
+
+                    if (transaction!.TransactionStatus == Enums.TransactionStatus.COMPLETED) return BadRequest("Transaction is already settled");
+
+                    await _transactionService.UpdateReceiverAccountIdAsync(transaction, receiverAccount);
+                    isSuccess = await _transactionService.PayTransctionAsync(transaction, senderAccount!);
+                    if (isSuccess)
+                    {
+                        await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                    }
+                    else
+                    {
+                        await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.FAIL);
+                        await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                        return BadRequest("Insufficient balance");
+                    }
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                if (transaction != null)
+                {
+                    await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.ERROR);
+                    await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionErrorUrl);
+                }
+
                 return BadRequest(ex.Message);
             }
         }

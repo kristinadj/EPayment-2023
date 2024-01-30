@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Bank1.Client.Authentication;
+using Microsoft.AspNetCore.Components;
 using System.Net.Http.Headers;
-using WebShop.Client.Authentication;
 
-namespace WebShop.Client.Handlers
+namespace Bank1.Client.Handlers
 {
     public class JwtAuthenticationHeaderHandler : DelegatingHandler
     {
@@ -19,11 +19,7 @@ namespace WebShop.Client.Handlers
         {
             var token = await _tokenProvider.GetTokenAsync();
 
-            if (string.IsNullOrEmpty(token))
-            {
-                _navManager.NavigateTo("/login");
-            }
-            else
+            if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }

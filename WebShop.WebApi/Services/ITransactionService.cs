@@ -55,9 +55,7 @@ namespace WebShop.WebApi.Services
                     .ThenInclude(x => x!.Transaction)
                     .FirstOrDefaultAsync();
 
-                if (order == null) throw new Exception($"Order for invoice {transaction.Invoice!.InvoiceId} not found");
-
-                if (order.OrderStatus == OrderStatus.CREATED || order.OrderStatus != OrderStatus.PARTIALLY_COMPLETED)
+                if (order != null && (order.OrderStatus == OrderStatus.CREATED || order.OrderStatus != OrderStatus.PARTIALLY_COMPLETED))
                 {
                     if (transactionStatus == TransactionStatus.COMPLETED)
                     {
