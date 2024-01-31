@@ -12,6 +12,7 @@ namespace BitcoinPaymentService.WebApi.Services
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
         Task<Invoice?> UpdateExternalPaymentServiceInvoiceIdAsync(int invoiceId, string externalInvoiceId);
+        Task<bool> IsInvoicePaidAsync(int externalInvoiceId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -102,6 +103,13 @@ namespace BitcoinPaymentService.WebApi.Services
             await _context.SaveChangesAsync();
 
             return invoice;
+        }
+
+        public async Task<bool> IsInvoicePaidAsync(int externalInvoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.ExternalInvoiceId == externalInvoiceId && x.TransactionStatus == TransactionStatus.COMPLETED)
+                .AnyAsync();
         }
     }
 }

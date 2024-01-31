@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PaymentCardCenter.WebApi.Models;
 
@@ -11,9 +12,10 @@ using PaymentCardCenter.WebApi.Models;
 namespace PaymentCardCenter.WebApi.Migrations
 {
     [DbContext(typeof(PccContext))]
-    partial class PccContextModelSnapshot : ModelSnapshot
+    [Migration("20240131132524_BankDataUpdate")]
+    partial class BankDataUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -23,6 +23,9 @@ namespace BankPaymentService.WebApi.Controllers
         {
             try
             {
+                var isPaid = await _invoiceService.IsInvoicePaidAsync(paymentRequestDTO.ExternalInvoiceId);
+                if (isPaid) return BadRequest("Invoice already paid");
+
                 var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
                 if (invoice == null) return BadRequest();
 

@@ -44,6 +44,9 @@ namespace BitcoinPaymentService.WebApi.Controllers
             var merchant = await _merchantService.GetMerchantByPaymentServiceMerchantId(paymentRequestDTO.MerchantId);
             if (merchant == null) return BadRequest();
 
+            var isPaid = await _invoiceService.IsInvoicePaidAsync(paymentRequestDTO.ExternalInvoiceId);
+            if (isPaid) return BadRequest("Invoice already paid");
+
             var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO);
             if (invoice == null) return BadRequest();
 

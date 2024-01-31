@@ -48,6 +48,9 @@ namespace PayPalPaymentService.WebApi.Controllers
             var accessToken = await _paytPalClientService.GenerateAccessTokenAsync(merchant.ClientId, merchant.Secret);
             if (accessToken == null) return BadRequest();
 
+            var isPaid = await _invoiceService.IsInvoicePaidAsync(paymentRequestDTO.ExternalInvoiceId);
+            if (isPaid) return BadRequest("Invoice already paid");
+
             var invoice = await _invoiceService.CreateInvoiceAsync(paymentRequestDTO, paymentRequestDTO.InvoiceType, false);
             if (invoice == null) return BadRequest();
 

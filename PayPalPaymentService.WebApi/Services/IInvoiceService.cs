@@ -9,6 +9,7 @@ namespace PayPalPaymentService.WebApi.Services
     public interface IInvoiceService
     {
         Task<Invoice?> GetInvoiceByPayPalOrderIdAsync(string payPalOrderId);
+        Task<bool> IsInvoicePaidAsync(int externalInvoiceId);
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO, InvoiceType invoiceType, bool recurringPayment);
         Task<Invoice?> GetInvoiceByPayPalSubscriptionIdAsync(string payPalSubscriptionId);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
@@ -137,6 +138,13 @@ namespace PayPalPaymentService.WebApi.Services
             await _context.SaveChangesAsync();
 
             return invoice;
+        }
+
+        public async Task<bool> IsInvoicePaidAsync(int externalInvoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.ExternalInvoiceId == externalInvoiceId && x.TransactionStatus == TransactionStatus.COMPLETED)
+                .AnyAsync();
         }
     }
 }

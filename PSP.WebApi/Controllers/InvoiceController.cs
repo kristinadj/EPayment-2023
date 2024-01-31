@@ -47,7 +47,7 @@ namespace PSP.WebApi.Controllers
         [HttpGet("{invoiceId}")]
         public async Task<ActionResult<InvoiceODTO>> GetInvoiceById([FromRoute] int invoiceId)
         {
-            var invoice = await _invoiceService.GetInvoiceByIdAsyync(invoiceId);
+            var invoice = await _invoiceService.GetInvoiceODTOByIdAsync(invoiceId);
             if (invoice == null) return NotFound($"Invoice {invoiceId} doesn't exist");
 
             return Ok(invoice);
@@ -77,7 +77,15 @@ namespace PSP.WebApi.Controllers
         [HttpPut("PaymentMethod/{invoiceId};{paymentMethodId}")]
         public async Task<ActionResult<RedirectUrlDTO>> UpdatePaymentMethod([FromRoute] int invoiceId, [FromRoute] int paymentMethodId)
         {
-            var invoice = await _invoiceService.UpdatePaymentMethodAsync(invoiceId, paymentMethodId);
+            var invoice = await _invoiceService.GetInvoiceByIdAsync(invoiceId);
+
+            if (invoice == null) 
+                return NotFound($"Invoice {invoiceId} not found");
+
+            if (invoice.Transaction!.TransactionStatus == Enums.TransactionStatus.COMPLETED)
+                return BadRequest("Invoice already paid");
+
+            invoice = await _invoiceService.UpdatePaymentMethodAsync(invoiceId, paymentMethodId);
             if (invoice == null) return NotFound("Invoice not found");
 
             var paymentMethodCredentials = invoice.Merchant!.PaymentMethods!.Where(x => x.PaymentMethodId == paymentMethodId).FirstOrDefault();

@@ -404,9 +404,9 @@ namespace Bank2.WebApi.Services
             var isLocalCard = transactionIDTO.PayTransaction!.PanNumber.StartsWith(cardStartNumbers);
             if (!isLocalCard) throw new Exception($"Card is not local");
 
-            var hashedPanNumber = Converter.HashPanNumber(transactionIDTO.PayTransaction.PanNumber);
             var issuerAccount = await _context.Accounts
-                .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == hashedPanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
+                .Where(x => x.Cards!.Any(x => x.CardHolderName == transactionIDTO.PayTransaction.CardHolderName && x.PanNumber == transactionIDTO.PayTransaction.PanNumber && x.ExpiratoryDate == transactionIDTO.PayTransaction.ExpiratoryDate && x.CVV == transactionIDTO.PayTransaction.CVV))
+                .Include(x => x.Currency)
                 .FirstOrDefaultAsync();
 
             if (issuerAccount == null) throw new Exception($"Invalid credit card data");
@@ -433,9 +433,9 @@ namespace Bank2.WebApi.Services
             };
 
             var senderAmount = transaction.Amount;
-            if (issuerAccount.Currency!.Code != transaction!.Currency!.Code)
+            if (issuerAccount.Currency!.Code != transactionIDTO.CurrencyCode)
             {
-                senderAmount = (double)await ExchangeAsync(transaction!.Currency!.Code, issuerAccount.Currency.Code, transaction.Amount);
+                senderAmount = (double)await ExchangeAsync(transactionIDTO.CurrencyCode, issuerAccount.Currency.Code, transaction.Amount);
             }
 
             if (issuerAccount.Balance < senderAmount)

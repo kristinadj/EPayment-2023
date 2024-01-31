@@ -247,7 +247,7 @@ namespace Bank2.WebApi.Models
                });
 
             builder.Entity<Card>().HasData(
-                new Card("JOHN DOE", "2024 1234 5678 90123", "10/26")
+                new Card("ANN SMITH", "2024 1234 5678 9012", "10/26")
                 {
                     CardId = 1,
                     AccountId = 2,
