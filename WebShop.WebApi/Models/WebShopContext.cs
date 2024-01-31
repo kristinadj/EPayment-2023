@@ -240,9 +240,9 @@ namespace WebShop.WebApi.Models
                     Role = Role.MERCHANT,
                     Address = "123 Main Street",
                     PhoneNumber = "+1 555-123-4567",
-                    PasswordHash = hasher.HashPassword(null!, "Admin123#"),
-                    Email = "webshopadmin@lawpublishingagency.com",
-                    NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
+                    PasswordHash = hasher.HashPassword(null!, "Pass123!"),
+                    Email = "webshop1@gmail.com",
+                    NormalizedEmail = "webshop1@gmail.com".ToUpper(),
                 });
 
             builder.Entity<Merchant>().HasData(
@@ -270,9 +270,9 @@ namespace WebShop.WebApi.Models
                     Role = Role.MERCHANT,
                     Address = "456 Oak Avenue",
                     PhoneNumber = "+1 555-987-6543",
-                    PasswordHash = hasher.HashPassword(null!, "AgencyPass456$"),
-                    Email = "agencyadmin@legaldocsagency.com",
-                    NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
+                    PasswordHash = hasher.HashPassword(null!, "Pass123!"),
+                    Email = "webshop2@gmail.com",
+                    NormalizedEmail = "webshop2@gmail.com".ToUpper(),
                 });
 
             builder.Entity<Merchant>().HasData(
@@ -290,6 +290,10 @@ namespace WebShop.WebApi.Models
                 new Item("International Law Consultation", "Expertise in international legal matters.") { ItemId = 18, MerchantId = 2, Price = 850, CurrencyId = 2 },
                 new Item("Dispute Resolution Services", "Assistance in resolving legal disputes.") { ItemId = 19, MerchantId = 2, Price = 700, CurrencyId = 2 },
                 new Item("Legal Training Seminars", "Seminars on various legal topics.") { ItemId = 20, MerchantId = 2, Price = 750, CurrencyId = 2 }
+                );
+
+            builder.Entity<Item>().HasData(
+                new Item("Test - very low price", "PTest - very low price") { ItemId = 21, MerchantId = 2, Price = 0.1, CurrencyId = 2 }
                 );
 
             #endregion

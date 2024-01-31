@@ -2,6 +2,7 @@
 using PayPalPaymentService.WebApi.AppSettings;
 using PayPalPaymentService.WebApi.DTO.PayPal.Input;
 using PayPalPaymentService.WebApi.DTO.PayPal.Output;
+using PayPalPaymentService.WebApi.Migrations;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -57,60 +58,93 @@ namespace PayPalPaymentService.WebApi.Services
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync("/v2/checkout/orders", order);
-            response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(order), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/v2/checkout/orders", requestContent);
 
-            var stringContent = await response.Content.ReadAsStringAsync();
-            var orderResponse = JsonSerializer.Deserialize<OrderODTO>(stringContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                var orderResponse = JsonSerializer.Deserialize<OrderODTO>(stringContent);
 
-            if (orderResponse == null) return null;
+                if (orderResponse == null) return null;
 
-            return orderResponse;
+                return orderResponse;
+            }
+            else
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(stringContent);
+            }
         }
 
         public async Task<PayPalProductODTO?> CreateProductAsync(string token, PayPalProductIDTO product)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync("/v1/catalogs/products", product);
-            response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/v1/catalogs/products", requestContent);
 
-            var stringContent = await response.Content.ReadAsStringAsync();
-            var productResponse = JsonSerializer.Deserialize<PayPalProductODTO>(stringContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                var productResponse = JsonSerializer.Deserialize<PayPalProductODTO>(stringContent);
 
-            if (productResponse == null) return null;
+                if (productResponse == null) return null;
 
-            return productResponse;
+                return productResponse;
+            }
+            else
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(stringContent);
+            }
         }
 
         public async Task<CreatePlanODTO?> CreatePlanAsync(string token, CreatePlanIDTO plan)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync("/v1/billing/plans", plan);
-            response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(plan), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/v1/billing/plans", requestContent);
 
-            var stringContent = await response.Content.ReadAsStringAsync();
-            var planResponse = JsonSerializer.Deserialize<CreatePlanODTO>(stringContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                var planResponse = JsonSerializer.Deserialize<CreatePlanODTO>(stringContent);
 
-            if (planResponse == null) return null;
+                if (planResponse == null) return null;
 
-            return planResponse;
+                return planResponse;
+            }
+            else
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(stringContent);
+            }
         }
 
         public async Task<CreateSubscriptionODTO?> CreateSubscriptionAsync(string token, CreateSubscriptionIDTO subscription)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await _httpClient.PostAsJsonAsync("/v1/billing/subscriptions", subscription);
-            response.EnsureSuccessStatusCode();
+            var requestContent = new StringContent(JsonSerializer.Serialize(subscription), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/v1/billing/subscriptions", requestContent);
 
-            var stringContent = await response.Content.ReadAsStringAsync();
-            var subscriptionResponse = JsonSerializer.Deserialize<CreateSubscriptionODTO>(stringContent);
+            if (response.IsSuccessStatusCode)
+            {
 
-            if (subscriptionResponse == null) return null;
+                var stringContent = await response.Content.ReadAsStringAsync();
+                var subscriptionResponse = JsonSerializer.Deserialize<CreateSubscriptionODTO>(stringContent);
 
-            return subscriptionResponse;
+                if (subscriptionResponse == null) return null;
+
+                return subscriptionResponse;
+            }
+            else
+            {
+                var stringContent = await response.Content.ReadAsStringAsync();
+                throw new Exception(stringContent);
+            }
         }
 
         public async Task<bool> CancelSubscriptionAsync(string token, string subscriptionId)
@@ -118,7 +152,8 @@ namespace PayPalPaymentService.WebApi.Services
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var cancelSubscriptionIDTO = new CancelSubscriptionIDTO();
-            var response = await _httpClient.PostAsJsonAsync($"/v1/billing/subscriptions/{subscriptionId}/cancel", cancelSubscriptionIDTO);
+            var requestContent = new StringContent(JsonSerializer.Serialize(cancelSubscriptionIDTO), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"/v1/billing/subscriptions/{subscriptionId}/cancel", requestContent);
             if (!response.IsSuccessStatusCode) return false;
 
             return true;

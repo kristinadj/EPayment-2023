@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.WebApi.Models;
 
@@ -11,9 +12,10 @@ using WebShop.WebApi.Models;
 namespace WebShop.WebApi.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20240131190924_DataUpdates")]
+    partial class DataUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -399,15 +401,6 @@ namespace WebShop.WebApi.Migrations
                             MerchantId = 2,
                             Name = "Legal Training Seminars",
                             Price = 750.0
-                        },
-                        new
-                        {
-                            ItemId = 21,
-                            CurrencyId = 2,
-                            Description = "PTest - very low price",
-                            MerchantId = 2,
-                            Name = "Test - very low price",
-                            Price = 0.10000000000000001
                         });
                 });
 
@@ -842,17 +835,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "da12e18e-e5b7-494a-ade2-c7074104103e",
+                            ConcurrencyStamp = "95bb7ada-6246-4cd1-ae5a-39a575b8a2fd",
                             Email = "webshop1@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOP1@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFhZU1HeloHkpH2MiA0JY2B7Zxy+0uRJmEGQS3GXRAHoGJc/gU01iJ4EWn/L5Srb0g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOHukHds2F8xRo6ag1Br9IJyR/E0BxPVWeQ/G/LP+HPogcGlTSQHMnhKiKk/BFfTOw==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "9c31f6c3-2564-461f-a6ab-38c113546439",
+                            SecurityStamp = "c2f93720-51eb-44c2-950c-beab367ed754",
                             TwoFactorEnabled = false
                         },
                         new
@@ -860,17 +853,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "8b0a3aba-4e48-4782-94e6-3dc6cf9b53a1",
+                            ConcurrencyStamp = "dfb03970-ae8d-4d3b-9614-031b09d71e52",
                             Email = "webshop2@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "WEBSHOP2@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAvj8HKZg646+m49HAJKqhr+DroXRPY1rXABFaNLqOmit7BWwmOo+e0KUoM32yZfAQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKXqy13p4vCPsW5jo+tMCCfB2Nef40b8n7jE6BUb7ekYUDVvL5Ypzz4TF1YsKBu2tw==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "df2639f1-c0c6-4e8d-9a5e-3635a60c9750",
+                            SecurityStamp = "09c2d1fb-53c3-494d-9e30-1531b500505f",
                             TwoFactorEnabled = false
                         });
                 });

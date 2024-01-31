@@ -109,11 +109,23 @@ namespace Bank1.WebApi.Services
                 .Include(x => x.Customer!.Accounts)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
+
             if (customer == null) return null;
 
-            var account = customer.Customer!.Accounts!
-                .Where(x => x.AccountNumber == transactionIDTO.AccountNumber)
-                .FirstOrDefault();
+            Account? account = null;
+
+            if (!string.IsNullOrEmpty(transactionIDTO.AccountNumber))
+            {
+                account = customer.Customer!.Accounts!
+                    .Where(x => x.AccountNumber == transactionIDTO.AccountNumber)
+                    .FirstOrDefault();
+            }
+            else
+            {
+                var defaultAccountId = customer.DefaultAccountId;
+                account = customer.Customer!.Accounts!.Where(x => x.AccountId == defaultAccountId).FirstOrDefault();
+            }
+
             if (account == null) return null;
 
             var recurringTransaction = new RecurringTransactionDefinition
@@ -135,7 +147,7 @@ namespace Bank1.WebApi.Services
                         {
                             Amount = transactionIDTO.Amount,
                             CurrencyId = currency.CurrencyId,
-                            IssuerAccountId = account.AccountId,
+                            AquirerAccountId = account.AccountId,
                             TransactionStatus = TransactionStatus.CREATED,
                             Timestamp = transactionIDTO.Timestamp,
                             TransactionLogs = new List<TransactionLog>

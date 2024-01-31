@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.WebApi.Models;
 
@@ -11,9 +12,10 @@ using WebShop.WebApi.Models;
 namespace WebShop.WebApi.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20240131212738_LowPriceTest")]
+    partial class LowPriceTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -407,7 +409,7 @@ namespace WebShop.WebApi.Migrations
                             Description = "PTest - very low price",
                             MerchantId = 2,
                             Name = "Test - very low price",
-                            Price = 0.10000000000000001
+                            Price = 0.0050000000000000001
                         });
                 });
 
@@ -842,17 +844,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "da12e18e-e5b7-494a-ade2-c7074104103e",
+                            ConcurrencyStamp = "710fc307-74a8-475a-a984-75d1a46c459e",
                             Email = "webshop1@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
                             NormalizedEmail = "WEBSHOP1@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFhZU1HeloHkpH2MiA0JY2B7Zxy+0uRJmEGQS3GXRAHoGJc/gU01iJ4EWn/L5Srb0g==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEM1w+oAwUolMK1OVptsU3tpuHPlcRChGXGLEdoLCyzr9jpfbEWSnke6SEF2PIjQdIw==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "9c31f6c3-2564-461f-a6ab-38c113546439",
+                            SecurityStamp = "438eafcb-7631-40c7-a1a3-c90dcaa22fb6",
                             TwoFactorEnabled = false
                         },
                         new
@@ -860,17 +862,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "8b0a3aba-4e48-4782-94e6-3dc6cf9b53a1",
+                            ConcurrencyStamp = "ca9fde5b-40ea-4cb2-a1c0-ac2ef71fc505",
                             Email = "webshop2@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
                             NormalizedEmail = "WEBSHOP2@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEAvj8HKZg646+m49HAJKqhr+DroXRPY1rXABFaNLqOmit7BWwmOo+e0KUoM32yZfAQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFIUkXmpLya6qJrFIjIoEHMhf4gnp4G+nOlinmdGRbdo74Uk0KTNX7EwrPvi8j82AQ==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "df2639f1-c0c6-4e8d-9a5e-3635a60c9750",
+                            SecurityStamp = "df1992d2-8180-4686-b13e-880174eb2369",
                             TwoFactorEnabled = false
                         });
                 });

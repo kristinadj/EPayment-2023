@@ -14,15 +14,25 @@ namespace WebShop.Client.Pages
         [Inject]
         protected GlobalUserSettings GlobalSettings { get; set; }
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
+
         private bool isLoading = false;
         private List<InvoiceODTO> invoices = new();
 
         protected override async Task OnInitializedAsync()
         {
-            isLoading = true;
-            invoices = await ApiServices.GetBuyerInvoicesAsync(GlobalSettings.UserId!);
-            isLoading = false;
-            StateHasChanged();
+            if (GlobalSettings.IsSubscriptionPlanValid == null || !(bool)GlobalSettings.IsSubscriptionPlanValid)
+            {
+                NavigationManager!.NavigateTo("/plan");
+            }
+            else
+            {
+                isLoading = true;
+                invoices = await ApiServices.GetBuyerInvoicesAsync(GlobalSettings.UserId!);
+                isLoading = false;
+                StateHasChanged();
+            }
         }
     }
 }

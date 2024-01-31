@@ -63,7 +63,7 @@ namespace WebShop.WebApi.Controllers
                     TransactionFailureUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/failure",
                     TransactionErrorUrl = $"{_webShopAppSettings.ClientUrl}/invoice/@INVOICE_ID@/error"
                 };
-                var result = await _pspApiHttpClient.PostAsync("/Merchant", merchantDTO);
+                var result = await _pspApiHttpClient.PostAsync("Merchant", merchantDTO);
 
                 if (result == null) return BadRequest();
 
@@ -196,7 +196,7 @@ namespace WebShop.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return Ok(institutions);
             }
 
             return Ok(institutions);

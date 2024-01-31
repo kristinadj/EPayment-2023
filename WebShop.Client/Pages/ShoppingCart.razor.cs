@@ -27,23 +27,25 @@ namespace WebShop.Client.Pages
         protected override async Task OnInitializedAsync()
         {
             isLoading = true;
-            shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
-
-            GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
-            GlobalSettings.UpdateShoppingCartItems(shoppingCart!.ShoppingCartItems!.Select(x => x.Quantity).Sum());
 
             if (GlobalSettings.IsSubscriptionPlanValid == null)
             {
                 var isSubscriptionPlanValid = await ApiServices.IsSubscriptionPlanValidAsync(GlobalSettings.UserId!);
                 GlobalSettings.IsSubscriptionPlanValid = isSubscriptionPlanValid;
             }
-            
+
             if (!(bool)GlobalSettings.IsSubscriptionPlanValid)
             {
                 NavigationManager!.NavigateTo("/plan");
             }
+            else
+            {
+                shoppingCart = await ApiServices.GetShoppingCartByUserAsync(GlobalSettings.UserId!);
 
-            isLoading = false;
+                GlobalSettings.UpdateShoppingCartItems(-GlobalSettings.ShoppingCartItemsCount);
+                GlobalSettings.UpdateShoppingCartItems(shoppingCart!.ShoppingCartItems!.Select(x => x.Quantity).Sum());
+                isLoading = false;
+            }
         }
 
         private async Task OnClickCheckoutAsync()
