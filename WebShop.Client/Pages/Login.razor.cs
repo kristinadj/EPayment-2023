@@ -55,12 +55,19 @@ namespace WebShop.Client.Pages
                 if (result != null)
                 {
                     isLoading = false;
-                    NavigationManager.NavigateTo("/");
+                    NavigationManager.NavigateTo("/", forceLoad: true);
+                }
+                else
+                {
+                    isLoading = false;
+                    StateHasChanged();
                 }
             }
-
-            isLoading = false;
-            StateHasChanged();
+            else
+            {
+                isLoading = false;
+                StateHasChanged();
+            }
         }
     }
 }
