@@ -39,8 +39,6 @@ namespace WebShop.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
-
             isLoading = true;
 
             var user = (await AuthenticationStateTask).User;

@@ -20,6 +20,15 @@
                 }
             </div>
             <div class="d-flex f-elx-row justify-center gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="OnClickRefreshAsync" Disabled="isRefreshing">
+                    @if (isRefreshing)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Refresh Payment Status
+                </MudButton>
+            </div>
+            <div class="d-flex f-elx-row justify-center gap-2">
                 <MudTextField T="string" Label="QR Code Content" Variant="Variant.Text" @bind-Value="@qrCodeInput" Lines="5" />
             </div>
             <div class="d-flex f-elx-row justify-center gap-2">

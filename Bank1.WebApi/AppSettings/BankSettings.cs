@@ -8,12 +8,15 @@
         public string PccUrl { get; set; }
         public string NbsUrl { get; set; }
 
+        public string EncriptionKey { get; set; }
+
         public BankSettings()
         {
             BankPaymentUrl = string.Empty;
             CardStartNumbers = string.Empty;
             PccUrl = string.Empty;
             NbsUrl = string.Empty;
+            EncriptionKey = string.Empty;
         }
     }
 }

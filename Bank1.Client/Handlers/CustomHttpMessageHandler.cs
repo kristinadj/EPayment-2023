@@ -28,7 +28,7 @@ namespace Bank1.Client.Handlers
                 {
                     case HttpStatusCode.Unauthorized:
                         _snackbar.Add("User is not authorized", Severity.Warning);
-                        _navManager.NavigateTo("/login");
+                        _navManager.NavigateTo("/");
                         break;
                     case HttpStatusCode.InternalServerError:
                         _snackbar.Add(message, Severity.Error);

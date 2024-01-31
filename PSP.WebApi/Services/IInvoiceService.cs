@@ -11,7 +11,8 @@ namespace PSP.WebApi.Services
 {
     public interface IInvoiceService
     {
-        Task<InvoiceODTO?> GetInvoiceByIdAsyync(int invoiceId);
+        Task<InvoiceODTO?> GetInvoiceODTOByIdAsync(int invoiceId);
+        Task<Invoice?> GetInvoiceByIdAsync(int invoiceId);
         Task<SubscriptionDetails?> GetSubscriptioNdetailsByInvoiceIdAsync(int invoiceId);
         Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspInvoiceIDTO invoiceIDTO, InvoiceType invoiceType);
         Task<Invoice?> CreateInvoiceAsync(Merchant merchant, PspSubscriptionPaymentDTO subscriptionPaymentIDTO);
@@ -30,11 +31,19 @@ namespace PSP.WebApi.Services
             _mapper = mapper;
         }
 
-        public async Task<InvoiceODTO?> GetInvoiceByIdAsyync(int invoiceId)
+        public async Task<InvoiceODTO?> GetInvoiceODTOByIdAsync(int invoiceId)
         {
             return await _context.Invoices
                 .Where(x => x.InvoiceId == invoiceId)
                 .ProjectTo<InvoiceODTO?>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Invoice?> GetInvoiceByIdAsync(int invoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .Include(x => x.Transaction)
                 .FirstOrDefaultAsync();
         }
 

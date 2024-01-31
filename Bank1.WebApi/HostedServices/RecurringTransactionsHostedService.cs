@@ -53,12 +53,12 @@ namespace Bank1.WebApi.HostedServices
                                 TransactionId = recurringTransaction!.TransactionId
                             };
 
-                            isSuccess = await transactionService.PccSendToPayTransctionAsync(recurringTransaction.Transaction!, payTransactionIDTO, appSettings.Value.PccBankId, appSettings.Value.PccUrl);
+                            isSuccess = await transactionService.PccSendAcquirerTransactionAsync(recurringTransaction.Transaction!, payTransactionIDTO, appSettings.Value.PccBankId, appSettings.Value.PccUrl);
                         }
                         else
                         {
                             var sender = await accountService!.GetAccountByCreditCardAsync(recurringTransactionDefinition.CardHolderName!, recurringTransactionDefinition.PanNumber, recurringTransactionDefinition.ExpiratoryDate!, (int)recurringTransactionDefinition.CVV!);
-                            isSuccess = await transactionService.PayTransctionAsync(recurringTransaction!.Transaction!, sender!);
+                            isSuccess = await transactionService.PayLocalTransactionAsync(recurringTransaction!.Transaction!, sender!);
                         }
 
                         if (isSuccess)
@@ -66,7 +66,7 @@ namespace Bank1.WebApi.HostedServices
                             
                             try
                             {
-                                var response = await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionSuccessUrl, null);
+                                var response = await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionSuccessUrl, null, stoppingToken);
 
                                 if (response.IsSuccessStatusCode)
                                 {
@@ -80,7 +80,7 @@ namespace Bank1.WebApi.HostedServices
                         }
                         else
                         {
-                            await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionFailureUrl, null);
+                            await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionFailureUrl, null, stoppingToken);
                         }
                     }
                 }

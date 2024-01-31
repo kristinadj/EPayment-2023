@@ -41,8 +41,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AccountId");
 
@@ -62,16 +63,53 @@ namespace Bank1.WebApi.Migrations
                             AccountNumber = "105-0000000000000-29",
                             Balance = 14500.0,
                             CurrencyId = 1,
-                            OwnerId = 1
+                            OwnerId = "ff997333-0c10-4fef-9d07-d2599fca2795"
+                        },
+                        new
+                        {
+                            AccountId = 3,
+                            AccountNumber = "105-0000000000001-26",
+                            Balance = 500.0,
+                            CurrencyId = 2,
+                            OwnerId = "ff997333-0c10-4fef-9d07-d2599fca2795"
                         },
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "106-0000000000000-30",
+                            AccountNumber = "105-0000000001234-13",
                             Balance = 6530.0,
-                            CurrencyId = 1,
-                            OwnerId = 2
+                            CurrencyId = 3,
+                            OwnerId = "cc1e5433-cf53-40d1-851e-e2102180eb55"
                         });
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.AcqurierTransaction", b =>
+                {
+                    b.Property<int>("AcqurierTransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcqurierTransactionId"), 1L, 1);
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("IssuerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IssuerTransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AcqurierTransactionId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("AqurierTransactions", "dbo");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.BusinessCustomer", b =>
@@ -82,13 +120,14 @@ namespace Bank1.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessCustomerId"), 1L, 1);
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DefaultAccountId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("SecretKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -106,9 +145,9 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             BusinessCustomerId = 1,
-                            CustomerId = 1,
-                            DefaultAccountId = 1,
-                            Password = "0hqo5asTUiTJe/2ZcF3vuA=="
+                            CustomerId = "ff997333-0c10-4fef-9d07-d2599fca2795",
+                            DefaultAccountId = 3,
+                            SecretKey = "Fy5Mib9nbUSKQCZYRPeWKA=="
                         });
                 });
 
@@ -213,58 +252,116 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>
                 {
-                    b.Property<int>("CustomerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"), 1L, 1);
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerId");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
-                    b.ToTable("Customers", "dbo");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
-                            CustomerId = 1,
+                            Id = "ff997333-0c10-4fef-9d07-d2599fca2795",
+                            AccessFailedCount = 0,
                             Address = "123 Glavna ulica",
-                            Email = "webshopadmin@lawpublishingagency.com",
-                            FirstName = "Web prodavnica pravnog izdavaštva",
-                            LastName = "",
-                            PhoneNumber = "+1 555-123-4567"
+                            ConcurrencyStamp = "b5391014-4f4b-48ee-bc31-16ac5b390a01",
+                            Email = "webshop1@gmail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "Web shop 1",
+                            NormalizedEmail = "WEBSHOP1@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMgPkZPy9MLcWVYTqJuoOQJ+jvYh+ESCMQFD185o9LBCkN6m/bxMa9iqVaBvv1pvKw==",
+                            PhoneNumber = "+1 555-123-4567",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "b5e8e06c-6856-41ec-a70e-c32f4f9a8a47",
+                            TwoFactorEnabled = false
                         },
                         new
                         {
-                            CustomerId = 2,
-                            Address = "789 Ulica jorgovana,",
-                            Email = "johndoe@email.com",
-                            FirstName = "John",
-                            LastName = "Doe",
-                            PhoneNumber = "+1 555-987-6543"
+                            Id = "cc1e5433-cf53-40d1-851e-e2102180eb55",
+                            AccessFailedCount = 0,
+                            Address = "789 Ulica jorgovana",
+                            ConcurrencyStamp = "844fcdc6-7095-43a2-b5de-059ebc6e03da",
+                            Email = "johndoe@gmail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "John Doe",
+                            NormalizedEmail = "JOHNDOE@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMZ93QN7DcmgJNX2exnKpz2tMpPxPFNz6NKPFn6JYv2Zhgkjun9TP8nxomu0IBpJiA==",
+                            PhoneNumber = "+1 555-987-6543",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "8a507cfd-670f-4b61-94af-04e54346ef6a",
+                            TwoFactorEnabled = false
                         });
                 });
 
@@ -341,43 +438,29 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
                 {
-                    b.Property<int>("TransactionId")
+                    b.Property<int>("IssuerTransactionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuerTransactionId"), 1L, 1);
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("AquirerTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AquirerTransactionId")
+                    b.Property<int?>("AquirerTransactionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurrencyId")
+                    b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("IssuerTransactionId");
 
-                    b.Property<int>("IssuerAccountId")
-                        .HasColumnType("int");
+                    b.HasIndex("AccountId");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TransactionStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(24)");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.HasIndex("IssuerAccountId");
+                    b.HasIndex("TransactionId");
 
                     b.ToTable("IssuerTransactions", "dbo");
                 });
@@ -416,6 +499,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("AquirerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CVV")
                         .HasColumnType("int");
 
@@ -441,9 +527,6 @@ namespace Bank1.WebApi.Migrations
                     b.Property<string>("PanNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReceiverAccountId")
-                        .HasColumnType("int");
-
                     b.Property<int>("RecurringCycleDays")
                         .HasColumnType("int");
 
@@ -458,9 +541,9 @@ namespace Bank1.WebApi.Migrations
 
                     b.HasKey("RecurringTransactionDefinitionId");
 
-                    b.HasIndex("CurrencyId");
+                    b.HasIndex("AquirerAccountId");
 
-                    b.HasIndex("ReceiverAccountId");
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("RecurringTransactionDefinitions", "dbo");
                 });
@@ -476,6 +559,12 @@ namespace Bank1.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int?>("AquirerAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BankPaymentServiceTransactionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
@@ -483,16 +572,13 @@ namespace Bank1.WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("IssuerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("IssuerTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("IssuerTransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReceiverAccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SenderAccountId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
@@ -519,11 +605,11 @@ namespace Bank1.WebApi.Migrations
 
                     b.HasKey("TransactionId");
 
+                    b.HasIndex("AquirerAccountId");
+
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("ReceiverAccountId");
-
-                    b.HasIndex("SenderAccountId");
+                    b.HasIndex("IssuerAccountId");
 
                     b.ToTable("Transactions", "dbo");
                 });
@@ -553,6 +639,72 @@ namespace Bank1.WebApi.Migrations
                     b.ToTable("TransactionLogs", "dbo");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Account", b =>
                 {
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
@@ -570,6 +722,21 @@ namespace Bank1.WebApi.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.AcqurierTransaction", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Account", null)
+                        .WithMany("TransactionsAsAcquirer")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.BusinessCustomer", b =>
@@ -623,21 +790,17 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
                 {
-                    b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Bank1.WebApi.Models.Account", "IsuerAccount")
+                    b.HasOne("Bank1.WebApi.Models.Account", null)
                         .WithMany("TransactionsAsIssuer")
-                        .HasForeignKey("IssuerAccountId")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Currency");
-
-                    b.Navigation("IsuerAccount");
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
@@ -661,47 +824,46 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
                 {
+                    b.HasOne("Bank1.WebApi.Models.Account", "AquirerAccount")
+                        .WithMany()
+                        .HasForeignKey("AquirerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
-                        .WithMany()
-                        .HasForeignKey("ReceiverAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("AquirerAccount");
 
                     b.Navigation("Currency");
-
-                    b.Navigation("ReceiverAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
+                    b.HasOne("Bank1.WebApi.Models.Account", "AquirerAccount")
+                        .WithMany("LocalTransactionsAsAquirer")
+                        .HasForeignKey("AquirerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
-                        .WithMany("TransactionsAsReceiver")
-                        .HasForeignKey("ReceiverAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Bank1.WebApi.Models.Account", "SenderAccount")
-                        .WithMany("TransactionsAsSender")
-                        .HasForeignKey("SenderAccountId")
+                    b.HasOne("Bank1.WebApi.Models.Account", "IssuerAccount")
+                        .WithMany("LocalTransactionsAsIssuer")
+                        .HasForeignKey("IssuerAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AquirerAccount");
 
                     b.Navigation("Currency");
 
-                    b.Navigation("ReceiverAccount");
-
-                    b.Navigation("SenderAccount");
+                    b.Navigation("IssuerAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.TransactionLog", b =>
@@ -715,15 +877,44 @@ namespace Bank1.WebApi.Migrations
                     b.Navigation("Transaction");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.Account", b =>
                 {
                     b.Navigation("Cards");
 
+                    b.Navigation("LocalTransactionsAsAquirer");
+
+                    b.Navigation("LocalTransactionsAsIssuer");
+
+                    b.Navigation("TransactionsAsAcquirer");
+
                     b.Navigation("TransactionsAsIssuer");
-
-                    b.Navigation("TransactionsAsReceiver");
-
-                    b.Navigation("TransactionsAsSender");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>

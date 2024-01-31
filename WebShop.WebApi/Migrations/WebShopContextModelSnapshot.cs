@@ -399,6 +399,15 @@ namespace WebShop.WebApi.Migrations
                             MerchantId = 2,
                             Name = "Legal Training Seminars",
                             Price = 750.0
+                        },
+                        new
+                        {
+                            ItemId = 21,
+                            CurrencyId = 2,
+                            Description = "PTest - very low price",
+                            MerchantId = 2,
+                            Name = "Test - very low price",
+                            Price = 0.10000000000000001
                         });
                 });
 
@@ -833,17 +842,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "408b89e8-e8e5-4b97-9c88-f19593d66378",
                             AccessFailedCount = 0,
                             Address = "123 Main Street",
-                            ConcurrencyStamp = "f102c5c3-6d0b-49f1-a339-3a508c8c2000",
-                            Email = "webshopadmin@lawpublishingagency.com",
+                            ConcurrencyStamp = "da12e18e-e5b7-494a-ade2-c7074104103e",
+                            Email = "webshop1@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Law Publishing Web Shop",
-                            NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEG/YfOnF/jbfI50whU62BoICZACCcT7JSgKXeyShoHxTMhgTT6eCwBzprP7v+zBttw==",
+                            NormalizedEmail = "WEBSHOP1@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFhZU1HeloHkpH2MiA0JY2B7Zxy+0uRJmEGQS3GXRAHoGJc/gU01iJ4EWn/L5Srb0g==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "dd853222-b31f-4b04-8d1f-bb64564b50ae",
+                            SecurityStamp = "9c31f6c3-2564-461f-a6ab-38c113546439",
                             TwoFactorEnabled = false
                         },
                         new
@@ -851,17 +860,17 @@ namespace WebShop.WebApi.Migrations
                             Id = "2e87d106-2e43-4a19-bd4c-843920dcf3e9",
                             AccessFailedCount = 0,
                             Address = "456 Oak Avenue",
-                            ConcurrencyStamp = "106f44c6-caa8-48e1-a46d-5f0454176102",
-                            Email = "agencyadmin@legaldocsagency.com",
+                            ConcurrencyStamp = "8b0a3aba-4e48-4782-94e6-3dc6cf9b53a1",
+                            Email = "webshop2@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Legal Documents Agency",
-                            NormalizedEmail = "AGENCYADMIN@LEGALDOCSAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB2zRQIwaOKBjmIC3Pf+x1bk/Uc1KrAd91LTugFDfu59o0r8RZHpqlVta1gysti+/Q==",
+                            NormalizedEmail = "WEBSHOP2@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAvj8HKZg646+m49HAJKqhr+DroXRPY1rXABFaNLqOmit7BWwmOo+e0KUoM32yZfAQ==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
                             Role = 0,
-                            SecurityStamp = "f59f187c-08d6-49f2-b5b8-295e3d93782a",
+                            SecurityStamp = "df2639f1-c0c6-4e8d-9a5e-3635a60c9750",
                             TwoFactorEnabled = false
                         });
                 });

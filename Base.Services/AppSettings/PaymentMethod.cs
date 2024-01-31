@@ -7,6 +7,7 @@
         public string Name { get; set; }
         public string ServiceApiSufix { get; set; }
         public bool SupportsAutomaticPayments { get; set; }
+        public string EncriptionKey { get; set; }
 
         public PaymentMethod()
         {
@@ -14,14 +15,16 @@
             PspRegisterApiEndpoint = string.Empty;
             Name = string.Empty;
             ServiceApiSufix = string.Empty;
+            EncriptionKey = string.Empty;
         }
 
-        public PaymentMethod(string pspServiceName, string pspRegisterApiEndpoint, string name, string serviceApiSufix)
+        public PaymentMethod(string pspServiceName, string pspRegisterApiEndpoint, string name, string serviceApiSufix, string encriptionKey)
         {
             PspServiceName = pspServiceName;
             PspRegisterApiEndpoint = pspRegisterApiEndpoint;
             Name = name;
             ServiceApiSufix = serviceApiSufix;
+            EncriptionKey = encriptionKey;
         }
     }
 }

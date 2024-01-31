@@ -2,6 +2,7 @@ using BankPaymentService.WebApi.AppSettings;
 using BankPaymentService.WebApi.Configurations;
 using BankPaymentService.WebApi.Models;
 using BankPaymentService.WebApi.Services;
+using Base.Services.AppSettings;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<BankPaymentServiceContext>(options => options.UseS
 builder.Services.AddControllers();
 
 builder.Services.Configure<BankPaymentServiceUrl>(builder.Configuration.GetSection("BankPaymentServiceUrl"));
+builder.Services.Configure<PaymentMethod>(builder.Configuration.GetSection("PaymentMethod"));
 builder.Services.Configure<CardPaymentMethod>(builder.Configuration.GetSection("CardPaymentMethod"));
 builder.Services.Configure<QrCodePaymentMethod>(builder.Configuration.GetSection("QrCodePaymentMethod"));
 

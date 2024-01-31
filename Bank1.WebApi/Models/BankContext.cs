@@ -1,30 +1,32 @@
-﻿using Bank1.WebApi.Helpers;
+﻿using Bank1.WebApi.AppSettings;
 using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Bank1.WebApi.Models
 {
-    public class BankContext : DbContext
+    public class BankContext : IdentityUserContext<Customer>
     {
         private readonly IEncryptionProvider _provider;
         public DbSet<Account> Accounts { get; set; }
         public DbSet<BusinessCustomer> BusinessCustomer { get; set; }
         public DbSet<Card> Cards { get; set; }
         public DbSet<Currency> Currencies { get; set; }
-        public DbSet<Customer> Customers { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<IssuerTransaction> IssuerTransactions { get; set; }
+        public DbSet<AcqurierTransaction> AcqurierTransactions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<RecurringTransactionDefinition> RecurringTransactionDefinitions { get; set; }
         public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
-        public BankContext(DbContextOptions<BankContext> options) : base(options)
+        public BankContext(DbContextOptions<BankContext> options, IOptions<BankSettings> bankSettings) : base(options)
         {
-            var key = "tQL9h3wtpfAtU+k3R+QOkA==";
-            _provider = new GenerateEncryptionProvider(key);
+            _provider = new GenerateEncryptionProvider(bankSettings.Value.EncriptionKey);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -76,6 +78,7 @@ namespace Bank1.WebApi.Models
 
             builder.Entity<Customer>(entity =>
             {
+                entity.HasIndex(x => x.Email).IsUnique();
             });
 
             builder.Entity<ExchangeRate>(entity =>
@@ -95,17 +98,17 @@ namespace Bank1.WebApi.Models
 
             builder.Entity<IssuerTransaction>(entity =>
             {
-                entity.Property(d => d.TransactionStatus)
-                    .HasConversion<string>();
-
-                entity.HasOne(x => x.Currency)
+                entity.HasOne(x => x.Transaction)
                     .WithMany()
-                    .HasForeignKey(x => x.CurrencyId)
+                    .HasForeignKey(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
 
-                entity.HasOne(x => x.IsuerAccount)
-                    .WithMany(x => x.TransactionsAsIssuer)
-                    .HasForeignKey(x => x.IssuerAccountId)
+            builder.Entity<AcqurierTransaction>(entity =>
+            {
+                entity.HasOne(x => x.Transaction)
+                    .WithMany()
+                    .HasForeignKey(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -119,14 +122,14 @@ namespace Bank1.WebApi.Models
                     .HasForeignKey(x => x.CurrencyId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.SenderAccount)
-                    .WithMany(x => x.TransactionsAsSender)
-                    .HasForeignKey(x => x.SenderAccountId)
+                entity.HasOne(x => x.IssuerAccount)
+                    .WithMany(x => x.LocalTransactionsAsIssuer)
+                    .HasForeignKey(x => x.IssuerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.ReceiverAccount)
-                    .WithMany(x => x.TransactionsAsReceiver)
-                    .HasForeignKey(x => x.ReceiverAccountId)
+                entity.HasOne(x => x.AquirerAccount)
+                    .WithMany(x => x.LocalTransactionsAsAquirer)
+                    .HasForeignKey(x => x.AquirerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -148,9 +151,9 @@ namespace Bank1.WebApi.Models
                     .HasForeignKey(x => x.CurrencyId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.ReceiverAccount)
+                entity.HasOne(x => x.AquirerAccount)
                     .WithMany()
-                    .HasForeignKey(x => x.ReceiverAccountId)
+                    .HasForeignKey(x => x.AquirerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -184,44 +187,73 @@ namespace Bank1.WebApi.Models
                 new ExchangeRate { ExchangeRateId = 6, FromCurrencyId = 3, ToCurrencyId = 2, Rate = 0.92 }
                 ); ;
 
+            var hasher = new PasswordHasher<IdentityUser>();
+
             // Merchant
+            var merchantId = "ff997333-0c10-4fef-9d07-d2599fca2795";
             builder.Entity<Customer>().HasData(
-                new Customer("Web prodavnica pravnog izdavaštva", "", "123 Glavna ulica", "+1 555-123-4567", "webshopadmin@lawpublishingagency.com")
+                new Customer
                 {
-                    CustomerId = 1
+                    Id = merchantId,
+                    PasswordHash = hasher.HashPassword(null!, "Pass123!"),
+                    Name = "Web shop 1",
+                    Address = "123 Glavna ulica",
+                    PhoneNumber = "+1 555-123-4567",
+                    Email = "webshop1@gmail.com",
+                    NormalizedEmail = "webshop1@gmail.com".ToUpper(),
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("105-0000000000000-29")
+               new Account
                {
+                   AccountNumber = "105-0000000000000-29",
+                   OwnerId = merchantId,
                    AccountId = 1,
                    Balance = 14500,
-                   CurrencyId = 1,
-                   OwnerId = 1
+                   CurrencyId = 1
+               });
+
+            builder.Entity<Account>().HasData(
+               new Account
+               {
+                   AccountNumber = "105-0000000000001-26",
+                   OwnerId = merchantId,
+                   AccountId = 3,
+                   Balance = 500,
+                   CurrencyId = 2
                });
 
             builder.Entity<BusinessCustomer>().HasData(
-                new BusinessCustomer("LPAPassword5!")
+                new BusinessCustomer
                 {
                     BusinessCustomerId = 1,
-                    CustomerId = 1,
-                    DefaultAccountId = 1
+                    CustomerId = merchantId,
+                    DefaultAccountId = 3,
+                    SecretKey = "Pass123!"
                 });
 
             // Buyer
+            var buyerId = "cc1e5433-cf53-40d1-851e-e2102180eb55";
             builder.Entity<Customer>().HasData(
-                new Customer("John", "Doe", "789 Ulica jorgovana,", "+1 555-987-6543", "johndoe@email.com")
+                new Customer
                 {
-                    CustomerId = 2
+                    Id = buyerId,
+                    PasswordHash = hasher.HashPassword(null!, "Pass123!"),
+                    Name = "John Doe",
+                    Address = "789 Ulica jorgovana",
+                    PhoneNumber = "+1 555-987-6543",
+                    Email = "johndoe@gmail.com",
+                    NormalizedEmail = "johndoe@gmail.com".ToUpper(),
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("106-0000000000000-30")
+               new Account
                {
+                   AccountNumber = "105-0000000001234-13",
+                   OwnerId = buyerId,
                    AccountId = 2,
                    Balance = 6530,
-                   CurrencyId = 1,
-                   OwnerId = 2
+                   CurrencyId = 3
                });
 
             builder.Entity<Card>().HasData(

@@ -9,7 +9,7 @@ namespace PayPalPaymentService.WebApi.Helpers
     {
         public static PayPalProductIDTO ToPayPalProductIDTO(ProductIDTO productIDTO)
         {
-            return new PayPalProductIDTO(productIDTO.Name, productIDTO.Type, productIDTO.Description, productIDTO.Category);
+            return new PayPalProductIDTO(productIDTO.Name, productIDTO.Type, "No description", productIDTO.Category);
         }
 
         public static OrderIDTO ToOrderIDTO(PaymentRequestIDTO paymentRequestDTO, Invoice invoice, PayPalSettings payPalSettings) 

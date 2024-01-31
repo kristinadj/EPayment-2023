@@ -54,8 +54,8 @@ namespace PaymentCardCenter.WebApi.Models
                 );
 
             builder.Entity<Bank>().HasData(
-                new Bank("1234","https://localhost:7092/api") { BankId = 1 },
-                new Bank("2023", "https://localhost:7130/api") { BankId = 2 }
+                new Bank("1234", "105", "https://localhost:7092/api") { BankId = 1 },
+                new Bank("2024", "123", "https://localhost:7130/api") { BankId = 2 }
                 );
 
             #endregion

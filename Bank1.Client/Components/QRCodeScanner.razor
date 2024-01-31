@@ -1,0 +1,29 @@
+﻿@inject IJSRuntime JS
+
+
+<div id="loadingMessage">@LoadingMessage</div>
+
+<canvas id="canvas" requestedWidth="@Width" hidden></canvas>
+
+@if (ShowOutput)
+{
+    <div id="output" hidden>
+        <div id="outputMessage">@OutputMessage</div>
+        <div hidden><b>Data:</b> <span id="outputData"></span></div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public string? Width { get; set; }
+
+    [Parameter]
+    public bool ShowOutput { get; set; } = false;
+
+    [Parameter]
+    public string LoadingMessage { get; set; } = "Loading video stream (please make sure you have a camera enabled)";
+
+    [Parameter]
+    public string OutputMessage { get; set; } = "No QR code detected.";
+}

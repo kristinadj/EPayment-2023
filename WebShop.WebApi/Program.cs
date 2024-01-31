@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebShop.WebApi.AppSettings;
-using WebShop.WebApi.Configurations;
 using WebShop.WebApi.HostedServices;
 using WebShop.WebApi.Models;
 using WebShop.WebApi.Services;
@@ -12,7 +11,6 @@ using WebShop.WebApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<WebShopAppSettings>(builder.Configuration.GetSection("WebShopAppSettings"));
-builder.Services.Configure<PspAppSettings>(builder.Configuration.GetSection("PspAppSettings"));
 
 builder.Services.AddDbContext<WebShopContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainDatabase")));
 
@@ -61,14 +59,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddConsul();
+var apiUrl = builder.Configuration["PspAppSettings:WebApiUrl"];
+builder.Services.AddHttpClient("PspAPI", x =>
+{
+    x.BaseAddress = new Uri(apiUrl);
+});
 
 #region Services
 
 builder.Services.AddHostedService<ImportPaymentMethodsHostedService>();
 builder.Services.AddHostedService<UpdateExpiredTransactionStatusHostedService>();
 
+builder.Services.AddScoped<IPspApiHttpClient, PspApiHttpClient>();
 builder.Services.AddScoped<ITokenCreationService, JwtService>();
+
 
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
@@ -89,8 +93,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseConsul();
 
 app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();

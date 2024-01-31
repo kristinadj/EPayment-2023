@@ -87,14 +87,14 @@ namespace BitcoinPaymentService.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("BitPayId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
                     b.Property<int>("ExternalInvoiceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ExternalPaymentServiceInvoiceId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MerchantId")
                         .HasColumnType("int");
@@ -166,29 +166,18 @@ namespace BitcoinPaymentService.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MerchantId"), 1L, 1);
 
-                    b.Property<string>("PairingCode")
-                        .IsRequired()
+                    b.Property<string>("ApiKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PaymentServiceMerchantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("MerchantId");
 
                     b.ToTable("Merchants", "dbo");
-
-                    b.HasData(
-                        new
-                        {
-                            MerchantId = 1,
-                            PairingCode = "",
-                            PaymentServiceMerchantId = 2,
-                            Token = ""
-                        });
                 });
 
             modelBuilder.Entity("BitcoinPaymentService.WebApi.Models.Invoice", b =>

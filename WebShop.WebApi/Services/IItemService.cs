@@ -25,6 +25,7 @@ namespace WebShop.WebApi.Services
         public async Task<List<ItemODTO>> GetItemsAsync()
         {
             return await _context.Items
+                .Where(x => x.Merchant!.PspMerchantId != null)
                 .ProjectTo<ItemODTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }

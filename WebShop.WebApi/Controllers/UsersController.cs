@@ -18,19 +18,16 @@ namespace WebShop.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ITokenCreationService _tokenCreationService;
         private readonly IShoppingCartService _shoppingCartService;
-        private readonly ISubscriptionPlanService _subscriptionPlanService;
         private readonly IMapper _mapper;
         public UsersController(
             UserManager<User> userManager,
             ITokenCreationService tokenCreationService,
             IShoppingCartService shoppingCartService,
-            ISubscriptionPlanService subscriptionPlanService,
             IMapper mapper)
         {
             _userManager = userManager;
             _tokenCreationService = tokenCreationService;
             _shoppingCartService = shoppingCartService;
-            _subscriptionPlanService = subscriptionPlanService;
             _mapper = mapper;
         }
 

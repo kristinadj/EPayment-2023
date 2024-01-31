@@ -30,6 +30,10 @@ namespace PaymentCardCenter.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BankId"), 1L, 1);
 
+                    b.Property<string>("AccountNumberStartNumbers")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CardStartNumbers")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -49,13 +53,15 @@ namespace PaymentCardCenter.WebApi.Migrations
                         new
                         {
                             BankId = 1,
+                            AccountNumberStartNumbers = "105",
                             CardStartNumbers = "1234",
                             RedirectUrl = "https://localhost:7092/api"
                         },
                         new
                         {
                             BankId = 2,
-                            CardStartNumbers = "2023",
+                            AccountNumberStartNumbers = "123",
+                            CardStartNumbers = "2024",
                             RedirectUrl = "https://localhost:7130/api"
                         });
                 });
@@ -125,13 +131,13 @@ namespace PaymentCardCenter.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("AquirerBankId")
+                    b.Property<int?>("AquirerBankId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AquirerTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AquirerTransctionId")
+                    b.Property<int?>("AquirerTransctionId")
                         .HasColumnType("int");
 
                     b.Property<int>("CurrencyId")
@@ -191,8 +197,7 @@ namespace PaymentCardCenter.WebApi.Migrations
                     b.HasOne("PaymentCardCenter.WebApi.Models.Bank", "AquirerBank")
                         .WithMany("AquirerTransactions")
                         .HasForeignKey("AquirerBankId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PaymentCardCenter.WebApi.Models.Currency", "Currency")
                         .WithMany()

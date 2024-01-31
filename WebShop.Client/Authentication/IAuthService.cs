@@ -1,12 +1,11 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using WebShop.DTO.Input;
 using WebShop.DTO.Output;
-using System.Net.Http.Json;
-using System.IO.Pipelines;
 
 namespace WebShop.Client.Authentication
 {

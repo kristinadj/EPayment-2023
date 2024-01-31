@@ -1,7 +1,9 @@
-﻿using EntityFrameworkCore.EncryptColumn.Extension;
+﻿using Base.Services.AppSettings;
+using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace PayPalPaymentService.WebApi.Models
 {
@@ -13,10 +15,9 @@ namespace PayPalPaymentService.WebApi.Models
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Merchant> Merchants { get; set; }
 
-        public PayPalServiceContext(DbContextOptions<PayPalServiceContext> options) : base(options)
+        public PayPalServiceContext(DbContextOptions<PayPalServiceContext> options, IOptions<PaymentMethod> paymentMethodSettings) : base(options)
         {
-            var key = "tQL9h3wtpfAtU+k3R+QOkA==";
-            _provider = new GenerateEncryptionProvider(key);
+            _provider = new GenerateEncryptionProvider(paymentMethodSettings.Value.EncriptionKey);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

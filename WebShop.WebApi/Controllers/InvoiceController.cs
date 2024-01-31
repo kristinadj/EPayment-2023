@@ -20,24 +20,18 @@ namespace WebShop.WebApi.Controllers
     public class InvoiceController : ControllerBase
     {
         private readonly IInvoiceService _invoiceService;
-        private readonly IPaymentMethodService _paymentMethodService;
-
-        private readonly PspAppSettings _pspAppSettings;
-        private readonly IConsulHttpClient _consulHttpClient;
+        private readonly IPspApiHttpClient _pspApiHttpClient;
 
         private readonly IMapper _mapper;
 
         public InvoiceController(
             IInvoiceService invoiceService,
             IPaymentMethodService paymentMethodService,
-            IOptions<PspAppSettings> pspAppSettings,
-            IConsulHttpClient consulHttpClient,
+            IPspApiHttpClient pspApiHttpClient,
             IMapper mapper)
         {
             _invoiceService = invoiceService;
-            _paymentMethodService = paymentMethodService;
-            _pspAppSettings = pspAppSettings.Value;
-            _consulHttpClient = consulHttpClient;
+            _pspApiHttpClient = pspApiHttpClient;
             _mapper = mapper;
         }
 
@@ -68,7 +62,8 @@ namespace WebShop.WebApi.Controllers
 
                 var pspPayment = _mapper.Map<PspInvoiceIDTO>(invoice);
                 pspPayment.InvoiceType = InvoiceType.ORDER;
-                var result = await _consulHttpClient.PostAsync(_pspAppSettings.ServiceName, $"/api/Invoice", pspPayment);
+
+                var result = await _pspApiHttpClient.PostAsync($"Invoice", pspPayment);
 
                 if (result == null || string.IsNullOrEmpty(result.RedirectUrl))
                 {

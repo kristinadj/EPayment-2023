@@ -8,6 +8,8 @@ namespace Bank2.Client.Pages
     public partial class QrCodePayment
     {
         [Inject]
+        private NavigationManager NavigationManager { get; set; }
+        [Inject]
         private IApiServices ApiServices { get; set; }
 
         [Inject]
@@ -25,6 +27,8 @@ namespace Bank2.Client.Pages
         public bool isValid = false;
         public bool showValidationResult = false;
         public string validationResult = string.Empty;
+
+        public bool isRefreshing = false;
 
         protected async override Task OnInitializedAsync()
         {
@@ -69,6 +73,19 @@ namespace Bank2.Client.Pages
 
             showValidationResult = true;
             isValidating = false;
+        }
+
+        private async Task OnClickRefreshAsync()
+        {
+            isRefreshing = true;
+
+            var result = await ApiServices.GetTransactionStatusAsync(TransactionId);
+            if (result != null)
+            {
+                NavigationManager.NavigateTo(result.RedirectUrl);
+            }
+
+            isRefreshing = false;
         }
     }
 }

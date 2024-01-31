@@ -9,15 +9,16 @@ namespace Bank1.WebApi.Models
     {
         [Key]
         public int TransactionId { get; set; }
+        public int BankPaymentServiceTransactionId { get; set; }
         public double Amount { get; set; }
         public int CurrencyId { get; set; }
 
         [Required]
         public string Description { get; set; }
-        public int? SenderAccountId { get; set; }
+        public int? IssuerAccountId { get; set; }
         public int? IssuerTransactionId { get; set; }
         public DateTime? IssuerTimestamp { get; set; }
-        public int ReceiverAccountId { get; set; }
+        public int? AquirerAccountId { get; set; }
 
         [Column(TypeName = "nvarchar(24)")]
         public TransactionStatus TransactionStatus { get; set; }
@@ -36,8 +37,8 @@ namespace Bank1.WebApi.Models
         public string TransactionErrorUrl { get; set; }
 
         public Currency? Currency { get; set; }
-        public Account? SenderAccount { get; set; }
-        public Account? ReceiverAccount { get; set; }
+        public Account? IssuerAccount { get; set; }
+        public Account? AquirerAccount { get; set; }
         public ICollection<TransactionLog>? TransactionLogs { get; set; }
 
         public Transaction(string description, string transactionSuccessUrl, string transactionFailureUrl, string transactionErrorUrl)

@@ -12,17 +12,11 @@ namespace BitcoinPaymentService.WebApi.Models
         public int PaymentServiceMerchantId { get; set; }
 
         [EncryptColumn]
-        public string Token { get; set; }
+        public string? ApiKey { get; set; }
 
         [EncryptColumn]
-        public string PairingCode { get; set; }
+        public string? Code { get; set; }
 
         public ICollection<Invoice>? Invoices { get; set; }
-
-        public Merchant(string token, string pairingCode)
-        {
-            Token = token;
-            PairingCode = pairingCode;
-        }
     }
 }

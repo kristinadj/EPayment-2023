@@ -9,20 +9,15 @@ namespace Bank1.WebApi.Models
     {
         [Key]
         public int BusinessCustomerId { get; set; }
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
 
         [Required]
         [EncryptColumn]
-        public string Password { get; set; }
+        public string SecretKey { get; set; } = string.Empty;
 
         public int DefaultAccountId { get; set; }
 
         public Customer? Customer { get; set; }
         public Account? DefaultAccount { get; set; }
-
-        public BusinessCustomer(string password)
-        {
-            Password = password;
-        }
     }
 }

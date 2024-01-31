@@ -8,10 +8,11 @@ namespace BitcoinPaymentService.WebApi.Services
     public interface IInvoiceService
     {
         Task<Invoice?> GetInvoiceByIdAsync(int id);
-        Task<Invoice?> GetInvoiceByBitPayIdAsync(string bitPayId);
+        Task<Invoice?> GetInvoiceByExternalPaymentServiceInvoiceIdAsync(string externalInvoiceId);
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
-        Task<Invoice?> UpdateBitPayIdAsync(int invoiceId, string bitPayId);
+        Task<Invoice?> UpdateExternalPaymentServiceInvoiceIdAsync(int invoiceId, string externalInvoiceId);
+        Task<bool> IsInvoicePaidAsync(int externalInvoiceId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -31,10 +32,10 @@ namespace BitcoinPaymentService.WebApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Invoice?> GetInvoiceByBitPayIdAsync(string bitPayId)
+        public async Task<Invoice?> GetInvoiceByExternalPaymentServiceInvoiceIdAsync(string externalInvoiceId)
         {
             return await _context.Invoices
-                .Where(x => x.BitPayId == bitPayId)
+                .Where(x => x.ExternalPaymentServiceInvoiceId == externalInvoiceId)
                 .FirstOrDefaultAsync();
         }
 
@@ -89,7 +90,7 @@ namespace BitcoinPaymentService.WebApi.Services
             return invoice;
         }
 
-        public async Task<Invoice?> UpdateBitPayIdAsync(int invoiceId, string bitPayId)
+        public async Task<Invoice?> UpdateExternalPaymentServiceInvoiceIdAsync(int invoiceId, string externalInvoiceId)
         {
             var invoice = await _context.Invoices
                 .Where(x => x.InvoiceId == invoiceId)
@@ -98,10 +99,17 @@ namespace BitcoinPaymentService.WebApi.Services
 
             if (invoice == null) return null;
 
-            invoice.BitPayId = bitPayId;
+            invoice.ExternalPaymentServiceInvoiceId = externalInvoiceId;
             await _context.SaveChangesAsync();
 
             return invoice;
+        }
+
+        public async Task<bool> IsInvoicePaidAsync(int externalInvoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.ExternalInvoiceId == externalInvoiceId && x.TransactionStatus == TransactionStatus.COMPLETED)
+                .AnyAsync();
         }
     }
 }

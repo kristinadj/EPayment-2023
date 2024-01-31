@@ -15,7 +15,7 @@ namespace Bank1.WebApi.Models
         public string? Description { get; set; }
 
         [Required]
-        public int ReceiverAccountId { get; set; }
+        public int AquirerAccountId { get; set; }
 
         [StringLength(100)]
         public string? CardHolderName { get; set; }
@@ -34,7 +34,7 @@ namespace Bank1.WebApi.Models
         public string? RecurringTransactionFailureUrl { get; set; }
 
         public Currency? Currency { get; set; }
-        public Account? ReceiverAccount { get; set; }
+        public Account? AquirerAccount { get; set; }
         public List<RecurringTransaction>? RecurringTransactions { get; set; }
     }
 }

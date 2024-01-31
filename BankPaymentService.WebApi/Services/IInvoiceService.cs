@@ -7,10 +7,12 @@ namespace BankPaymentService.WebApi.Services
 {
     public interface IInvoiceService
     {
+        Task<Invoice?> GetInvoiceByInvoiceIdAsync(int invoiceId);
         Task<Invoice?> GetInvoiceByExternalInvoiceIdAsync(int extrenalInvoiceId);
         Task<Invoice?> CreateInvoiceAsync(PaymentRequestIDTO paymentRequestDTO);
         Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus);
         Task<Invoice?> UpdateBankRecurringTransactionId(int invoiceId, int recurringTransactionId);
+        Task<bool> IsInvoicePaidAsync(int externalInvoiceId);
     }
 
     public class InvoiceService : IInvoiceService
@@ -81,6 +83,13 @@ namespace BankPaymentService.WebApi.Services
             return invoice;
         }
 
+        public async Task<Invoice?> GetInvoiceByInvoiceIdAsync(int invoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.InvoiceId == invoiceId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Invoice?> UpdateInvoiceStatusAsync(int invoiceId, TransactionStatus transactionStatus)
         {
             var invoice = await _context.Invoices
@@ -95,6 +104,13 @@ namespace BankPaymentService.WebApi.Services
             await _context.SaveChangesAsync();
 
             return invoice;
+        }
+
+       public async Task<bool> IsInvoicePaidAsync(int externalInvoiceId)
+        {
+            return await _context.Invoices
+                .Where(x => x.ExternalInvoiceId == externalInvoiceId && x.TransactionStatus == TransactionStatus.COMPLETED)
+                .AnyAsync();
         }
     }
 }
