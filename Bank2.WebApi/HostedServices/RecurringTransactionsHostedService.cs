@@ -1,9 +1,9 @@
-﻿using Bank1.WebApi.AppSettings;
-using Bank1.WebApi.Services;
+﻿using Bank2.WebApi.AppSettings;
+using Bank2.WebApi.Services;
 using Base.DTO.Input;
 using Microsoft.Extensions.Options;
 
-namespace Bank1.WebApi.HostedServices
+namespace Bank2.WebApi.HostedServices
 {
     public class RecurringTransactionsHostedService : BackgroundService
     {
@@ -63,7 +63,7 @@ namespace Bank1.WebApi.HostedServices
 
                         if (isSuccess)
                         {
-                            
+
                             try
                             {
                                 var response = await httpClient.PostAsync(recurringTransactionDefinition.RecurringTransactionSuccessUrl, null, stoppingToken);
@@ -72,7 +72,7 @@ namespace Bank1.WebApi.HostedServices
                                 {
                                     await transactionService.UpdateRecurringTransactionDefinitionNextPaymentDateAsync(recurringTransactionDefinition);
                                 }
-                            } 
+                            }
                             catch (Exception ex)
                             {
                                 // TODO: Rollback transaction ???

@@ -9,26 +9,11 @@ namespace Bank2.WebApi.Models
     public class IssuerTransaction
     {
         [Key]
+        public int IssuerTransactionId { get; set; }
         public int TransactionId { get; set; }
-        public double Amount { get; set; }
-        public int CurrencyId { get; set; }
-
-        [Required]
-        public string Description { get; set; }
-        public int IssuerAccountId { get; set; }
-        public int AquirerTransactionId { get; set; }
+        public int? AquirerTransactionId { get; set; }
         public DateTime AquirerTimestamp { get; set; }
 
-        [Column(TypeName = "nvarchar(24)")]
-        public TransactionStatus TransactionStatus { get; set; }
-        public DateTime Timestamp { get; set; }
-
-        public Currency? Currency { get; set; }
-        public Account? IsuerAccount { get; set; }
-
-        public IssuerTransaction(string description)
-        {
-            Description = description;
-        }
+        public Transaction? Transaction { get; set; }
     }
 }

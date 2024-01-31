@@ -76,11 +76,40 @@ namespace Bank1.WebApi.Migrations
                         new
                         {
                             AccountId = 2,
-                            AccountNumber = "106-0000000000000-30",
+                            AccountNumber = "105-0000000001234-13",
                             Balance = 6530.0,
                             CurrencyId = 3,
                             OwnerId = "cc1e5433-cf53-40d1-851e-e2102180eb55"
                         });
+                });
+
+            modelBuilder.Entity("Bank1.WebApi.Models.AcqurierTransaction", b =>
+                {
+                    b.Property<int>("AcqurierTransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcqurierTransactionId"), 1L, 1);
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("IssuerTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IssuerTransactionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AcqurierTransactionId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("AqurierTransactions", "dbo");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.BusinessCustomer", b =>
@@ -305,16 +334,16 @@ namespace Bank1.WebApi.Migrations
                             Id = "ff997333-0c10-4fef-9d07-d2599fca2795",
                             AccessFailedCount = 0,
                             Address = "123 Glavna ulica",
-                            ConcurrencyStamp = "937939ae-4288-4434-9198-c97d5833ce88",
-                            Email = "webshopadmin@lawpublishingagency.com",
+                            ConcurrencyStamp = "b5391014-4f4b-48ee-bc31-16ac5b390a01",
+                            Email = "webshop1@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            Name = "Web prodavnica pravnog izdavaštva",
-                            NormalizedEmail = "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDHAlStHZ3B0XusjPNTHzaUBCw6EUNAKsT5xNSfpMVGwJnKJ1PJTzWgoHgBL74sr6w==",
+                            Name = "Web shop 1",
+                            NormalizedEmail = "WEBSHOP1@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMgPkZPy9MLcWVYTqJuoOQJ+jvYh+ESCMQFD185o9LBCkN6m/bxMa9iqVaBvv1pvKw==",
                             PhoneNumber = "+1 555-123-4567",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fe7739bb-759c-4e37-959e-f59d5c7f9125",
+                            SecurityStamp = "b5e8e06c-6856-41ec-a70e-c32f4f9a8a47",
                             TwoFactorEnabled = false
                         },
                         new
@@ -322,16 +351,16 @@ namespace Bank1.WebApi.Migrations
                             Id = "cc1e5433-cf53-40d1-851e-e2102180eb55",
                             AccessFailedCount = 0,
                             Address = "789 Ulica jorgovana",
-                            ConcurrencyStamp = "62e66885-3081-4a88-bef3-b87d3f561283",
+                            ConcurrencyStamp = "844fcdc6-7095-43a2-b5de-059ebc6e03da",
                             Email = "johndoe@gmail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "John Doe",
                             NormalizedEmail = "JOHNDOE@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHQhY3iNZMVIqO052n/DUKT4d9ti9HES6V3ZiX5U1YGjLxZi+x2VcM5UZrpoRVfT8A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMZ93QN7DcmgJNX2exnKpz2tMpPxPFNz6NKPFn6JYv2Zhgkjun9TP8nxomu0IBpJiA==",
                             PhoneNumber = "+1 555-987-6543",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9fcea6c5-a68e-476e-bafa-1ce31e96db39",
+                            SecurityStamp = "8a507cfd-670f-4b61-94af-04e54346ef6a",
                             TwoFactorEnabled = false
                         });
                 });
@@ -409,43 +438,29 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
                 {
-                    b.Property<int>("TransactionId")
+                    b.Property<int>("IssuerTransactionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IssuerTransactionId"), 1L, 1);
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("AquirerTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AquirerTransactionId")
+                    b.Property<int?>("AquirerTransactionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurrencyId")
+                    b.Property<int>("TransactionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("IssuerTransactionId");
 
-                    b.Property<int>("IssuerAccountId")
-                        .HasColumnType("int");
+                    b.HasIndex("AccountId");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TransactionStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(24)");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.HasIndex("IssuerAccountId");
+                    b.HasIndex("TransactionId");
 
                     b.ToTable("IssuerTransactions", "dbo");
                 });
@@ -484,6 +499,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("AquirerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CVV")
                         .HasColumnType("int");
 
@@ -509,9 +527,6 @@ namespace Bank1.WebApi.Migrations
                     b.Property<string>("PanNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReceiverAccountId")
-                        .HasColumnType("int");
-
                     b.Property<int>("RecurringCycleDays")
                         .HasColumnType("int");
 
@@ -526,9 +541,9 @@ namespace Bank1.WebApi.Migrations
 
                     b.HasKey("RecurringTransactionDefinitionId");
 
-                    b.HasIndex("CurrencyId");
+                    b.HasIndex("AquirerAccountId");
 
-                    b.HasIndex("ReceiverAccountId");
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("RecurringTransactionDefinitions", "dbo");
                 });
@@ -544,6 +559,9 @@ namespace Bank1.WebApi.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int?>("AquirerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BankPaymentServiceTransactionId")
                         .HasColumnType("int");
 
@@ -554,16 +572,13 @@ namespace Bank1.WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("IssuerAccountId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("IssuerTimestamp")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("IssuerTransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReceiverAccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SenderAccountId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
@@ -590,11 +605,11 @@ namespace Bank1.WebApi.Migrations
 
                     b.HasKey("TransactionId");
 
+                    b.HasIndex("AquirerAccountId");
+
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("ReceiverAccountId");
-
-                    b.HasIndex("SenderAccountId");
+                    b.HasIndex("IssuerAccountId");
 
                     b.ToTable("Transactions", "dbo");
                 });
@@ -709,6 +724,21 @@ namespace Bank1.WebApi.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Bank1.WebApi.Models.AcqurierTransaction", b =>
+                {
+                    b.HasOne("Bank1.WebApi.Models.Account", null)
+                        .WithMany("TransactionsAsAcquirer")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("Bank1.WebApi.Models.BusinessCustomer", b =>
                 {
                     b.HasOne("Bank1.WebApi.Models.Customer", "Customer")
@@ -760,21 +790,17 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.IssuerTransaction", b =>
                 {
-                    b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Bank1.WebApi.Models.Account", "IsuerAccount")
+                    b.HasOne("Bank1.WebApi.Models.Account", null)
                         .WithMany("TransactionsAsIssuer")
-                        .HasForeignKey("IssuerAccountId")
+                        .HasForeignKey("AccountId");
+
+                    b.HasOne("Bank1.WebApi.Models.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Currency");
-
-                    b.Navigation("IsuerAccount");
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransaction", b =>
@@ -798,47 +824,46 @@ namespace Bank1.WebApi.Migrations
 
             modelBuilder.Entity("Bank1.WebApi.Models.RecurringTransactionDefinition", b =>
                 {
+                    b.HasOne("Bank1.WebApi.Models.Account", "AquirerAccount")
+                        .WithMany()
+                        .HasForeignKey("AquirerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
-                        .WithMany()
-                        .HasForeignKey("ReceiverAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("AquirerAccount");
 
                     b.Navigation("Currency");
-
-                    b.Navigation("ReceiverAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Transaction", b =>
                 {
+                    b.HasOne("Bank1.WebApi.Models.Account", "AquirerAccount")
+                        .WithMany("LocalTransactionsAsAquirer")
+                        .HasForeignKey("AquirerAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Bank1.WebApi.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Bank1.WebApi.Models.Account", "ReceiverAccount")
-                        .WithMany("TransactionsAsReceiver")
-                        .HasForeignKey("ReceiverAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Bank1.WebApi.Models.Account", "SenderAccount")
-                        .WithMany("TransactionsAsSender")
-                        .HasForeignKey("SenderAccountId")
+                    b.HasOne("Bank1.WebApi.Models.Account", "IssuerAccount")
+                        .WithMany("LocalTransactionsAsIssuer")
+                        .HasForeignKey("IssuerAccountId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AquirerAccount");
 
                     b.Navigation("Currency");
 
-                    b.Navigation("ReceiverAccount");
-
-                    b.Navigation("SenderAccount");
+                    b.Navigation("IssuerAccount");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.TransactionLog", b =>
@@ -883,11 +908,13 @@ namespace Bank1.WebApi.Migrations
                 {
                     b.Navigation("Cards");
 
+                    b.Navigation("LocalTransactionsAsAquirer");
+
+                    b.Navigation("LocalTransactionsAsIssuer");
+
+                    b.Navigation("TransactionsAsAcquirer");
+
                     b.Navigation("TransactionsAsIssuer");
-
-                    b.Navigation("TransactionsAsReceiver");
-
-                    b.Navigation("TransactionsAsSender");
                 });
 
             modelBuilder.Entity("Bank1.WebApi.Models.Customer", b =>

@@ -14,8 +14,8 @@ namespace Bank1.WebApi.Helpers
                 K = "PR",
                 V = "01",
                 C = "1",
-                R = transaction.ReceiverAccount!.AccountNumber.Replace("-", string.Empty),
-                N = $"{transaction.ReceiverAccount!.Owner!.Name}\r\n{transaction.ReceiverAccount.Owner.Address}",
+                R = transaction.AquirerAccount!.AccountNumber.Replace("-", string.Empty),
+                N = $"{transaction.AquirerAccount!.Owner!.Name}\r\n{transaction.AquirerAccount.Owner.Address}",
                 I = $"{currencyCode}{amount:N2}".Replace(".", ","),
                 SF = "189",
                 S = $"{transaction.BankPaymentServiceTransactionId}"
@@ -26,8 +26,8 @@ namespace Bank1.WebApi.Helpers
 
         public static string ConvertToQrCodeGenerateIDTO(Transaction transaction, double amount, string currencyCode)
         {
-            return $"K:PR|V:01|C:1|R:{transaction.ReceiverAccount!.AccountNumber.Replace("-", string.Empty)}" +
-                $"|N:{transaction.ReceiverAccount!.Owner!.Name}\r\n{transaction.ReceiverAccount.Owner.Address}" +
+            return $"K:PR|V:01|C:1|R:{transaction.AquirerAccount!.AccountNumber.Replace("-", string.Empty)}" +
+                $"|N:{transaction.AquirerAccount!.Owner!.Name}\r\n{transaction.AquirerAccount.Owner.Address}" +
                 $"|I:{currencyCode}{amount.ToString().Replace(".", ",")}|SF:189|S:{transaction.BankPaymentServiceTransactionId}";
         }
 

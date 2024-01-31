@@ -16,8 +16,23 @@ namespace PaymentCardCenter.WebApi.Controllers
             _transactionService = transactionService;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PccTransactionODTO>> ResolvePayment([FromBody] PccTransactionIDTO pccTransactionIDTO)
+        [HttpPost("ReceiveAcquirerTransaction")]
+        public async Task<ActionResult<PccAquirerTransactionODTO>> ResolvePayment([FromBody] PccAquirerTransactionIDTO pccTransactionIDTO)
+        {
+            try
+            {
+                var transactionODTO = await _transactionService.ResolvePaymentAsync(pccTransactionIDTO);
+                if (transactionODTO == null) return BadRequest();
+                return Ok(transactionODTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("ReceiveIssuerTransaction")]
+        public async Task<ActionResult<PccAquirerTransactionODTO>> ResolvePayment([FromBody] PccIssuerTransactionIDTO pccTransactionIDTO)
         {
             try
             {

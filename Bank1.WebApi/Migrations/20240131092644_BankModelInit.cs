@@ -4,32 +4,23 @@
 
 namespace Bank1.WebApi.Migrations
 {
-    public partial class CustomerUpdates : Migration
+    public partial class BankModelInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "AspNetUsers",
-                type: "nvarchar(50)",
-                maxLength: 50,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "cc1e5433-cf53-40d1-851e-e2102180eb55",
-                columns: new[] { "Address", "ConcurrencyStamp", "Email", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "789 Ulica jorgovana", "74de82ef-3e4c-4073-8d48-94bbaa018e29", "johndoe@gmail.com", "AQAAAAEAACcQAAAAEMfZfoY8JKmhkwxAUqTGc6rN+5mPRBCre+tS0GdScZQkucHFqego2izK5mk9xH8OzQ==", "6234167b-1a89-4b03-a984-f8b8e56a9584" });
+                columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
+                values: new object[] { "844fcdc6-7095-43a2-b5de-059ebc6e03da", "AQAAAAEAACcQAAAAEMZ93QN7DcmgJNX2exnKpz2tMpPxPFNz6NKPFn6JYv2Zhgkjun9TP8nxomu0IBpJiA==", "8a507cfd-670f-4b61-94af-04e54346ef6a" });
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "ff997333-0c10-4fef-9d07-d2599fca2795",
-                columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "968eff0a-8976-46f1-a289-72cf529a5d54", "AQAAAAEAACcQAAAAELwallhuaX7U5CZocgVfthvOKEvEMXQrHgo/TjqK5jnBpF5Joeo7HqtzvBo/s2ZXTw==", "a2ae7609-9774-4873-b709-6eac70e32f3e" });
+                columns: new[] { "ConcurrencyStamp", "Email", "Name", "NormalizedEmail", "PasswordHash", "SecurityStamp" },
+                values: new object[] { "b5391014-4f4b-48ee-bc31-16ac5b390a01", "webshop1@gmail.com", "Web shop 1", "WEBSHOP1@GMAIL.COM", "AQAAAAEAACcQAAAAEMgPkZPy9MLcWVYTqJuoOQJ+jvYh+ESCMQFD185o9LBCkN6m/bxMa9iqVaBvv1pvKw==", "b5e8e06c-6856-41ec-a70e-c32f4f9a8a47" });
 
             migrationBuilder.UpdateData(
                 schema: "dbo",
@@ -50,28 +41,19 @@ namespace Bank1.WebApi.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "AspNetUsers",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(50)",
-                oldMaxLength: 50);
-
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "cc1e5433-cf53-40d1-851e-e2102180eb55",
-                columns: new[] { "Address", "ConcurrencyStamp", "Email", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "789 Ulica jorgovana,", "40d0d67b-255c-4524-9f15-bfaa9e79b915", "johndoe@email.com", "AQAAAAEAACcQAAAAEE8+3TqN8KtvOQ+MvzloSW8L9EZ2UQZi2iNJf11RWuKsgAuM6ov1tHl+eSqAVWxJCw==", "995b1230-1745-4aaa-b69f-e2f5ec3efb1c" });
+                columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
+                values: new object[] { "f6fabbbe-7339-4535-8e8d-7ef8c3e109e3", "AQAAAAEAACcQAAAAENP40DPvoBISbCZKaUn7RB2J0P4ZFbj2jzWPk9z/sS35YBgnaL085P1z8RET/r8ihw==", "1c4cd3ab-e0ec-42df-b1b3-31c6ca8e1892" });
 
             migrationBuilder.UpdateData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "ff997333-0c10-4fef-9d07-d2599fca2795",
-                columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "725c2c77-db4b-4c79-ae0d-ec9ab2c2f0f8", "AQAAAAEAACcQAAAAEGEVT8KJCuDA6P9xsrxUvNivPlNEkKbus70dUmCoBCQN60EG1qJdyVzOWweN7h6LrA==", "74e4aa14-d6dd-4166-b60b-d8b8e86963f3" });
+                columns: new[] { "ConcurrencyStamp", "Email", "Name", "NormalizedEmail", "PasswordHash", "SecurityStamp" },
+                values: new object[] { "1ed630d3-6e45-4b08-9a79-654d66550129", "webshopadmin@lawpublishingagency.com", "Web prodavnica pravnog izdavaštva", "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM", "AQAAAAEAACcQAAAAEFs5jPuhlCRyi4bfy+YJXzg6UkJadsfowXvAJAWxUibMld/WBWXaoeF/Eyrj5wlhyA==", "3064522d-c8fa-447c-904e-cbd419861677" });
 
             migrationBuilder.UpdateData(
                 schema: "dbo",

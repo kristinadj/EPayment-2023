@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using EntityFrameworkCore.EncryptColumn.Attribute;
 
 namespace Bank2.WebApi.Models
 {
@@ -8,17 +9,15 @@ namespace Bank2.WebApi.Models
     {
         [Key]
         public int BusinessCustomerId { get; set; }
-        public int CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(25)]
-        public string Password { get; set; }
+        [EncryptColumn]
+        public string SecretKey { get; set; } = string.Empty;
+
+        public int DefaultAccountId { get; set; }
 
         public Customer? Customer { get; set; }
-
-        public BusinessCustomer(string password)
-        {
-            Password = password;
-        }
+        public Account? DefaultAccount { get; set; }
     }
 }

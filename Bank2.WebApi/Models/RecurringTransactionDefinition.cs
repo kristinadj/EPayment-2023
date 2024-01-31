@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Bank1.WebApi.Models
+namespace Bank2.WebApi.Models
 {
     [Table("RecurringTransactionDefinitions", Schema = "dbo")]
     public class RecurringTransactionDefinition

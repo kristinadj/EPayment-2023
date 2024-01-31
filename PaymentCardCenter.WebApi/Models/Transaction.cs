@@ -7,8 +7,8 @@ namespace PaymentCardCenter.WebApi.Models
     public class Transaction
     {
         public int Transactionid { get; set; }
-        public int AquirerBankId { get; set; }
-        public int AquirerTransctionId { get; set; }
+        public int? AquirerBankId { get; set; }
+        public int? AquirerTransctionId { get; set; }
         public DateTime AquirerTimestamp { get; set; }
         public int? IssuerBankId { get; set; }
         public int? IssuerTransactionId { get; set; }

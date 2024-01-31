@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Bank1.WebApi.Migrations
 {
-    public partial class AddedIdentity : Migration
+    public partial class BankInit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,7 +17,7 @@ namespace Bank1.WebApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -231,41 +231,6 @@ namespace Bank1.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IssuerTransactions",
-                schema: "dbo",
-                columns: table => new
-                {
-                    TransactionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Amount = table.Column<double>(type: "float", nullable: false),
-                    CurrencyId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IssuerAccountId = table.Column<int>(type: "int", nullable: false),
-                    AquirerTransactionId = table.Column<int>(type: "int", nullable: false),
-                    AquirerTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TransactionStatus = table.Column<string>(type: "nvarchar(24)", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IssuerTransactions", x => x.TransactionId);
-                    table.ForeignKey(
-                        name: "FK_IssuerTransactions_Accounts_IssuerAccountId",
-                        column: x => x.IssuerAccountId,
-                        principalSchema: "dbo",
-                        principalTable: "Accounts",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_IssuerTransactions_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalSchema: "dbo",
-                        principalTable: "Currencies",
-                        principalColumn: "CurrencyId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RecurringTransactionDefinitions",
                 schema: "dbo",
                 columns: table => new
@@ -275,7 +240,7 @@ namespace Bank1.WebApi.Migrations
                     Amount = table.Column<double>(type: "float", nullable: false),
                     CurrencyId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ReceiverAccountId = table.Column<int>(type: "int", nullable: false),
+                    AquirerAccountId = table.Column<int>(type: "int", nullable: false),
                     CardHolderName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     PanNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpiratoryDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -291,8 +256,8 @@ namespace Bank1.WebApi.Migrations
                 {
                     table.PrimaryKey("PK_RecurringTransactionDefinitions", x => x.RecurringTransactionDefinitionId);
                     table.ForeignKey(
-                        name: "FK_RecurringTransactionDefinitions_Accounts_ReceiverAccountId",
-                        column: x => x.ReceiverAccountId,
+                        name: "FK_RecurringTransactionDefinitions_Accounts_AquirerAccountId",
+                        column: x => x.AquirerAccountId,
                         principalSchema: "dbo",
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
@@ -313,13 +278,14 @@ namespace Bank1.WebApi.Migrations
                 {
                     TransactionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    BankPaymentServiceTransactionId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     CurrencyId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SenderAccountId = table.Column<int>(type: "int", nullable: true),
+                    IssuerAccountId = table.Column<int>(type: "int", nullable: true),
                     IssuerTransactionId = table.Column<int>(type: "int", nullable: true),
                     IssuerTimestamp = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ReceiverAccountId = table.Column<int>(type: "int", nullable: false),
+                    AquirerAccountId = table.Column<int>(type: "int", nullable: true),
                     TransactionStatus = table.Column<string>(type: "nvarchar(24)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TransactionSuccessUrl = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
@@ -330,15 +296,15 @@ namespace Bank1.WebApi.Migrations
                 {
                     table.PrimaryKey("PK_Transactions", x => x.TransactionId);
                     table.ForeignKey(
-                        name: "FK_Transactions_Accounts_ReceiverAccountId",
-                        column: x => x.ReceiverAccountId,
+                        name: "FK_Transactions_Accounts_AquirerAccountId",
+                        column: x => x.AquirerAccountId,
                         principalSchema: "dbo",
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Transactions_Accounts_SenderAccountId",
-                        column: x => x.SenderAccountId,
+                        name: "FK_Transactions_Accounts_IssuerAccountId",
+                        column: x => x.IssuerAccountId,
                         principalSchema: "dbo",
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
@@ -349,6 +315,66 @@ namespace Bank1.WebApi.Migrations
                         principalSchema: "dbo",
                         principalTable: "Currencies",
                         principalColumn: "CurrencyId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AqurierTransactions",
+                schema: "dbo",
+                columns: table => new
+                {
+                    AcqurierTransactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<int>(type: "int", nullable: false),
+                    IssuerTransactionId = table.Column<int>(type: "int", nullable: true),
+                    IssuerTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AqurierTransactions", x => x.AcqurierTransactionId);
+                    table.ForeignKey(
+                        name: "FK_AqurierTransactions_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalSchema: "dbo",
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId");
+                    table.ForeignKey(
+                        name: "FK_AqurierTransactions_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalSchema: "dbo",
+                        principalTable: "Transactions",
+                        principalColumn: "TransactionId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IssuerTransactions",
+                schema: "dbo",
+                columns: table => new
+                {
+                    IssuerTransactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<int>(type: "int", nullable: false),
+                    AquirerTransactionId = table.Column<int>(type: "int", nullable: true),
+                    AquirerTimestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IssuerTransactions", x => x.IssuerTransactionId);
+                    table.ForeignKey(
+                        name: "FK_IssuerTransactions_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalSchema: "dbo",
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId");
+                    table.ForeignKey(
+                        name: "FK_IssuerTransactions_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalSchema: "dbo",
+                        principalTable: "Transactions",
+                        principalColumn: "TransactionId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -409,8 +435,8 @@ namespace Bank1.WebApi.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "cc1e5433-cf53-40d1-851e-e2102180eb55", 0, "789 Ulica jorgovana,", "40d0d67b-255c-4524-9f15-bfaa9e79b915", "johndoe@email.com", false, false, null, "John Doe", null, null, "AQAAAAEAACcQAAAAEE8+3TqN8KtvOQ+MvzloSW8L9EZ2UQZi2iNJf11RWuKsgAuM6ov1tHl+eSqAVWxJCw==", "+1 555-987-6543", false, "995b1230-1745-4aaa-b69f-e2f5ec3efb1c", false, null },
-                    { "ff997333-0c10-4fef-9d07-d2599fca2795", 0, "123 Glavna ulica", "725c2c77-db4b-4c79-ae0d-ec9ab2c2f0f8", "webshopadmin@lawpublishingagency.com", false, false, null, "Web prodavnica pravnog izdavaštva", null, null, "AQAAAAEAACcQAAAAEGEVT8KJCuDA6P9xsrxUvNivPlNEkKbus70dUmCoBCQN60EG1qJdyVzOWweN7h6LrA==", "+1 555-123-4567", false, "74e4aa14-d6dd-4166-b60b-d8b8e86963f3", false, null }
+                    { "cc1e5433-cf53-40d1-851e-e2102180eb55", 0, "789 Ulica jorgovana", "cd182e5b-f831-428a-b7f2-d41a5a581cee", "johndoe@gmail.com", false, false, null, "John Doe", "JOHNDOE@GMAIL.COM", null, "AQAAAAEAACcQAAAAECo9SRv/+iceg6Xp2VXutCR7B0rMWSypiYgbeh7WIlWjJy2iiMw/FKwP0kwZwlpIdQ==", "+1 555-987-6543", false, "050842c8-c857-4807-9cca-fc203f6866b3", false, null },
+                    { "ff997333-0c10-4fef-9d07-d2599fca2795", 0, "123 Glavna ulica", "98aed1c5-8b26-4e48-919f-31425ff8048b", "webshopadmin@lawpublishingagency.com", false, false, null, "Web prodavnica pravnog izdavaštva", "WEBSHOPADMIN@LAWPUBLISHINGAGENCY.COM", null, "AQAAAAEAACcQAAAAEL40geoYRhsZMaOZSs9k9tlLwPx2EH641Yh6jG1ivgUa4wcvBJCn/SjYYuO1rPlnBQ==", "+1 555-123-4567", false, "7bace500-77f1-41d0-abea-51a3af87b09e", false, null }
                 });
 
             migrationBuilder.InsertData(
@@ -431,8 +457,8 @@ namespace Bank1.WebApi.Migrations
                 values: new object[,]
                 {
                     { 1, "105-0000000000000-29", 14500.0, 1, "ff997333-0c10-4fef-9d07-d2599fca2795" },
-                    { 2, "106-0000000000000-30", 6530.0, 3, "cc1e5433-cf53-40d1-851e-e2102180eb55" },
-                    { 3, "105-0000000000001-37", 500.0, 2, "ff997333-0c10-4fef-9d07-d2599fca2795" }
+                    { 2, "105-0000000001234-13", 6530.0, 3, "cc1e5433-cf53-40d1-851e-e2102180eb55" },
+                    { 3, "105-0000000000001-26", 500.0, 2, "ff997333-0c10-4fef-9d07-d2599fca2795" }
                 });
 
             migrationBuilder.InsertData(
@@ -479,6 +505,18 @@ namespace Bank1.WebApi.Migrations
                 schema: "dbo",
                 table: "Accounts",
                 column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AqurierTransactions_AccountId",
+                schema: "dbo",
+                table: "AqurierTransactions",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AqurierTransactions_TransactionId",
+                schema: "dbo",
+                table: "AqurierTransactions",
+                column: "TransactionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -550,28 +588,28 @@ namespace Bank1.WebApi.Migrations
                 column: "ToCurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IssuerTransactions_CurrencyId",
+                name: "IX_IssuerTransactions_AccountId",
                 schema: "dbo",
                 table: "IssuerTransactions",
-                column: "CurrencyId");
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_IssuerTransactions_IssuerAccountId",
+                name: "IX_IssuerTransactions_TransactionId",
                 schema: "dbo",
                 table: "IssuerTransactions",
-                column: "IssuerAccountId");
+                column: "TransactionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecurringTransactionDefinitions_AquirerAccountId",
+                schema: "dbo",
+                table: "RecurringTransactionDefinitions",
+                column: "AquirerAccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecurringTransactionDefinitions_CurrencyId",
                 schema: "dbo",
                 table: "RecurringTransactionDefinitions",
                 column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RecurringTransactionDefinitions_ReceiverAccountId",
-                schema: "dbo",
-                table: "RecurringTransactionDefinitions",
-                column: "ReceiverAccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecurringTransactions_RecurringTransactionDefinitionId",
@@ -592,26 +630,30 @@ namespace Bank1.WebApi.Migrations
                 column: "TransactionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transactions_AquirerAccountId",
+                schema: "dbo",
+                table: "Transactions",
+                column: "AquirerAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transactions_CurrencyId",
                 schema: "dbo",
                 table: "Transactions",
                 column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_ReceiverAccountId",
+                name: "IX_Transactions_IssuerAccountId",
                 schema: "dbo",
                 table: "Transactions",
-                column: "ReceiverAccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_SenderAccountId",
-                schema: "dbo",
-                table: "Transactions",
-                column: "SenderAccountId");
+                column: "IssuerAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AqurierTransactions",
+                schema: "dbo");
+
             migrationBuilder.DropTable(
                 name: "AspNetUserClaims");
 

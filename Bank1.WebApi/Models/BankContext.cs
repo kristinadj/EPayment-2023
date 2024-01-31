@@ -18,6 +18,7 @@ namespace Bank1.WebApi.Models
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<IssuerTransaction> IssuerTransactions { get; set; }
+        public DbSet<AcqurierTransaction> AcqurierTransactions { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TransactionLog> TransactionLogs { get; set; }
         public DbSet<RecurringTransactionDefinition> RecurringTransactionDefinitions { get; set; }
@@ -97,17 +98,17 @@ namespace Bank1.WebApi.Models
 
             builder.Entity<IssuerTransaction>(entity =>
             {
-                entity.Property(d => d.TransactionStatus)
-                    .HasConversion<string>();
-
-                entity.HasOne(x => x.Currency)
+                entity.HasOne(x => x.Transaction)
                     .WithMany()
-                    .HasForeignKey(x => x.CurrencyId)
+                    .HasForeignKey(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
 
-                entity.HasOne(x => x.IsuerAccount)
-                    .WithMany(x => x.TransactionsAsIssuer)
-                    .HasForeignKey(x => x.IssuerAccountId)
+            builder.Entity<AcqurierTransaction>(entity =>
+            {
+                entity.HasOne(x => x.Transaction)
+                    .WithMany()
+                    .HasForeignKey(x => x.TransactionId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -121,14 +122,14 @@ namespace Bank1.WebApi.Models
                     .HasForeignKey(x => x.CurrencyId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.SenderAccount)
-                    .WithMany(x => x.TransactionsAsSender)
-                    .HasForeignKey(x => x.SenderAccountId)
+                entity.HasOne(x => x.IssuerAccount)
+                    .WithMany(x => x.LocalTransactionsAsIssuer)
+                    .HasForeignKey(x => x.IssuerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.ReceiverAccount)
-                    .WithMany(x => x.TransactionsAsReceiver)
-                    .HasForeignKey(x => x.ReceiverAccountId)
+                entity.HasOne(x => x.AquirerAccount)
+                    .WithMany(x => x.LocalTransactionsAsAquirer)
+                    .HasForeignKey(x => x.AquirerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -150,9 +151,9 @@ namespace Bank1.WebApi.Models
                     .HasForeignKey(x => x.CurrencyId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne(x => x.ReceiverAccount)
+                entity.HasOne(x => x.AquirerAccount)
                     .WithMany()
-                    .HasForeignKey(x => x.ReceiverAccountId)
+                    .HasForeignKey(x => x.AquirerAccountId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -195,29 +196,31 @@ namespace Bank1.WebApi.Models
                 {
                     Id = merchantId,
                     PasswordHash = hasher.HashPassword(null!, "Pass123!"),
-                    Name = "Web prodavnica pravnog izdavaštva",
+                    Name = "Web shop 1",
                     Address = "123 Glavna ulica",
                     PhoneNumber = "+1 555-123-4567",
-                    Email = "webshopadmin@lawpublishingagency.com",
-                    NormalizedEmail = "webshopadmin@lawpublishingagency.com".ToUpper(),
+                    Email = "webshop1@gmail.com",
+                    NormalizedEmail = "webshop1@gmail.com".ToUpper(),
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("105-0000000000000-29")
+               new Account
                {
+                   AccountNumber = "105-0000000000000-29",
+                   OwnerId = merchantId,
                    AccountId = 1,
                    Balance = 14500,
-                   CurrencyId = 1,
-                   OwnerId = merchantId
+                   CurrencyId = 1
                });
 
             builder.Entity<Account>().HasData(
-               new Account("105-0000000000001-26")
+               new Account
                {
+                   AccountNumber = "105-0000000000001-26",
+                   OwnerId = merchantId,
                    AccountId = 3,
                    Balance = 500,
-                   CurrencyId = 2,
-                   OwnerId = merchantId
+                   CurrencyId = 2
                });
 
             builder.Entity<BusinessCustomer>().HasData(
@@ -244,12 +247,13 @@ namespace Bank1.WebApi.Models
                 });
 
             builder.Entity<Account>().HasData(
-               new Account("106-0000000000000-30")
+               new Account
                {
+                   AccountNumber = "105-0000000001234-13",
+                   OwnerId = buyerId,
                    AccountId = 2,
                    Balance = 6530,
-                   CurrencyId = 3,
-                   OwnerId = buyerId
+                   CurrencyId = 3
                });
 
             builder.Entity<Card>().HasData(

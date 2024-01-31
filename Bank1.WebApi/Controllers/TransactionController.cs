@@ -39,8 +39,6 @@ namespace Bank1.WebApi.Controllers
         [HttpGet("Status/{transactionId}")]
         public async Task<ActionResult<RedirectUrlDTO?>> GeTransactionStatus([FromRoute] int transactionId)
         {
-            RedirectUrlDTO? redirectUrl = null;
-
             try
             {
                 var transaction = await _transactionService.GetTransactionByIdAsync(transactionId);
@@ -48,6 +46,7 @@ namespace Bank1.WebApi.Controllers
                 if (transaction!.TransactionStatus == Enums.TransactionStatus.CREATED || transaction!.TransactionStatus == Enums.TransactionStatus.IN_PROGRESS)
                     return BadRequest("Transaction is still in progress");
 
+                RedirectUrlDTO? redirectUrl;
                 if (transaction.TransactionStatus == Enums.TransactionStatus.COMPLETED)
                 {
                     redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
@@ -121,7 +120,7 @@ namespace Bank1.WebApi.Controllers
 
                 if (!isLocalCard)
                 {
-                    var isSuccess = await _transactionService.PccSendToPayTransctionAsync(transaction, payTransactionIDTO, _appSettings.PccBankId, _appSettings.PccUrl);
+                    var isSuccess = await _transactionService.PccSendAcquirerTransactionAsync(transaction, payTransactionIDTO, _appSettings.PccBankId, _appSettings.PccUrl);
                     if (isSuccess)
                     {
                         redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
@@ -139,7 +138,7 @@ namespace Bank1.WebApi.Controllers
                     var isSuccess = false;
                     if (sender != null)
                     {
-                        isSuccess = await _transactionService.PayTransctionAsync(transaction, sender!);
+                        isSuccess = await _transactionService.PayLocalTransactionAsync(transaction, sender!);
                         if (isSuccess)
                         {
                             redirectUrl = await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(successUrl);
@@ -188,12 +187,26 @@ namespace Bank1.WebApi.Controllers
             }
         }
 
-        [HttpPost("PCC")]
-        public async Task<ActionResult<PccTransactionODTO>> PccPayTransaction([FromBody] PccTransactionIDTO pccTransactionIDTO)
+        [HttpPost("PCC/ReceiveAquirerTransaction")]
+        public async Task<ActionResult<PccAquirerTransactionODTO>> PccPayAcquirerTransaction([FromBody] PccAquirerTransactionIDTO pccTransactionIDTO)
         {
             try
             {
-                var transactionODTO = await _transactionService.PccReceiveToPayTransactionAsync(pccTransactionIDTO, _appSettings.CardStartNumbers);
+                var transactionODTO = await _transactionService.PccReceiveAquirerTransactionAsync(pccTransactionIDTO, _appSettings.CardStartNumbers);
+                return Ok(transactionODTO);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("PCC/ReceiveIssuerTransaction")]
+        public async Task<ActionResult<PccAquirerTransactionODTO>> PccPayIssuerTransaction([FromBody] PccIssuerTransactionIDTO pccTransactionIDTO)
+        {
+            try
+            {
+                var transactionODTO = await _transactionService.PccReceiveIsssuerTransactionAsync(pccTransactionIDTO);
                 return Ok(transactionODTO);
             }
             catch (Exception)
@@ -286,11 +299,20 @@ namespace Bank1.WebApi.Controllers
                 var qrCode = await _nbsClient.ValdiateQrCodeAsync(qrCodePayment.ScannedQrCode);
                 if (qrCode == null || qrCode.Status!.Code != 0) return BadRequest("NBS - Invalid QR code format");
 
-                var receiverAccount = await _accountService.GetAcountByAccountNumberAsync(qrCode.Data!.R, false);
+                var acquirerAccount = await _accountService.GetAcountByAccountNumberAsync(qrCode.Data!.R, false);
 
-                if (receiverAccount == null)
+                if (acquirerAccount == null)
                 {
-                    // TODO: PCC redirect
+                    var isSuccess = await _transactionService.PccSendIssuerTransactionAsync(transaction!, senderAccount, _appSettings.PccBankId, _appSettings.PccUrl);
+                    if (isSuccess)
+                    {
+                        await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
+                    }
+                    else
+                    {
+                        await _transactionService.UpdateTransactionStatusAsync(transaction, Enums.TransactionStatus.FAIL);
+                        await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionFailureUrl);
+                    }
                 }
                 else
                 {
@@ -302,8 +324,8 @@ namespace Bank1.WebApi.Controllers
 
                     if (transaction!.TransactionStatus == Enums.TransactionStatus.COMPLETED) return BadRequest("Transaction is already settled");
 
-                    await _transactionService.UpdateReceiverAccountIdAsync(transaction, receiverAccount);
-                    isSuccess = await _transactionService.PayTransctionAsync(transaction, senderAccount!);
+                    await _transactionService.UpdateAcquirerAccountIdAsync(transaction, acquirerAccount);
+                    isSuccess = await _transactionService.PayLocalTransactionAsync(transaction, senderAccount!);
                     if (isSuccess)
                     {
                         await _transactionService.UpdatePaymentServiceInvoiceStatusAsync(transaction.TransactionSuccessUrl);
