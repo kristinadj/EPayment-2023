@@ -12,11 +12,11 @@ var Scanner = {
         }
     },
     QRCodeScanned: function (code) {
-        DotNet.invokeMethodAsync("Bank1.Client", "QRCodeJsCallBack", code);
+        DotNet.invokeMethodAsync("Bank2.Client", "QRCodeJsCallBack", code);
     },
     ManageError: function (error) {
         var json = JSON.stringify(error);
-        DotNet.invokeMethodAsync("Bank1.Client", "ManageErrorJsCallBack", json);
+        DotNet.invokeMethodAsync("Bank2.Client", "ManageErrorJsCallBack", json);
     },
     Init: function (useFront) {
         try {
